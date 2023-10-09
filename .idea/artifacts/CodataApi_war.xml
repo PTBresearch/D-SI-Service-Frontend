@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="dsiservices.war">
+    <root id="archive" name="dsi-client.war">
       <element id="artifact" artifact-name="CodataApi:war exploded" />
     </root>
   </artifact>

@@ -1,0 +1,254 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "D-Services management APIs",
+    "description": "This API exposes endpoints to manage d-constant.",
+    "termsOfService": "https://d-si.ptb.de/#/d-constant",
+    "contact": {
+      "name": "D-SI Services",
+      "url": "https://d-si.ptb.de",
+      "email": "Daniel.Hutzschenreuter@ptb.de"
+    },
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8082",
+      "description": "Server URL in Development environment"
+    },
+    {
+      "url": "https://d-si.ptb.de",
+      "description": "Server URL in Production environment"
+    }
+  ],
+  "tags": [
+    {
+      "name": "D-Constant-Api",
+      "description": " management API"
+    }
+  ],
+  "paths": {
+    "/api/dccValidation/{dccPid}": {
+      "get": {
+        "tags": [
+          "D-Constant-Api"
+        ],
+        "operationId": "getDPPByDcc",
+        "parameters": [
+          {
+            "name": "dccPid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/d-siConstantJson": {
+      "get": {
+        "tags": [
+          "d-constant",
+          "D-Constant-Api"
+        ],
+        "summary": "Retrieve a list of physical and mathematical constants ",
+        "description": "Get a list of physical and mathematical constants with data (value,unit, dateTime,uncertainty....). The response is JSON data",
+        "operationId": "getSiConstantsJson",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/JSON": {
+                "schema": {
+                  "$ref": "#/components/schemas/DsiConstant"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The constant with given name and subName was not found."
+          }
+        }
+      }
+    },
+    "/api/d-constant/{name}": {
+      "get": {
+        "tags": [
+          "d-constant",
+          "D-Constant-Api"
+        ],
+        "summary": "Retrieve a physical constant by name and subName",
+        "description": "Get a physical constant  by specifying its name and subName. The response is D-si Xml",
+        "operationId": "marshal",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/XML": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScientificConstant"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The constant with given name and subName was not found."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DsiConstant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "year": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string",
+            "xml": {
+              "namespace": "https://ptb.de/si"
+            }
+          },
+          "quantityTypeQUDT": {
+            "type": "string",
+            "xml": {
+              "namespace": "https://ptb.de/si"
+            }
+          },
+          "value": {
+            "type": "string",
+            "xml": {
+              "namespace": "https://ptb.de/si"
+            }
+          },
+          "unit": {
+            "type": "string",
+            "xml": {
+              "namespace": "https://ptb.de/si"
+            }
+          },
+          "dateTime": {
+            "type": "string",
+            "xml": {
+              "namespace": "https://ptb.de/si"
+            }
+          },
+          "uncertainty": {
+            "type": "string",
+            "xml": {
+              "namespace": "https://ptb.de/si"
+            }
+          },
+          "distribution": {
+            "type": "string",
+            "xml": {
+              "namespace": "https://ptb.de/si"
+            }
+          }
+        }
+      },
+      "DsiIdentifier": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "publisher": {
+            "type": "string",
+            "xml": {
+              "namespace": "http://purl.org/dc/terms/"
+            }
+          },
+          "identifier": {
+            "type": "string",
+            "xml": {
+              "namespace": "http://purl.org/dc/terms/"
+            }
+          }
+        }
+      },
+      "ScientificConstant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "year": {
+            "type": "string"
+          },
+          "nameYear": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "array",
+            "xml": {
+              "name": "identifiers",
+              "wrapped": true
+            },
+            "items": {
+              "$ref": "#/components/schemas/DsiIdentifier"
+            }
+          },
+          "dsiApproved": {
+            "type": "boolean",
+            "xml": {
+              "namespace": "https://ptb.de/si/d-constant"
+            }
+          },
+          "dsiConstant": {
+            "$ref": "#/components/schemas/DsiConstant"
+          },
+          "sidefining": {
+            "type": "boolean"
+          },
+          "codata": {
+            "type": "boolean"
+          },
+          "math": {
+            "type": "boolean"
+          }
+        },
+        "description": "D-Constant Model Information",
+        "xml": {
+          "name": "constant",
+          "namespace": "https://ptb.de/si/d-constant"
+        }
+      }
+    }
+  }
+}

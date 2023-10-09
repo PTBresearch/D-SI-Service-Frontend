@@ -16,8 +16,8 @@
       </div>
       <div class="form-group">
         <label for="lastName">PID DCC:</label>
-        <input id="lastName" formControlName="dccPid" placeholder="PID DCC"  type="text" class="form-control"/>
-        <small *ngIf="participantFormGroup.controls['dccPid'].errors && participantFormGroup.controls['dccPid'].touched" class="text-danger">PID DCC is required</small>
+        <input id="lastName" formControlName="pidDCC" placeholder="PID DCC"  type="text" class="form-control"/>
+        <small *ngIf="participantFormGroup.controls['pidDCC'].errors && participantFormGroup.controls['pidDCC'].touched" class="text-danger">PID DCC is required</small>
 
       </div>
       <div class="col text-center">
@@ -49,7 +49,7 @@
                 <td *ngIf="!result.data?.length" colspan="5">Please add some Participants!</td>
               <tr *ngFor="let participant of result.data">
                 <td>{{participant.name}}</td>
-                <td>{{participant.dccPid}}</td>
+                <td>{{participant.pidDCC}}</td>
                 <td>
                   <button  style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger"  (click)="onDeleteParticipant(participant)">
                     <span class="fa fa-trash-o"></span>
@@ -64,25 +64,34 @@
     </ng-container>
   </div>
   <div>
-    <form  name="ReportForm"  class="col card p-3 mb-5"  >
-      <div class="row">
-        <div class="row mb-3 m-lg-3">
+    <div *ngIf="reportFormGroup">
+    <form  name="ReportForm"  [formGroup]="reportFormGroup"  class="col card p-3 mb-5"   (ngSubmit)= "addReport()" >
+      <div class="row " >
+        <div class="row mb-3 m-lg-3 ">
           <legend>Report:</legend>
           <label for="pidReport" class="col-1 col-form-label"><span
             style="font-weight:bold">PID Report</span></label>
-          <div class="col-sm-10">
-            <input type="text" id="pidReport" placeholder="CCM-KC1"  >
-
+          <div   class="col-sm-10 form-group " >
+            <input type="text" formControlName="pidReport"  id="pidReport" placeholder="CCM-K1" >
+            <small *ngIf="reportFormGroup.controls['pidReport'].errors && reportFormGroup.controls['pidReport'].touched" class="text-danger">pidReport is required</small>
             <label for="destination" class=" col-form-label disabled"><span
               style="font-weight:bold; margin:10px">Destination</span></label>
             <input type="text" class="my-lg-2" id="destination" placeholder="filesystem" readonly/>
+
           </div>
         </div>
-      </div>
-      <div class="col text-center">
-        <a href="https://www.ptb.de/si/dkcr/CCM-KC1.xml" target="_blank"  onclick="document.forms['ReportForm'].submit(); return true;"  class="btn btn-primary mt-5 w-auto" style="background-color:#009cd1; border-color:#009cd1;">EVALUATE COMPARISON</a>
+        <div class="col text-center form-group">
+          <button [disabled]="this.reportFormGroup.invalid" style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger" type="submit" (click)="onDownload()"  >
+            EVALUATE COMPARISON
+          </button>
+        </div>
       </div>
     </form>
+      <div class="col text-center form-group">
+        <a  style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger" type="submit"   href="http://localhost:8084/swagger-ui/index.html#/" target="_blank"  >
+          Swagger UI OpenAPI
+        </a>
+      </div>
   </div>
 
 
@@ -118,6 +127,7 @@
 <!--  </div>-->
 
   <div>
+  </div>
   </div>
 </div>
 

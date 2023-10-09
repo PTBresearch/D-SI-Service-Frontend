@@ -11,7 +11,6 @@ describe('ConstantComponent', () => {
       declarations: [ ConstantComponent ]
     })
     .compileComponents();
-
     fixture = TestBed.createComponent(ConstantComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

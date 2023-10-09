@@ -12,6 +12,9 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
 import {Ng2SearchPipeModule} from "ng2-search-filter";
 import {HashLocationStrategy, LocationStrategy, PathLocationStrategy} from "@angular/common";
+import { ErrorComponent } from './components/error/error.component';
+import { SawaggerComponent } from './components/sawagger/sawagger.component';
+
 
 
 @NgModule({
@@ -21,7 +24,9 @@ import {HashLocationStrategy, LocationStrategy, PathLocationStrategy} from "@ang
     ConstantComponent,
     DkeycomparisonComponent,
     NavBarComponent,
-    FooterComponent
+    FooterComponent,
+    ErrorComponent,
+    SawaggerComponent,
   ],
   imports: [
     BrowserModule,

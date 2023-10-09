@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="CodataApi:war exploded">
-    <output-path>$PROJECT_DIR$/backend/target/dsiservices</output-path>
+    <output-path>$PROJECT_DIR$/backend/target/dsi-client</output-path>
     <properties id="maven-jee-properties">
       <options>
         <exploded>true</exploded>
@@ -14,54 +14,19 @@
           <element id="module-output" name="CodataApi" />
         </element>
         <element id="directory" name="lib">
-          <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-data-jpa:3.0.1" />
-          <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-aop:3.0.1" />
-          <element id="library" level="project" name="Maven: org.springframework:spring-aop:6.0.3" />
-          <element id="library" level="project" name="Maven: org.aspectj:aspectjweaver:1.9.19" />
-          <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-jdbc:3.0.1" />
-          <element id="library" level="project" name="Maven: com.zaxxer:HikariCP:5.0.1" />
-          <element id="library" level="project" name="Maven: org.springframework:spring-jdbc:6.0.3" />
-          <element id="library" level="project" name="Maven: org.hibernate.orm:hibernate-core:6.1.6.Final" />
-          <element id="library" level="project" name="Maven: jakarta.persistence:jakarta.persistence-api:3.1.0" />
-          <element id="library" level="project" name="Maven: jakarta.transaction:jakarta.transaction-api:2.0.1" />
-          <element id="library" level="project" name="Maven: org.jboss.logging:jboss-logging:3.5.0.Final" />
-          <element id="library" level="project" name="Maven: org.hibernate.common:hibernate-commons-annotations:6.0.2.Final" />
-          <element id="library" level="project" name="Maven: org.jboss:jandex:2.4.2.Final" />
-          <element id="library" level="project" name="Maven: com.fasterxml:classmate:1.5.1" />
-          <element id="library" level="project" name="Maven: net.bytebuddy:byte-buddy:1.12.20" />
-          <element id="library" level="project" name="Maven: org.glassfish.jaxb:jaxb-runtime:4.0.1" />
-          <element id="library" level="project" name="Maven: org.glassfish.jaxb:jaxb-core:4.0.1" />
-          <element id="library" level="project" name="Maven: org.eclipse.angus:angus-activation:1.0.0" />
-          <element id="library" level="project" name="Maven: org.glassfish.jaxb:txw2:4.0.1" />
-          <element id="library" level="project" name="Maven: com.sun.istack:istack-commons-runtime:4.1.1" />
-          <element id="library" level="project" name="Maven: jakarta.inject:jakarta.inject-api:2.0.0" />
-          <element id="library" level="project" name="Maven: org.antlr:antlr4-runtime:4.10.1" />
-          <element id="library" level="project" name="Maven: org.springframework.data:spring-data-jpa:3.0.0" />
-          <element id="library" level="project" name="Maven: org.springframework.data:spring-data-commons:3.0.0" />
-          <element id="library" level="project" name="Maven: org.springframework:spring-orm:6.0.3" />
-          <element id="library" level="project" name="Maven: org.springframework:spring-context:6.0.3" />
-          <element id="library" level="project" name="Maven: org.springframework:spring-tx:6.0.3" />
-          <element id="library" level="project" name="Maven: org.springframework:spring-beans:6.0.3" />
-          <element id="library" level="project" name="Maven: jakarta.annotation:jakarta.annotation-api:2.1.1" />
-          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:2.0.6" />
-          <element id="library" level="project" name="Maven: org.springframework:spring-aspects:6.0.3" />
-          <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-thymeleaf:3.0.1" />
+          <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-web:3.0.1" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter:3.0.1" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-logging:3.0.1" />
           <element id="library" level="project" name="Maven: ch.qos.logback:logback-classic:1.4.5" />
           <element id="library" level="project" name="Maven: ch.qos.logback:logback-core:1.4.5" />
           <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-to-slf4j:2.19.0" />
-          <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-api:2.19.0" />
           <element id="library" level="project" name="Maven: org.slf4j:jul-to-slf4j:2.0.6" />
+          <element id="library" level="project" name="Maven: jakarta.annotation:jakarta.annotation-api:2.1.1" />
           <element id="library" level="project" name="Maven: org.yaml:snakeyaml:1.33" />
-          <element id="library" level="project" name="Maven: org.thymeleaf:thymeleaf-spring6:3.1.1.RELEASE" />
-          <element id="library" level="project" name="Maven: org.thymeleaf:thymeleaf:3.1.1.RELEASE" />
-          <element id="library" level="project" name="Maven: org.attoparser:attoparser:2.0.6.RELEASE" />
-          <element id="library" level="project" name="Maven: org.unbescape:unbescape:1.1.6.RELEASE" />
-          <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-web:3.0.1" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-json:3.0.1" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.14.1" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.14.1" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.14.1" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.14.1" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.module:jackson-module-parameter-names:2.14.1" />
@@ -70,16 +35,15 @@
           <element id="library" level="project" name="Maven: org.apache.tomcat.embed:tomcat-embed-el:10.1.4" />
           <element id="library" level="project" name="Maven: org.apache.tomcat.embed:tomcat-embed-websocket:10.1.4" />
           <element id="library" level="project" name="Maven: org.springframework:spring-web:6.0.3" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-beans:6.0.3" />
           <element id="library" level="project" name="Maven: io.micrometer:micrometer-observation:1.10.2" />
           <element id="library" level="project" name="Maven: io.micrometer:micrometer-commons:1.10.2" />
           <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:6.0.3" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-aop:6.0.3" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-context:6.0.3" />
           <element id="library" level="project" name="Maven: org.springframework:spring-expression:6.0.3" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot:3.0.1" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-autoconfigure:3.0.1" />
-          <element id="library" level="project" name="Maven: com.mysql:mysql-connector-j:8.0.31" />
-          <element id="library" level="project" name="Maven: jakarta.xml.bind:jakarta.xml.bind-api:4.0.0" />
-          <element id="library" level="project" name="Maven: jakarta.activation:jakarta.activation-api:2.1.0" />
-          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.14.1" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-test:3.0.1" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-test:3.0.1" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-test-autoconfigure:3.0.1" />
@@ -87,7 +51,11 @@
           <element id="library" level="project" name="Maven: net.minidev:json-smart:2.4.8" />
           <element id="library" level="project" name="Maven: net.minidev:accessors-smart:2.4.8" />
           <element id="library" level="project" name="Maven: org.ow2.asm:asm:9.1" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:2.0.6" />
+          <element id="library" level="project" name="Maven: jakarta.xml.bind:jakarta.xml.bind-api:4.0.0" />
+          <element id="library" level="project" name="Maven: jakarta.activation:jakarta.activation-api:2.1.0" />
           <element id="library" level="project" name="Maven: org.assertj:assertj-core:3.23.1" />
+          <element id="library" level="project" name="Maven: net.bytebuddy:byte-buddy:1.12.20" />
           <element id="library" level="project" name="Maven: org.hamcrest:hamcrest:2.2" />
           <element id="library" level="project" name="Maven: org.junit.jupiter:junit-jupiter:5.9.1" />
           <element id="library" level="project" name="Maven: org.junit.jupiter:junit-jupiter-api:5.9.1" />
@@ -108,10 +76,31 @@
           <element id="library" level="project" name="Maven: org.springframework:spring-test:6.0.3" />
           <element id="library" level="project" name="Maven: org.xmlunit:xmlunit-core:2.9.0" />
           <element id="library" level="project" name="Maven: org.webjars:bootstrap:5.1.3" />
+          <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.15" />
+          <element id="library" level="project" name="Maven: commons-io:commons-io:1.3.2" />
+          <element id="library" level="project" name="Maven: org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0" />
+          <element id="library" level="project" name="Maven: org.springdoc:springdoc-openapi-starter-webmvc-api:2.1.0" />
+          <element id="library" level="project" name="Maven: org.springdoc:springdoc-openapi-starter-common:2.1.0" />
+          <element id="library" level="project" name="Maven: io.swagger.core.v3:swagger-core-jakarta:2.2.9" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-lang3:3.12.0" />
+          <element id="library" level="project" name="Maven: io.swagger.core.v3:swagger-annotations-jakarta:2.2.9" />
+          <element id="library" level="project" name="Maven: io.swagger.core.v3:swagger-models-jakarta:2.2.9" />
+          <element id="library" level="project" name="Maven: jakarta.validation:jakarta.validation-api:3.0.2" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.1" />
+          <element id="library" level="project" name="Maven: org.webjars:swagger-ui:4.18.2" />
+          <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-thymeleaf:3.0.1" />
+          <element id="library" level="project" name="Maven: org.thymeleaf:thymeleaf-spring6:3.1.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.thymeleaf:thymeleaf:3.1.1.RELEASE" />
+          <element id="library" level="project" name="Maven: org.attoparser:attoparser:2.0.6.RELEASE" />
+          <element id="library" level="project" name="Maven: org.unbescape:unbescape:1.1.6.RELEASE" />
+          <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-core:2.20.0" />
+          <element id="library" level="project" name="Maven: org.apache.logging.log4j:log4j-api:2.19.0" />
+          <element id="library" level="project" name="Maven: ch.unibas.cs.gravis:niftijio:0.1.0" />
+          <element id="library" level="project" name="Maven: ch.unibas.cs.gravis:scalismo-niftijiojar:0.1.0" />
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/backend/target/dsiservices/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/backend/target/dsi-client/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="CodataApi/web/Web" />
     </root>

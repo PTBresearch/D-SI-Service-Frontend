@@ -1,26 +1,26 @@
 <div class="container " style="margin-bottom: 120px;">
-  <h2 class="font-weight-bold text-md-center mb-5 rounded text-white" style="width:20%;background-color:#009cd1;text-align:left;">
-    D-Constant </h2>
+  <h2 class="font-weight-bold text-md-center mb-5 rounded text-white"
+      style="width:20%;background-color:#009cd1;text-align:left;">D-Constant </h2>
+  <!--  Search form-->
   <form>
-    <div class="input-group" >
+    <div class="input-group">
       <label class="input-group-text ">Search</label>
-      <input class="bi-search  input-group-text bg-light" style="width:1200px;text-align: start;" type="text" placeholder="search Fundamentalconstant"   name="search" [(ngModel)]="searchText"   >
-<!--      <button class="btn btn-info">-->
-<!--        <i class="bi bi-search"></i>-->
-<!--      </button>-->
+      <input class="bi-search  input-group-text bg-light" style="width:1200px;text-align: start;" type="text"
+             placeholder="search constants " name="search" [(ngModel)]="searchText">
     </div>
   </form>
-  <div class="container" *ngIf="!constant">
+  <!--  Constants table-->
+  <div class="container " *ngIf="!constant">
     <ng-container *ngIf="constants$ | async as result" [ngSwitch]="result.dataState">
       <ng-container *ngSwitchCase="DataStateEnum.LOADING">Loading...</ng-container>
       <ng-container *ngSwitchCase="DataStateEnum.ERROR">
         <div class="alert-danger">{{result.errorMessage}}</div>
       </ng-container>
-      <ng-container *ngSwitchCase="DataStateEnum.LOADED">
-        <div class=" card col p-3 mt-5 mb-5 ">
-          <div class="card-header input-group-text bg-light">Fundamentalconstant List</div>
+      <ng-container *ngSwitchCase="DataStateEnum.LOADED" class="display: flex">
+        <div class=" card col p-3 mt-5 mb-5">
+          <div class="card-header input-group-text bg-light">Constant list</div>
           <div class="card-body">
-            <table class="table table-striped table-bordered mb-xl-5 data-resizable">
+            <table class="table table-striped table-bordered mb-xl-5 resize-handle data-resizable">
               <thead>
               <tr>
                 <th>Name (label)</th>
@@ -36,8 +36,7 @@
                 <td>{{constant.label}}</td>
                 <td>{{constant.value}}</td>
                 <td>{{constant.unit}}</td>
-<!--                <td><a href="http://localhost:8082/api/d-constant/{{constant.pid}}" target="_blank" >{{constant.pid}}</a></td>-->
-                <td><a href="https://d-si.ptb.de/api/d-constant/{{constant.pid}}" target="_blank" >{{constant.pid}}</a></td>
+                <td><a href="https://d-si.ptb.de/api/d-constant/{{constant.label}}{{constant.year}}" target="_blank">{{constant.label}}{{constant.year}}</a></td>
               </tr>
               </tbody>
             </table>
@@ -45,39 +44,10 @@
         </div>
       </ng-container>
     </ng-container>
+    <!--    Swagger-->
+    <div class="col text-center form-group">
+      <a style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger" type="submit"
+         href="http://localhost:8082/swagger-ui/index.html#/" target="_blank">Swagger UI OpenAPI</a>
+    </div>
   </div>
-<!--  (click)="OnChangeConstantValue($any($event.target).value)"-->
-<!--  <div class="container"  *ngIf="constant">-->
-<!--    <ng-container *ngIf="constants$ | async as result" [ngSwitch]="result.dataState">-->
-<!--      <ng-container *ngSwitchCase="DataStateEnum.LOADING">Loading...</ng-container>-->
-<!--      <ng-container *ngSwitchCase="DataStateEnum.ERROR">-->
-<!--        <div class="alert-danger">{{result.errorMessage}}</div>-->
-<!--      </ng-container>-->
-<!--      <ng-container *ngSwitchCase="DataStateEnum.LOADED">-->
-<!--        <div class=" card col p-3 mt-5 mb-5 ">-->
-<!--          <div class="card-header bg-light">Constant List</div>-->
-<!--          <div class="card-body">-->
-<!--            <table class="table table-striped table-bordered mb-xl-5 data-resizable">-->
-<!--              <thead>-->
-<!--              <tr>-->
-<!--                <th>label</th>-->
-<!--                <th>pid</th>-->
-<!--                <th>value</th>-->
-<!--                <th>unit</th>-->
-<!--              </tr>-->
-<!--              </thead>-->
-<!--              <tbody>-->
-<!--              <tr>-->
-<!--                <td>{{constant.label}}</td>-->
-<!--                <td>{{constant.pid}}</td>-->
-<!--                <td>{{constant.value}}</td>-->
-<!--                <td>{{constant.unit}}</td>-->
-<!--              </tr>-->
-<!--              </tbody>-->
-<!--            </table>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </ng-container>-->
-<!--    </ng-container>-->
-<!--  </div>-->
 </div>
