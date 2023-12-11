@@ -21,6 +21,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.ptb.codataapi.model.*;
 import de.ptb.codataapi.service.ParticipantService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.xml.bind.DatatypeConverter;
@@ -31,6 +36,22 @@ import org.springframework.web.client.RestTemplate;
 import java.io.*;
 import java.util.*;
 
+
+
+
+@OpenAPIDefinition(
+        info = @Info(
+                title = "Client Service Backend API",
+                description = "This API exposes endpoints to manage Client-Backend.",
+                version = "1.0.0",
+                contact = @Contact(
+                        name = "ptb",
+                        url = "https://www.ptb.de",
+                        email = "contact@ptb.de")),
+        servers = {
+        @Server(url ="http://localhost:8084", description = "local system")
+})
+@Tag(name = "Client-Api", description = "D-Si_Service Client API")
 @AllArgsConstructor
 @RestController
 @RequestMapping(path = "/api/client")
