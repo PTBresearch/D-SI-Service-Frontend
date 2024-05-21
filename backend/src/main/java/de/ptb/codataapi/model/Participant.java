@@ -17,8 +17,13 @@
 
 package de.ptb.codataapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import org.springframework.web.servlet.View;
+
 import java.io.Serializable;
 
 /**

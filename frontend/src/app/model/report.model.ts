@@ -4,6 +4,7 @@ import {AppDataState} from "../state/participant.state";
 
 export interface Report{
   pidReport: string;
-  participants$?: Observable<AppDataState<Participant[]>> ;
+  smartStandardEvaluationMethod: string;
+  participants$?: Observable<AppDataState<Participant[]>>;
 
 }

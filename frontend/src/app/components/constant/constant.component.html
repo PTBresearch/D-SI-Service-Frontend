@@ -1,5 +1,7 @@
+
 <div class="container const ">
   <h2 class="font-weight-bold text-md-center mb-5 rounded text-white d-const">D-Constant </h2>
+
   <!--  Search form-->
   <form>
     <div class="input-group">
@@ -16,9 +18,9 @@
         <div class="alert-danger">{{result.errorMessage}}</div>
       </ng-container>
       <ng-container *ngSwitchCase="DataStateEnum.LOADED" class="display: flex">
-        <div class=" card col p-3 mt-5 mb-5">
-          <div class="card-header input-group-text bg-light">Constant list</div>
-          <div class="card-body">
+        <div class=" card col p-3 mt-5 mb-5 table-responsive ">
+          <div class="card-header input-group-text bg-light ">Constant list</div>
+          <div class="card-body ">
             <table class="table table-striped table-bordered mb-xl-5 resize-handle data-resizable">
               <thead>
               <tr>
@@ -43,10 +45,10 @@
         </div>
       </ng-container>
     </ng-container>
-    <!--    Swagger-->
     <div class="col text-center form-group">
-      <a  class="btn btn-danger swagger" type="submit"
-         href="http://localhost:8082/swagger-ui/index.html#/" target="_blank">Swagger UI OpenAPI</a>
+      <a  class="btn btn-primary swagger" type="submit"
+         href="https://d-si.ptb.de/api/d-constant/swagger-ui/index.html#" target="_blank">Swagger UI OpenAPI</a>
     </div>
   </div>
 </div>
+

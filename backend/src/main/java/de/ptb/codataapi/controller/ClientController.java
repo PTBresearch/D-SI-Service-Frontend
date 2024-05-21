@@ -15,10 +15,7 @@
  * LAST MODIFIED:		 28.09.23, 10:20
  */
 package de.ptb.codataapi.controller;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.ptb.codataapi.model.*;
 import de.ptb.codataapi.service.ParticipantService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -26,17 +23,12 @@ import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.xml.bind.DatatypeConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import java.io.*;
 import java.util.*;
-
-
 
 
 @OpenAPIDefinition(
@@ -45,19 +37,21 @@ import java.util.*;
                 description = "This API exposes endpoints to manage Client-Backend.",
                 version = "1.0.0",
                 contact = @Contact(
-                        name = "ptb",
-                        url = "https://www.ptb.de",
-                        email = "contact@ptb.de")),
+                        name = "D-SI Services_Client",
+                        url = "https://d-si.ptb.de/#/d-comparison",
+                        email = "Daniel.Hutzschenreuter@ptb.de")),
         servers = {
-        @Server(url ="http://localhost:8084", description = "local system")
-})
+                @Server(url = "https://d-si.ptb.de", description = "Server URL in production environment"),
+                @Server(url ="http://localhost:8084", description = "Server URL in development environment")
+
+        })
 @Tag(name = "Client-Api", description = "D-Si_Service Client API")
 @AllArgsConstructor
 @RestController
 @RequestMapping(path = "/api/client")
 public class ClientController {
 
-    private ParticipantService participantService;
+    private final ParticipantService participantService;
     private static final String VALID_DCC = "PTB-DCC-4711";
 
     /**
@@ -107,6 +101,7 @@ public class ClientController {
     public ResponseEntity<Report> getReport() {
         Report r = new Report();
         r.setPidReport(participantService.getReport().getPidReport());
+        r.setSmartStandardEvaluationMethod(participantService.getReport().getSmartStandardEvaluationMethod());
         r.setParticipantList(participantService.getParticipantList());
         return new ResponseEntity<>(r, HttpStatus.OK);
     }
@@ -125,76 +120,12 @@ public class ClientController {
      * which has as  response the filename and Base64String.</p>
      * @author Wafa El jaoua
      */
+
     @RequestMapping(value = "/download", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
     public void downloadReportXML(HttpServletResponse response) throws IOException {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://d-si.ptb.de/api/d-comparison/evaluateComparison";
-//        String url = "http://localhost:8083/api/d-comparison/evaluateComparison";
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-        ObjectNode rootNode = objectMapper.createObjectNode();
-        Report r = getReport().getBody();
-        addReport(r);
-        System.out.println("report: " + r.toString());
-        // Retrieve the "reportJsonData" JsonNode
-        String reportJson = objectMapper.writeValueAsString(r);
-        JsonNode KeyCompJsonNode = objectMapper.readTree(reportJson);
-        ObjectNode keyComparisonDataObjectNode = objectMapper.createObjectNode();
-        keyComparisonDataObjectNode.put("pidReport", KeyCompJsonNode.get("pidReport"));
-        JsonNode participantListNode = KeyCompJsonNode.get("participantList");
-        keyComparisonDataObjectNode.putArray("participantList");
-        for (JsonNode participantNode : participantListNode) {
-            ObjectNode participantObjectNode = objectMapper.createObjectNode();
-            participantObjectNode.set("participant", participantNode);
-            keyComparisonDataObjectNode.withArray("participantList").add(participantObjectNode);
+            participantService.downloadAndSaveReport(response);
         }
-        rootNode.set("keyComparisonData", keyComparisonDataObjectNode);
-        // Convert the updated JsonNode to a JSON String
-        String updatedJsonString = objectMapper.writeValueAsString(rootNode);
-        System.out.println("postRequest: " + updatedJsonString);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<String>(updatedJsonString, headers);
-        //POST Request with base64String and reportName as  response
-        ResponseEntity<String> answer = restTemplate.postForEntity(url, entity, String.class);
-        JsonNode rootNode1 = objectMapper.readTree(answer.getBody());
-        String base64String = String.valueOf(rootNode1.path("base64String"));
-        JsonNode reportName = rootNode1.path("fileName");
-        String decodedBase64String = new String(DatatypeConverter.parseBase64Binary(base64String));
-        File file = new File("backend\\src\\main\\resources\\static\\dccFiles\\K1.xml");
-        try (FileOutputStream fos = new FileOutputStream(file);
-             BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-            //convert string to byte array
-            byte[] bytes = decodedBase64String.getBytes();
-            //write byte array to file
-            bos.write(bytes);
-            bos.close();
-            fos.close();
-            System.out.print("Data written to file successfully.");
-        } catch (IOException e) {
-            System.out.print("Data not written to file successfully.");
-            e.printStackTrace();
-        }
-        //save reportFile
-        File reportFile = new File("backend\\src\\main\\resources\\static\\dccFiles\\K1.xml");
-        if (reportFile.exists() && !reportFile.isDirectory()) {
-            response.setContentType("application/octet-stream");
-            response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-            String headerKey = "Content-Disposition";
-            String stringWithoutQuotes = String.valueOf(reportName);
-            String ds = stringWithoutQuotes.replace("\"", "");
-            String headerValue = "attachment;filename=" + ds;
-            response.setHeader(headerKey, headerValue);
-            ServletOutputStream outputStream = response.getOutputStream();
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(reportFile));
-            byte[] buffer = new byte[8192];
-            int bytesRead = -1;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-            inputStream.close();
-            outputStream.close();
-        }
-    }
+
 }
 

@@ -80,6 +80,7 @@ public class ParticipantRepository {
 
     public Report addReport(Report r) {
         report.setPidReport(r.getPidReport());
+        report.setSmartStandardEvaluationMethod(r.getSmartStandardEvaluationMethod());
         report.setParticipantList(r.getParticipantList());
         return report;
     }

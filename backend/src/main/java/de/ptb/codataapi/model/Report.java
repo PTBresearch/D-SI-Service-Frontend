@@ -34,5 +34,6 @@ import java.util.List;
 @NoArgsConstructor
 public class Report  implements Serializable {
     private String pidReport;
+    private String smartStandardEvaluationMethod;
     private List<Participant> participantList;
 }

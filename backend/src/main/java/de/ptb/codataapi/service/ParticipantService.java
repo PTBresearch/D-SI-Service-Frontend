@@ -17,8 +17,12 @@
 
 package de.ptb.codataapi.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.ptb.codataapi.model.Participant;
 import de.ptb.codataapi.model.Report;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 import java.util.List;
 /**
  * This is an interface for participant service .
@@ -32,4 +36,5 @@ public interface ParticipantService {
     Participant update(Participant p);
     Report addReport(Report report);
     Report getReport();
+    void downloadAndSaveReport(HttpServletResponse response)throws IOException ;
 }
