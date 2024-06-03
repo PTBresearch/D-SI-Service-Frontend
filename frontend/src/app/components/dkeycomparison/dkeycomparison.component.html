@@ -89,6 +89,7 @@
                 <option value = "" selected disabled>select evaluation method</option>
                 <option value = "energyComparison">E = mc²</option>
                 <option value = "massIntercomparison">mass intercomparison</option>
+                <option value = "radiationTempComparison">radiation temperature comparison</option>
                 <div *ngIf="reportFormGroup.controls['smartStandardEvaluationMethod'].errors && reportFormGroup.controls['smartStandardEvaluationMethod'].touched  " class="text-danger report">evaluation method is required</div>
               </select>
               <label for="destination" class=" col-form-label disabled m-1 "><span
