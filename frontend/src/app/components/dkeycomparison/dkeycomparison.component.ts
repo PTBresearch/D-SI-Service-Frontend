@@ -84,7 +84,7 @@ export class DkeycomparisonComponent implements OnInit {
     this.participantsService.addParticipant(this.participantFormGroup?.value)
       .subscribe(data => {
         this.getParticipants()
-        alert("added successfully")
+        // alert("added successfully")
       });
     this.participantFormGroup?.reset();
     //sessionStorage.setItem('participnatsList', JSON.stringify( this.participantsService.getParticipants()))
@@ -103,7 +103,7 @@ export class DkeycomparisonComponent implements OnInit {
     this.participantsService.addReport(this.reportFormGroup?.value)
       .subscribe(data => {
         this.getReports()
-        alert("added successfully")
+        // alert("added successfully")
       });
     this.reportFormGroup?.reset({smartStandardEvaluationMethod:""});
   }
