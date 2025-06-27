@@ -6,12 +6,9 @@ import {
   FormGroup,
   Validators
 } from "@angular/forms";
-import {HttpErrorResponse, HttpEvent, HttpEventType} from '@angular/common/http';
 import {catchError, map, Observable, of, startWith} from "rxjs";
 import {AppDataState, DataStateEnum} from "../../state/participant.state";
 import {Report} from "../../model/report.model";
-import {saveAs} from "file-saver";
-
 import {Dcc} from "../../model/Dcc.model";
 
 
@@ -22,19 +19,14 @@ import {Dcc} from "../../model/Dcc.model";
 })
 export class DkeycomparisonComponent implements OnInit {
   title = 'dsi-Services';
-
   public participants$?: Observable<AppDataState<Participant[]>>;
-
   public dccPidList$?: Observable<AppDataState<Dcc[]>>;
-
   participantFormGroup?: FormGroup;
   readonly DataStateEnum = DataStateEnum;
   public reports$?: Observable<AppDataState<Report>>;
   reportFormGroup?: FormGroup<any>;
   searchText: any;
-  selectedOption:string="";
-
-
+  selectedOption: string = "";
 
   constructor(private participantsService: ParticipantsService, private fb: FormBuilder) {
   }
@@ -46,13 +38,11 @@ export class DkeycomparisonComponent implements OnInit {
         name: ["", Validators.required],
         pidDCC: ["", Validators.required]
       }
-
     )
     this.getReports();
     this.reportFormGroup = this.fb.group({
       pidReport: ["", Validators.required],
-      smartStandardEvaluationMethod:["", Validators.required]
-
+      smartStandardEvaluationMethod: ["", Validators.required]
     })
     this.clearParticipantsList();
 
@@ -83,7 +73,6 @@ export class DkeycomparisonComponent implements OnInit {
     this.participantsService.addParticipant(this.participantFormGroup?.value)
       .subscribe(data => {
         this.getParticipants()
-        // alert("added successfully")
       });
     this.participantFormGroup?.reset();
     //sessionStorage.setItem('participnatsList', JSON.stringify( this.participantsService.getParticipants()))
@@ -104,7 +93,7 @@ export class DkeycomparisonComponent implements OnInit {
         this.getReports()
         // alert("added successfully")
       });
-    this.reportFormGroup?.reset({smartStandardEvaluationMethod:""});
+    this.reportFormGroup?.reset({smartStandardEvaluationMethod: ""});
   }
 
   public onDownload(): any {
@@ -122,9 +111,7 @@ export class DkeycomparisonComponent implements OnInit {
       }
     );
     this.participantsService.getPidReport();
-
   }
-
 
   public getDccList(): void {
     this.dccPidList$ = this.participantsService.getDccList().pipe(
@@ -133,8 +120,9 @@ export class DkeycomparisonComponent implements OnInit {
       catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
     );
   }
-  selectedEvalMethod(e:any){
-    console.log("smartStandardEvaluationMethod: ",e.target.value)
+
+  selectedEvalMethod(e: any) {
+    console.log("smartStandardEvaluationMethod: ", e.target.value)
   }
 }
 

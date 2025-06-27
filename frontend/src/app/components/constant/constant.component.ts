@@ -1,12 +1,9 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {ConstantsService} from "../../services/constants.service";
 import {catchError, map, Observable, of, startWith} from "rxjs";
 import {AppDataState} from "../../state/participant.state";
-
 import {DataStateEnum} from "../../state/participant.state";
 import {Constant} from "../../model/Constant.model";
-
-
 
 
 @Component({
@@ -17,12 +14,13 @@ import {Constant} from "../../model/Constant.model";
 export class ConstantComponent {
 
   public constants$?: Observable<AppDataState<Constant[]>>;
-
-  public constant:any;
+  public constant: any;
   readonly DataStateEnum = DataStateEnum;
-  searchText: string='';
+  searchText: string = '';
+
   constructor(private constantsService: ConstantsService) {
   }
+
   ngOnInit() {
     this.getConstantList();
   }

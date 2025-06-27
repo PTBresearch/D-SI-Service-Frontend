@@ -11,10 +11,12 @@ export class DsiconverterComponent implements OnInit {
   showResults: boolean = false;
   inputValue: string = ''
   unitData: any = {};
+
   constructor(private sirpConverterService: SirpConverterService) {
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
   convert() {
     this.sirpConverterService.getUnitData(this.inputValue).subscribe(

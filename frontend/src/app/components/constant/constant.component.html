@@ -1,4 +1,3 @@
-
 <div class="container const ">
   <h2 class="font-weight-bold text-md-center mb-5 rounded text-white d-const">D-Constant</h2>
 
@@ -6,7 +5,7 @@
   <form>
     <div class="input-group">
       <label class="input-group-text ">Search</label>
-      <input class="bi-search  input-group-text bg-light search"  type="text"
+      <input class="bi-search  input-group-text bg-light search" type="text"
              placeholder="search constants " name="search" [(ngModel)]="searchText">
     </div>
   </form>
@@ -37,7 +36,8 @@
                 <td>{{constant.label}}</td>
                 <td>{{constant.value}}</td>
                 <td>{{constant.unit}}</td>
-                <td><a href="https://d-si.ptb.de/api/d-constant/{{constant.label}}{{constant.year}}" target="_blank">{{constant.label}}{{constant.year}}</a></td>
+                <td><a href="https://d-si.ptb.de/api/d-constant/{{constant.label}}{{constant.year}}"
+                       target="_blank">{{constant.label}}{{constant.year}}</a></td>
               </tr>
               </tbody>
             </table>
@@ -46,7 +46,7 @@
       </ng-container>
     </ng-container>
     <div class="col text-center form-group">
-      <a  class="btn btn-primary swagger" type="submit"
+      <a class="btn btn-primary swagger" type="submit"
          href="https://d-si.ptb.de/api/d-constant/swagger-ui/index.html#" target="_blank">Swagger UI OpenAPI</a>
     </div>
   </div>

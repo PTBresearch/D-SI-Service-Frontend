@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable, of} from "rxjs";
 import {Participant} from "../model/participant.model";
 
@@ -9,46 +9,54 @@ import {Report} from "../model/report.model";
 import {Dcc} from "../model/Dcc.model";
 
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class ParticipantsService {
-  private apiServerUrl=environment.apiBaseUrl;
+  private apiServerUrl = environment.apiBaseUrl;
 
-   private apiServerDCCUrl=environment.apiDCCUrl;
+  private apiServerDCCUrl = environment.apiDCCUrl;
 
 
-  constructor(private  http: HttpClient) { }
-  public getParticipants():  Observable<Participant[]>{
+  constructor(private http: HttpClient) {
+  }
+
+  public getParticipants(): Observable<Participant[]> {
     return this.http.get<Participant[]>(`${this.apiServerUrl}/client/participants`);
   }
-  public addParticipant(participant: Participant): Observable<Participant>{
+
+  public addParticipant(participant: Participant): Observable<Participant> {
     return this.http.post<Participant>(`${this.apiServerUrl}/client/addParticipant`, participant);
   }
-  public onDeleteParticipant(participant: number): Observable<void>{
+
+  public onDeleteParticipant(participant: number): Observable<void> {
     return this.http.delete<void>(`${this.apiServerUrl}/client/delete/${participant}`);
   }
-  public onDeleteAll(): Observable<void>{
+
+  public onDeleteAll(): Observable<void> {
     return this.http.delete<void>(`${this.apiServerUrl}/client/deleteAll`);
   }
-  public getReports():  Observable<Report>{
+
+  public getReports(): Observable<Report> {
     return this.http.get<Report>(`${this.apiServerUrl}/client/report`);
   }
-  public getPidReport(): Observable<string>{
+
+  public getPidReport(): Observable<string> {
     return this.http.get<string>(`${this.apiServerUrl}client/report/{pidReport}`);
   }
-  public addReport(report: Report): Observable<Report>{
+
+  public addReport(report: Report): Observable<Report> {
     return this.http.post<Report>(`${this.apiServerUrl}/client/addReport`, report);
 
   }
 
-  public download():Observable<any> {
-    return this.http.get(`${this.apiServerUrl}/client/download`,{
-      observe:'response', responseType:'blob'
+  public download(): Observable<any> {
+    return this.http.get(`${this.apiServerUrl}/client/download`, {
+      observe: 'response', responseType: 'blob'
     });
   }
-  public getDccList():Observable<Dcc[]>{
+
+  public getDccList(): Observable<Dcc[]> {
     // return this.http.get<Dcc[]>(`${this.apiServerDCCUrl}/d-dcc/dccPidList`);
     return this.http.get<Dcc[]>(`${this.apiServerUrl}/d-dcc/dccPidList`);
   }
