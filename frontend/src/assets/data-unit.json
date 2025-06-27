@@ -1,0 +1,87 @@
+{
+  "input unit": "this is the input compound unit intended to be\\ a d-si unit__",
+  "__metadata__": "tbd",
+  "__permanent_identifier__": "tbd",
+  "__rdf_representation__": "tbd",
+  "__results_": "the validation output_human_message",
+  "__sirp_transformation__": "tbd",
+  "input_unit": "\\metre",
+  "metadata": {
+    "ttl_representation": "@prefix owl: <http://www.w3.org/2002/07/owl#> .\n@prefix si: <http://si-digital-framework.org/SI#> .\n@prefix units: <http://si-digital-framework.org/SI/units/> .\n\n[] a si:MeasurementUnit ;\n    si:hasSymbol \"m\" ;\n    owl:sameAs units:metre .\n\n"
+  },
+  "permanent_identifier": {
+    "identifier": "https://si-digital-framework.org/SI/units/metre"
+  },
+  "rdf_representation": {
+    "sirp_metadata_triples": [
+      [
+        "metre",
+        "type",
+        "SIBaseUnit"
+      ],
+      [
+        "metre",
+        "hasDefinition",
+        "metre1889"
+      ],
+      [
+        "metre",
+        "hasDefinition",
+        "metre1927"
+      ],
+      [
+        "metre",
+        "hasDefinition",
+        "metre1960"
+      ],
+      [
+        "metre",
+        "hasDefinition",
+        "metre1983"
+      ],
+      [
+        "metre",
+        "hasDefinition",
+        "metre2018"
+      ],
+      [
+        "metre",
+        "hasSymbol",
+        "m"
+      ],
+      [
+        "metre",
+        "hasUnitTypeAsString",
+        "SI base unit"
+      ],
+      [
+        "metre",
+        "hasUnitTypeAsString",
+        "Unit\u00e9 SI de base"
+      ],
+      [
+        "metre",
+        "isUnitOfQtyKind",
+        "LENG"
+      ],
+      [
+        "metre",
+        "prefLabel",
+        "metre"
+      ],
+      [
+        "metre",
+        "prefLabel",
+        "m\u00e8tre"
+      ]
+    ]
+  },
+  "results": {
+    "validSirpBoolean": true,
+    "valid_boolean": true,
+    "validation_output_human_message": "Valid D-SI Unit"
+  },
+  "sirp_transformation": {
+    "sirp_syntax": "m"
+  }
+}

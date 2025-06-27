@@ -1,0 +1,82 @@
+<div class="container converter section " >
+
+  <h2 class=" font-weight-bold m-lg-2 text-md-center mb-3 mt-5 rounded text-white d-conv section" >D-SI -- SIRP Converter</h2>
+
+<!--  <h1>D-SI to SIRP transformation</h1>-->
+  <form class="section">
+  <div class="input-group">
+    <input class=" input-group-text bg-light search convert"  type="text"
+           placeholder="SI unit to convert in SIRP: for example: \metre, \second, \milli\bel, \deca\gram\tothe{-2}" [(ngModel)]="inputValue"
+           (ngModelChange)="resetResults()" name="convertInput" (keydown.enter)="convert()">
+    <button class="btn btn-primary convertSirp" type="button" (click)="convert()">Convert to SIRP</button>
+<!--    | filter:searchText-->
+  </div>
+  </form>
+
+  <div class="section" *ngIf="showResults">
+  <h1>Results</h1>
+
+  <div  >
+    <h4>Unit Input: </h4>
+    <p>{{unitData['input_unit']}}</p>
+  </div>
+
+  <!-- Sección para validation_message -->
+  <div >
+    <h4>Validation message:</h4>
+<!--    <p>Valid D-Si Unit</p>-->
+    <p>{{unitData['results']['validation_output_human_message']}}</p>
+  </div>
+  <div>
+    <h4>D-SI Validation Status:</h4>
+    <p>{{unitData['results']['valid_boolean'] }}</p>
+  </div>
+  <div >
+    <h4>SIRP Validation Status:</h4>
+    <p>{{unitData['results']['validSirpBoolean'] }}</p>
+  </div>
+
+  <!-- Sección para sirp_syntax -->
+  <div >
+    <h4>D-SI Unit transformed in SI reference Point Unit Syntaxis:</h4>
+    <p>{{unitData ['sirp_transformation']['sirp_syntax']}}</p>
+  </div>
+
+  <!-- Sección para permanent_identifier -->
+  <div >
+
+    <h4>D-SI Unit as an SI Reference Point PID:</h4>
+    <p><a href="{{unitData ['permanent_identifier']['identifier']}}" target="_blank">{{ unitData ['permanent_identifier']['identifier'] }}</a></p>
+  </div>
+
+<!--   Sección para triples (Tabla dinámica)-->
+  <ng-container  class="display: flex">
+    <h4>TTL Metadata:</h4>
+    <div class=" card col p-3 mt-5 mb-5 table-responsive ">
+      <div class="card-header input-group-text bg-light ">TTL Metadata</div>
+      <div class="card-body ">
+        <table class="table table-striped table-bordered mb-xl-5 resize-handle data-resizable">
+          <thead>
+          <tr>
+        <th>Subject</th>
+        <th>Predicate</th>
+        <th>Object</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let triple of unitData['rdf_representation']['sirp_metadata_triples']">
+        <td>{{ triple[0] }}</td>
+        <td>{{ triple[1] }}</td>
+        <td>{{ triple[2] }}</td>
+      </tr>
+      </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+  <div >
+    <h4>D-SI Unit in SI Reference Point RDF Unit:</h4>
+    <pre class="sectionPre">{{ unitData ['metadata']['ttl_representation'] }}</pre>
+  </div>
+  </div>
+</div>

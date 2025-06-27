@@ -1,0 +1,25 @@
+.d-conv{
+  width:38%;background-color: #009cd1; text-align:left;
+}
+.convert{
+  width:80%;
+  text-align: start;
+}
+.convertSirp{
+  background-color:#009cd1;
+  border-color:#009cd1;
+  text-align: end;
+}
+.converter{
+  margin-bottom: 120px;
+}
+.section {
+  margin-top: 3%;
+}
+.sectionPre {
+  background-color: #f4f4f4;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+
+}

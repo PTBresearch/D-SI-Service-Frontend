@@ -49,8 +49,8 @@ export class ParticipantsService {
     });
   }
   public getDccList():Observable<Dcc[]>{
-    return this.http.get<Dcc[]>(`${this.apiServerDCCUrl}/d-dcc/dccPidList`);
-    // return this.http.get<Dcc[]>(`${this.apiServerUrl}/d-dcc/dccPidList`);
+    // return this.http.get<Dcc[]>(`${this.apiServerDCCUrl}/d-dcc/dccPidList`);
+    return this.http.get<Dcc[]>(`${this.apiServerUrl}/d-dcc/dccPidList`);
   }
 
 }

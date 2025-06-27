@@ -16,8 +16,8 @@
       <div class="form-group mb-2" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">
         <label class="form-label" for="pidDCC">PID DCC:</label>
         <input id="pidDCC" formControlName="pidDCC" class="form-control" type="text"
-               placeholder="Search or enter PID DCC" list="dccList">
-<!--                name="search" [(ngModel)]="searchText"-->
+               placeholder="Search or enter PID DCC" list="dccList"  name="search" [(ngModel)]="searchText" >
+
         <datalist id="dccList">
           <option *ngFor="let dccPid of result.data">{{dccPid}}</option>
         </datalist>
@@ -32,8 +32,6 @@
       </div>
     </form>
   </div>
-
-
   <ng-container *ngIf="participants$ | async as result" [ngSwitch]="result.dataState"
                 class="container-fluid col card p-3 mt-5 mb-5">
     <ng-container *ngSwitchCase="DataStateEnum.LOADING">Loading...</ng-container>
@@ -71,7 +69,6 @@
       </div>
     </ng-container>
   </ng-container>
-
   <div>
     <div *ngIf="reportFormGroup">
 
@@ -87,9 +84,10 @@
                 class="text-danger report" >PID report is required</small>
               <select  id="smartStandardEvaluationMethod"  class="form-select-sm  border border-secondary rounded-0 " formControlName="smartStandardEvaluationMethod"    (change)="selectedEvalMethod($event)"  style=" margin:10px; width:20%" >
                 <option value = "" selected disabled>select evaluation method</option>
-                <option value = "energyComparison">E = mc²</option>
+<!--                <option value = "energyComparison">E = mc²</option>-->
                 <option value = "massIntercomparison">mass intercomparison</option>
                 <option value = "radiationTempComparison">radiation temperature comparison</option>
+                <option value = "laboratoryMedicineComparison">laboratory medicine comparison</option>
                 <div *ngIf="reportFormGroup.controls['smartStandardEvaluationMethod'].errors && reportFormGroup.controls['smartStandardEvaluationMethod'].touched  " class="text-danger report">evaluation method is required</div>
               </select>
               <label for="destination" class=" col-form-label disabled m-1 "><span

@@ -14,6 +14,7 @@ import {Ng2SearchPipeModule} from "ng2-search-filter";
 import {HashLocationStrategy, LocationStrategy, PathLocationStrategy} from "@angular/common";
 import { ErrorComponent } from './components/error/error.component';
 import { SawaggerComponent } from './components/sawagger/sawagger.component';
+import { DsiconverterComponent } from './components/dsiconverter/dsiconverter.component';
 
 
 
@@ -27,6 +28,7 @@ import { SawaggerComponent } from './components/sawagger/sawagger.component';
     FooterComponent,
     ErrorComponent,
     SawaggerComponent,
+    DsiconverterComponent,
   ],
   imports: [
     BrowserModule,
