@@ -18,8 +18,8 @@
 package de.ptb.codataapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.ptb.codataapi.model.Participant;
-import de.ptb.codataapi.service.ParticipantServiceImpl;
+import de.ptb.codataapi.model.Contribution;
+import de.ptb.codataapi.service.ContributionsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,50 +35,49 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class ClientControllerTest {
     @Mock
-    private ParticipantServiceImpl service;
+    private ContributionsServiceImpl service;
     @InjectMocks
     private ClientController controller;
     @Autowired
     private MockMvc mockMvc;
-    private List<Participant> participantList;
+    private List<Contribution> participantList;
 
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-        Participant participant1 = new Participant(1L, "NPL", "CCM.M-K1-NPL9507");
-        Participant participant2 = new Participant(2L, "PTB", "CCM.M-K1-PTB9608");
+        Contribution participant1 = new Contribution(1L, "NPL", "CCM.M-K1-NPL9507","reference");
+        Contribution participant2 = new Contribution(2L, "PTB", "CCM.M-K1-PTB9608", "excluded");
         participantList = List.of(participant1, participant2);
     }
 
     @Test
     void getParticipants() throws Exception {
-        when(service.getParticipantList()).thenReturn(participantList);
+        when(service.getContributionList()).thenReturn(participantList);
         mockMvc.perform(MockMvcRequestBuilders.get("/api/client/participants")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
-       verify(service).getParticipantList();
-       verify(service,times(1)).getParticipantList();
+       verify(service).getContributionList();
+       verify(service,times(1)).getContributionList();
     }
 
     @Test
     void addParticipant() throws Exception {
-        Participant participant = new Participant(1L, "NPL", "CCM.M-K1-NPL9507");
-        when(service.addParticipant(participant)).thenReturn(participant);
+        Contribution participant = new Contribution(1L, "NPL", "CCM.M-K1-NPL9507","reference");
+        when(service.addContribution(participant)).thenReturn(participant);
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/api/client/addParticipant")
                         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(participant)))
                 .andExpect(status().isCreated())
                 .andDo(MockMvcResultHandlers.print());
-        verify(service).addParticipant(participant);
-        verify(service, times(1)).addParticipant(participant);
+        verify(service).addContribution(participant);
+        verify(service, times(1)).addContribution(participant);
     }
     public static String asJsonString(final Object obj) {
         try {

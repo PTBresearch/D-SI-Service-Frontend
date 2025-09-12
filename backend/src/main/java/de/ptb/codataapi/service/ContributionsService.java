@@ -12,41 +12,28 @@
  * CONTACT: 		info@ptb.de
  * DEVELOPMENT:		https://d-si.ptb.de
  * AUTHORS:		Wafa El Jaoua, Tobias Hoffmann, Clifford Brown, Daniel Hutzschenreuter
- * LAST MODIFIED:		 06.10.23, 23:35
+ * LAST MODIFIED:		 05.10.23, 10:36
  */
 
-package de.ptb.codataapi.model;
+package de.ptb.codataapi.service;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import org.springframework.web.servlet.View;
+import de.ptb.codataapi.model.Contribution;
+import de.ptb.codataapi.model.Report;
+import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.Serializable;
-
+import java.io.IOException;
+import java.util.List;
 /**
- * Pojo for participant
+ * This is an interface for participant service .
  * @author Wafa El jaoua
  */
-@Getter
-@Setter
-@AllArgsConstructor
-@ToString
-@EqualsAndHashCode
-public class Participant implements Serializable {
-    static long instanceCounter=0;
-
-    @Schema(name = "id", example = "1")
-    private  Long  id;
-    @Schema(name = "name", example = "NPL")
-    private  String name;
-    @Schema(name = "pidDCC", example = "CCM.M-K1-NPL9507")
-    private String  pidDCC;
-    public Participant() {
-        instanceCounter++;
-        id=instanceCounter;
-    }
-
+public interface ContributionsService {
+    List<Contribution> getContributionList();
+    boolean delete(long id);
+    void deleteAll();
+    Contribution addContribution(Contribution contribution);
+//    Contribution update(Contribution p);
+    Report addReport(Report report);
+    Report getReport();
+    void downloadAndSaveReport(HttpServletResponse response)throws IOException ;
 }

@@ -17,7 +17,7 @@
 
 package de.ptb.codataapi.repository;
 
-import de.ptb.codataapi.model.Participant;
+import de.ptb.codataapi.model.Contribution;
 import de.ptb.codataapi.model.Report;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,12 +28,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class ParticipantRepositoryTest {
+class ContributionRepositoryTest {
 
     @InjectMocks
-    private ParticipantRepository repository;
+    private ContributionRepository repository;
     @Mock
-    private List<Participant> participantList;
+    private List<Contribution> contributionList;
 
     private Report report;
 
@@ -44,8 +44,8 @@ class ParticipantRepositoryTest {
 
     @Test
     void should_return_participantList() {
-        when(participantList.size()).thenReturn(1);
-        List<Participant> resultParticipantList = repository.getAllParticipants();
+        when(contributionList.size()).thenReturn(1);
+        List<Contribution> resultParticipantList = repository.getAllContributions();
         assertNotNull(resultParticipantList);
         assertEquals(1, resultParticipantList.size());
     }
@@ -53,44 +53,44 @@ class ParticipantRepositoryTest {
     @Test
     void should_return_participant_isRemoved() {
         //when
-        when(participantList.removeIf(any())).thenReturn(true);
+        when(contributionList.removeIf(any())).thenReturn(true);
         //then
         boolean isParticipantRemoved = repository.delete(1L);
         //verify
         assertTrue(isParticipantRemoved);
-        verify(participantList, times(1)).removeIf(any());
+        verify(contributionList, times(1)).removeIf(any());
     }
 
     @Test
     void should_return_participant_isNotRemoved() {
         //when
-        when(participantList.removeIf(any())).thenReturn(false);
+        when(contributionList.removeIf(any())).thenReturn(false);
         //then
         boolean isParticipantRemoved = repository.delete(6L);
         //verify
         assertFalse(isParticipantRemoved);
-        verify(participantList, times(1)).removeIf(any());
+        verify(contributionList, times(1)).removeIf(any());
 
     }
 
     @Test
     void should_return_addedParticipant() {
         //when
-        Participant participant = new Participant(1L, "NPL", "CCM.M-K1-NPL9507");
-        when(participantList.add(participant)).thenReturn(true);
+        Contribution contribution = new Contribution(1L, "PTB_2", "http://localhost:8085/api/d-dcc/dcc/Temp_Comparison_PTB_2","reference");
+        when(contributionList.add(contribution)).thenReturn(true);
         //then
-        Participant participantExpected = repository.addParticipant(participant);
+        Contribution participantExpected = repository.addContribution(contribution);
         //verify
         assertNotNull(participantExpected);
-        assertEquals(participant, participantExpected);
+        assertEquals(contribution, participantExpected);
     }
 
 //    @Test
 //    void should_return_addedReport() {
 //        //given
-//        Participant participant1 = new Participant(1L, "NPL", "CCM.M-K1-NPL9507");
-//        Participant participant2 = new Participant(2L, "PTB", "CCM.M-K1-PTB9608");
-//        List<Participant> participantList = List.of(participant1, participant2);
+//        Contribution participant1 = new Contribution(1L, "NPL", "CCM.M-K1-NPL9507");
+//        Contribution participant2 = new Contribution(2L, "PTB", "CCM.M-K1-PTB9608");
+//        List<Contribution> participantList = List.of(participant1, participant2);
 //        report = new Report("CCM-KC1", participantList);
 //        //when
 //        Report reportExpected = repository.addReport(report);

@@ -35,5 +35,6 @@ import java.util.List;
 public class Report  implements Serializable {
     private String pidReport;
     private String smartStandardEvaluationMethod;
-    private List<Participant> participantList;
+    private List<Contribution> contributionList;
+    private String pilotParticipantName;
 }

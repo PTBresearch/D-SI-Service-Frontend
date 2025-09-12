@@ -17,9 +17,8 @@
 
 package de.ptb.codataapi.service;
 
-import de.ptb.codataapi.model.Participant;
-import de.ptb.codataapi.model.Report;
-import de.ptb.codataapi.repository.ParticipantRepository;
+import de.ptb.codataapi.model.Contribution;
+import de.ptb.codataapi.repository.ContributionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,19 +31,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class ParticipantServiceImplTest {
+class ContributionsServiceImplTest {
     @InjectMocks
-    private ParticipantServiceImpl service;
+    private ContributionsServiceImpl service;
     @Mock
-    private ParticipantRepository repository;
+    private ContributionRepository repository;
 
-    private List<Participant> participantList;
+    private List<Contribution> participantList;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        Participant participant1 = new Participant(1L, "NPL", "CCM.M-K1-NPL9507");
-        Participant participant2 = new Participant(2L, "PTB", "CCM.M-K1-PTB9608");
+        Contribution participant1 = new Contribution(1L, "PTB_2", "http://localhost:8085/api/d-dcc/dcc/Temp_Comparison_PTB_1","reference");
+        Contribution participant2 = new Contribution(2L, "PTB_2", "http://localhost:8085/api/d-dcc/dcc/Temp_Comparison_PTB_2","reference");
         participantList = List.of(participant1, participant2);
 
     }
@@ -52,9 +51,9 @@ class ParticipantServiceImplTest {
     @Test
     void should_return_participantList() {
         //Mock the call
-        when(repository.getAllParticipants()).thenReturn(participantList);
+        when(repository.getAllContributions()).thenReturn(participantList);
         //when
-        List<Participant> exceptedList= service.getParticipantList();
+        List<Contribution> exceptedList= service.getContributionList();
         //then
         assertEquals(participantList, exceptedList);
 
@@ -73,11 +72,11 @@ class ParticipantServiceImplTest {
     @Test
     void should_return_addedParticipant() {
         //given
-        Participant participant = new Participant(1L, "NPL", "CCM.M-K1-NPL9507");
+        Contribution participant = new Contribution(1L, "PTB_2", "http://localhost:8085/api/d-dcc/dcc/Temp_Comparison_PTB_1","reference");
         //when
-        when(repository.addParticipant(participant)).thenReturn(participant);
+        when(repository.addContribution(participant)).thenReturn(participant);
         //then
-        Participant participantExpected = service.addParticipant(participant);
+        Contribution participantExpected = service.addContribution(participant);
         assertNotNull(participantExpected);
         assertEquals(participant, participantExpected);
     }
@@ -85,8 +84,8 @@ class ParticipantServiceImplTest {
 //    @Test
 //    void addReport() {
 //        //given
-//        Participant participant1 = new Participant(1L, "NPL", "CCM.M-K1-NPL9507");
-//        Participant participant2 = new Participant(2L, "PTB", "CCM.M-K1-PTB9608");
+//        Contribution participant1 = new Contribution(1L, "NPL", "CCM.M-K1-NPL9507");
+//        Contribution participant2 = new Contribution(2L, "PTB", "CCM.M-K1-PTB9608");
 //        participantList = List.of(participant1, participant2);
 //        Report report = new Report("CCM-KC1", participantList);
 //        //when

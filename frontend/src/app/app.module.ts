@@ -15,7 +15,8 @@ import {HashLocationStrategy, LocationStrategy, PathLocationStrategy} from "@ang
 import { ErrorComponent } from './components/error/error.component';
 import { SawaggerComponent } from './components/sawagger/sawagger.component';
 import { DsiconverterComponent } from './components/dsiconverter/dsiconverter.component';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatRadioModule} from "@angular/material/radio";
 
 
 @NgModule({
@@ -29,6 +30,7 @@ import { DsiconverterComponent } from './components/dsiconverter/dsiconverter.co
     ErrorComponent,
     SawaggerComponent,
     DsiconverterComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -36,7 +38,11 @@ import { DsiconverterComponent } from './components/dsiconverter/dsiconverter.co
     ReactiveFormsModule,
     HttpClientModule,
     FormsModule,
-    Ng2SearchPipeModule
+    Ng2SearchPipeModule,
+    BrowserModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    MatRadioModule
   ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]

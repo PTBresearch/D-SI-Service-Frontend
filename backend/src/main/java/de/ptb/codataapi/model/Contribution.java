@@ -12,29 +12,39 @@
  * CONTACT: 		info@ptb.de
  * DEVELOPMENT:		https://d-si.ptb.de
  * AUTHORS:		Wafa El Jaoua, Tobias Hoffmann, Clifford Brown, Daniel Hutzschenreuter
- * LAST MODIFIED:		 05.10.23, 10:36
+ * LAST MODIFIED:		 06.10.23, 23:35
  */
 
-package de.ptb.codataapi.service;
+package de.ptb.codataapi.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import de.ptb.codataapi.model.Participant;
-import de.ptb.codataapi.model.Report;
-import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
-import java.io.IOException;
-import java.util.List;
+import java.io.Serializable;
+
 /**
- * This is an interface for participant service .
+ * Pojo for participant
  * @author Wafa El jaoua
  */
-public interface ParticipantService {
-    List<Participant> getParticipantList();
-    boolean delete(long id);
-    void deleteAll();
-    Participant addParticipant(Participant participant);
-    Participant update(Participant p);
-    Report addReport(Report report);
-    Report getReport();
-    void downloadAndSaveReport(HttpServletResponse response)throws IOException ;
+@Getter
+@Setter
+@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
+public class Contribution implements Serializable {
+    static long instanceCounter=0;
+
+    @Schema(name = "id", example = "1")
+    private  Long  id;
+    @Schema(name = "name", example = "NPL")
+    private  String participantName;
+    @Schema(name = "pidDCC", example = "CCM.M-K1-NPL9507")
+    private String  pidDCC;
+    @Schema(name = "property", example = "reference")
+    private String  property;
+    public Contribution() {
+        instanceCounter++;
+        id=instanceCounter;
+    }
+
 }

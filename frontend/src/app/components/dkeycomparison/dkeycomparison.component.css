@@ -4,8 +4,17 @@
 .d-comp{
   width:28%;background-color: #009cd1; text-align:left;
 }
-.mc{
-  text-align: center; color: #009cd1; font-weight:bold
+.title {
+  text-align: center;
+}
+.mc {
+  display: inline-block;
+  text-align: center;
+  color: #009cd1;
+  font-weight: bold;
+  font-style: italic;
+  border: 1px solid #009cd1;
+  padding: 0.5rem 1rem;
 }
 .sub{
   background-color:#009cd1;
@@ -16,4 +25,38 @@
   bottom: 30%;
   left:11%;
   top: 60%;
+}
+.background {
+  background-color: #f8f9fa;
+}
+
+.form-group-inline {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  white-space: nowrap;
+}
+
+
+.input-field {
+  width: 100%;
+}
+
+
+.row-inline {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+::ng-deep .custom-radio.mat-radio-checked .mat-radio-inner-circle {
+  background-color: #009cd1;
+}
+
+::ng-deep .custom-radio.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #009cd1;
+}
+
+::ng-deep .custom-radio .mat-radio-ripple .mat-ripple-element {
+  background-color: rgba(0, 156, 209, 0.3) ;
 }

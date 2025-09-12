@@ -1,10 +1,11 @@
-import {Participant} from "./participant.model";
+import {Contribution} from "./contribution.model";
 import {Observable} from "rxjs";
 import {AppDataState} from "../state/participant.state";
 
 export interface Report{
   pidReport: string;
   smartStandardEvaluationMethod: string;
-  participants$?: Observable<AppDataState<Participant[]>>;
+  contributions$?: Observable<AppDataState<Contribution[]>>;
+  pilotParticipantName:string;
 
 }

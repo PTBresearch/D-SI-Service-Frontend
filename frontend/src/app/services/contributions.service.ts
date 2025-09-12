@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from "rxjs";
-import {Participant} from "../model/participant.model";
+import {Contribution} from "../model/contribution.model";
 
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
@@ -12,25 +12,24 @@ import {Dcc} from "../model/Dcc.model";
 @Injectable({
   providedIn: 'root'
 })
-export class ParticipantsService {
+export class ContributionsService {
   private apiServerUrl = environment.apiBaseUrl;
 
   private apiServerDCCUrl = environment.apiDCCUrl;
 
-
   constructor(private http: HttpClient) {
   }
 
-  public getParticipants(): Observable<Participant[]> {
-    return this.http.get<Participant[]>(`${this.apiServerUrl}/client/participants`);
+  public getContributions(): Observable<Contribution[]> {
+    return this.http.get<Contribution[]>(`${this.apiServerUrl}/client/contributions`);
   }
 
-  public addParticipant(participant: Participant): Observable<Participant> {
-    return this.http.post<Participant>(`${this.apiServerUrl}/client/addParticipant`, participant);
+  public addContribution(contribution: Contribution): Observable<Contribution> {
+    return this.http.post<Contribution>(`${this.apiServerUrl}/client/addContribution`, contribution);
   }
 
-  public onDeleteParticipant(participant: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiServerUrl}/client/delete/${participant}`);
+  public onDeleteContribution(contribution: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiServerUrl}/client/delete/${contribution}`);
   }
 
   public onDeleteAll(): Observable<void> {
@@ -51,7 +50,7 @@ export class ParticipantsService {
   }
 
   public download(): Observable<any> {
-    return this.http.get(`${this.apiServerUrl}/client/download`, {
+      return this.http.get(`${this.apiServerUrl}/client/download`, {
       observe: 'response', responseType: 'blob'
     });
   }

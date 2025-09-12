@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ParticipantsService} from "../../services/participants.service";
-import {Participant} from "../../model/participant.model";
+import {ContributionsService} from "../../services/contributions.service";
+import {Contribution} from "../../model/contribution.model";
 import {
-  FormBuilder,
+  FormBuilder, FormControl,
   FormGroup,
   Validators
 } from "@angular/forms";
@@ -10,6 +10,7 @@ import {catchError, map, Observable, of, startWith} from "rxjs";
 import {AppDataState, DataStateEnum} from "../../state/participant.state";
 import {Report} from "../../model/report.model";
 import {Dcc} from "../../model/Dcc.model";
+import {MatRadioChange} from "@angular/material/radio";
 
 
 @Component({
@@ -19,68 +20,82 @@ import {Dcc} from "../../model/Dcc.model";
 })
 export class DkeycomparisonComponent implements OnInit {
   title = 'dsi-Services';
-  public participants$?: Observable<AppDataState<Participant[]>>;
+  public contributions$?: Observable<AppDataState<Contribution[]>>;
   public dccPidList$?: Observable<AppDataState<Dcc[]>>;
-  participantFormGroup?: FormGroup;
+  contributionFormGroup?: FormGroup;
   readonly DataStateEnum = DataStateEnum;
   public reports$?: Observable<AppDataState<Report>>;
   reportFormGroup?: FormGroup<any>;
   searchText: any;
-  selectedOption: string = "";
+  property: string = '';
+  options: string[] = ['reference', 'excluded'];
+  selectedOption: string = '';
 
-  constructor(private participantsService: ParticipantsService, private fb: FormBuilder) {
+
+  constructor(private contributionsService: ContributionsService, private fb: FormBuilder) {
   }
 
   ngOnInit() {
-    this.getParticipants();
+    this.getContributions();
     this.getDccList();
-    this.participantFormGroup = this.fb.group({
-        name: ["", Validators.required],
-        pidDCC: ["", Validators.required]
+    this.contributionFormGroup = this.fb.group({
+      participantName: ["", Validators.required],
+        pidDCC: ["", Validators.required],
+      pilotParticipantName: ["select pilot ParticipantName"],
+      selectedOption: new FormControl(''),
+      property: new FormControl('')
       }
     )
+
     this.getReports();
     this.reportFormGroup = this.fb.group({
       pidReport: ["", Validators.required],
-      smartStandardEvaluationMethod: ["", Validators.required]
+      smartStandardEvaluationMethod: ["", Validators.required],
+      pilotParticipantName:["", Validators.required],
     })
-    this.clearParticipantsList();
+    this.clearContributionsList();
 
   }
 
-  public getParticipants(): void {
-    this.participants$ = this.participantsService.getParticipants().pipe(
+  public getContributions(): void {
+    this.contributions$ = this.contributionsService.getContributions().pipe(
       map(data => ({dataState: DataStateEnum.LOADED, data: data})),
       startWith({dataState: DataStateEnum.LOADING}),
       catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
     );
   }
 
-  public onDeleteParticipant(p: Participant) {
-    if (confirm("Are you sure to delete " + p.name))
-      this.participantsService.onDeleteParticipant(p.id).subscribe(data => {
-        this.getParticipants();
+
+  public onDeleteContribution(c: Contribution) {
+    if (confirm("Are you sure to delete " + c.participantName))
+      this.contributionsService.onDeleteContribution(c.id).subscribe(data => {
+        this.getContributions();
       });
   }
 
-  public clearParticipantsList() {
-    this.participantsService.onDeleteAll().subscribe(data => {
+  public clearContributionsList() {
+    this.contributionsService.onDeleteAll().subscribe(data => {
 
     });
   }
 
-  public addParticipant() {
-    this.participantsService.addParticipant(this.participantFormGroup?.value)
+  public addContribution() {
+    this.contributionsService.addContribution(this.contributionFormGroup?.value)
       .subscribe(data => {
-        this.getParticipants()
+        this.getContributions()
       });
-    this.participantFormGroup?.reset();
+    this.contributionFormGroup?.reset();
+// Setze den Wert auf null (keine Auswahl)
+    this.contributionFormGroup?.get('selectedOption')?.setValue(null);
+
+    console.log('selectedOption value after reset:', this.contributionFormGroup?.get('selectedOption')?.value);
+
     //sessionStorage.setItem('participnatsList', JSON.stringify( this.participantsService.getParticipants()))
   }
 
   public getReports(): void {
 
-    this.reports$ = this.participantsService.getReports().pipe(
+    this.reports$ = this.contributionsService.getReports().pipe(
       map(data => ({dataState: DataStateEnum.LOADED, data: data})),
       startWith({dataState: DataStateEnum.LOADING}),
       catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
@@ -88,7 +103,7 @@ export class DkeycomparisonComponent implements OnInit {
   }
 
   public addReport() {
-    this.participantsService.addReport(this.reportFormGroup?.value)
+    this.contributionsService.addReport(this.reportFormGroup?.value)
       .subscribe(data => {
         this.getReports()
         // alert("added successfully")
@@ -98,23 +113,23 @@ export class DkeycomparisonComponent implements OnInit {
 
   public onDownload(): any {
     this.addReport();
-    this.participantsService.getPidReport();
-    this.participantsService.download().subscribe(
+    this.contributionsService.getPidReport();
+    this.contributionsService.download().subscribe(
       response => {
-        let fileName = response.headers.get('Content-Disposition').split(';')[1].split('filename')[1].split('=')[1].trim();
+        let fileName = (response.headers.get('Content-Disposition').split(';')[1].split('filename')[1].split('=')[1].trim());
         let blob: Blob = response.body as Blob;
         let a = document.createElement('a');
         console.log("file: ", fileName)
-        a.download = fileName;
+        a.download = fileName ;
         a.href = window.URL.createObjectURL(blob);
         a.click();
       }
     );
-    this.participantsService.getPidReport();
+    this.contributionsService.getPidReport();
   }
 
   public getDccList(): void {
-    this.dccPidList$ = this.participantsService.getDccList().pipe(
+    this.dccPidList$ = this.contributionsService.getDccList().pipe(
       map(data => ({dataState: DataStateEnum.LOADED, data: data})),
       startWith({dataState: DataStateEnum.LOADING}),
       catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
@@ -124,6 +139,17 @@ export class DkeycomparisonComponent implements OnInit {
   selectedEvalMethod(e: any) {
     console.log("smartStandardEvaluationMethod: ", e.target.value)
   }
+  selectedPilotParticipantName(e: any) {
+    console.log("PilotParticipantName: ", e.target.value)
+  }
+  selectedProperty(event: MatRadioChange) {
+    const value = event.value;
+    // @ts-ignore
+    this.contributionFormGroup.get('selectedOption')?.setValue(value);
+    // @ts-ignore
+    this.contributionFormGroup.get('property')?.setValue(value);
+  }
+
 }
 
 

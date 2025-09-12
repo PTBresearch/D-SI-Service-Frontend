@@ -17,7 +17,7 @@
 package de.ptb.codataapi.controller;
 
 import de.ptb.codataapi.model.*;
-import de.ptb.codataapi.service.ParticipantService;
+import de.ptb.codataapi.service.ContributionsService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -51,58 +51,59 @@ import java.util.*;
 @RequestMapping(path = "/api/client")
 public class ClientController {
 
-    private final ParticipantService participantService;
+    private final ContributionsService contributionsService;
     private static final String VALID_DCC = "PTB-DCC-4711";
 
     /**
-     * <p>method retrieves a List of participants through an HTTP GET request.</p>
-     * @return ResponseEntity, which return a List of participants in JSON format as a response Entity with an HTTP status of 200 (OK).
+     * <p>method retrieves a List of contributions through an HTTP GET request.</p>
+     * @return ResponseEntity, which return a List of contributions in JSON format as a response Entity with an HTTP status of 200 (OK).
      */
-    @RequestMapping(value = "/participants", method = RequestMethod.GET)
-    public ResponseEntity<List<Participant>> getParticipants() {
-        return new ResponseEntity<>(participantService.getParticipantList(), HttpStatus.OK);
+    @RequestMapping(value = "/contributions", method = RequestMethod.GET)
+    public ResponseEntity<List<Contribution>> getContributions() {
+        return new ResponseEntity<>(contributionsService.getContributionList(), HttpStatus.OK);
     }
 
     /**
      * <p>method creates a new participant through an HTTP POST request.</p>
-     * @return ResponseEntity, which return a new participant as a response Entity with an HTTP status of 201 (CREATED).
+     * @return ResponseEntity, which return a new contribution as a response Entity with an HTTP status of 201 (CREATED).
      */
 
-    @RequestMapping(value = "/addParticipant", method = RequestMethod.POST)
-    public ResponseEntity<Participant> addParticipant(@RequestBody Participant participant) {
-        return new ResponseEntity<>(participantService.addParticipant(participant), HttpStatus.CREATED);
+    @RequestMapping(value = "/addContribution", method = RequestMethod.POST)
+    public ResponseEntity<Contribution> addContribution(@RequestBody Contribution contribution) {
+        return new ResponseEntity<>(contributionsService.addContribution(contribution), HttpStatus.CREATED);
     }
 
     /**
-     * <p>method deletes a  specific participant through an HTTP DELETE request.</p>
+     * <p>method deletes a  specific contribution through an HTTP DELETE request.</p>
      * @return ResponseEntity, which return  a response Entity with an HTTP status of 200(OK).
      */
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Long> delete(@PathVariable("id") Long id) {
-        participantService.delete(Math.toIntExact(id));
+        contributionsService.delete(Math.toIntExact(id));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
-     * <p>method deletes all participants through an HTTP DELETE request.</p>
+     * <p>method deletes all contributions through an HTTP DELETE request.</p>
      * @return ResponseEntity, which return a response Entity with an HTTP status of 200 (OK).
      */
     @DeleteMapping("/deleteAll")
     public ResponseEntity<Long> deleteAll() {
-        participantService.deleteAll();
+        contributionsService.deleteAll();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
      * <p>method retrieves a report through an HTTP GET request.</p>
-     * @return ResponseEntity, which return a report with the PidReport and the List of participants in JSON format as a response Entity with an HTTP status of 200 (OK).
+     * @return ResponseEntity, which return a report with the PidReport and the List of contributions in JSON format as a response Entity with an HTTP status of 200 (OK).
      */
     @RequestMapping(value = "/report", method = RequestMethod.GET)
     public ResponseEntity<Report> getReport() {
         Report r = new Report();
-        r.setPidReport(participantService.getReport().getPidReport());
-        r.setSmartStandardEvaluationMethod(participantService.getReport().getSmartStandardEvaluationMethod());
-        r.setParticipantList(participantService.getParticipantList());
+        r.setPidReport(contributionsService.getReport().getPidReport());
+        r.setSmartStandardEvaluationMethod(contributionsService.getReport().getSmartStandardEvaluationMethod());
+        r.setContributionList(contributionsService.getContributionList());
+        r.setPilotParticipantName(contributionsService.getReport().getPilotParticipantName());
         return new ResponseEntity<>(r, HttpStatus.OK);
     }
 
@@ -112,7 +113,7 @@ public class ClientController {
      */
     @RequestMapping(value = "/addReport", method = RequestMethod.POST)
     public ResponseEntity<Report> addReport(@RequestBody Report report) {
-        return new ResponseEntity<>(participantService.addReport(report), HttpStatus.CREATED);
+        return new ResponseEntity<>(contributionsService.addReport(report), HttpStatus.CREATED);
     }
 
     /**
@@ -124,7 +125,7 @@ public class ClientController {
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public void downloadReportXML(HttpServletResponse response) throws IOException {
-            participantService.downloadAndSaveReport(response);
+            contributionsService.downloadAndSaveReport(response);
         }
 
 }
