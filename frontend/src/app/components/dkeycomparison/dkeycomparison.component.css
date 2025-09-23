@@ -49,14 +49,178 @@
   flex-wrap: nowrap;
 }
 
-::ng-deep .custom-radio.mat-radio-checked .mat-radio-inner-circle {
-  background-color: #009cd1;
+/*::ng-deep .custom-radio.mat-radio-checked .mat-radio-inner-circle {*/
+/*  background-color: #009cd1;*/
+/*}*/
+
+/*::ng-deep .custom-radio.mat-radio-checked .mat-radio-outer-circle {*/
+/*  border-color: #009cd1;*/
+/*}*/
+
+/*::ng-deep .custom-radio .mat-radio-ripple .mat-ripple-element {*/
+/*  background-color: rgba(0, 156, 209, 0.3) ;*/
+/*}*/
+
+/* Container für den Button, rechts ausgerichtet */
+.btn-login {
+  display: flex;
+  justify-content: flex-end; /* Button rechts */
+  align-items: center;
 }
 
-::ng-deep .custom-radio.mat-radio-checked .mat-radio-outer-circle {
-  border-color: #009cd1;
+.logout-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-::ng-deep .custom-radio .mat-radio-ripple .mat-ripple-element {
-  background-color: rgba(0, 156, 209, 0.3) ;
+.logout-btn:hover {
+  background-color: #d0f0ff;
+  transform: scale(1.05);
 }
+
+/* Icon */
+.icon {
+  width: 40px;
+  height: 40px;
+  transition: transform 0.2s;
+  display: block; /* sorgt dafür, dass es im Button zentriert */
+  pointer-events: none; /* verhindert, dass img Hover blockiert */
+}
+
+.custom-icon-btn:hover .icon {
+  transform: scale(1.2);
+}
+
+
+.button-row {
+  margin-top: 20px; /* Abstand über der Zeile */
+  display: flex;     /* optional, falls Buttons nebeneinander */
+  gap: 10px;         /* Abstand zwischen Buttons */
+}
+
+
+/* -------------------------------
+   Modal / Pop-Up
+--------------------------------*/
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* hoch genug, damit es über allem liegt */
+}
+
+.modal-content {
+  background: white;
+  padding: 5rem;
+  border-radius: 8px;
+  width: 25%;
+  max-width: 80%;
+  box-shadow: 0 0 15px rgba(0,0,0,0.8);
+}
+
+.modal-content h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* -------------------------------
+   Tabs (Bootstrap / ngbNav)
+--------------------------------*/
+.nav-tabs {
+  border-bottom: none; /* normale Linie unter der Tab-Leiste */
+}
+
+.nav-tabs .nav-item {
+  margin-bottom: 0; /* verhindert Abstand unter Tabs */
+  padding-bottom: 0;  /* entfernt unteren Padding */
+  font-size: 1.3rem;
+}
+
+/* Tabs normal */
+.nav-tabs .nav-link {
+  background-color: white; /* Tabs immer weiß */
+  color: #009cd1;          /* Schriftfarbe */
+  /*font-weight: bold;*/
+  border: none;  /* leichter Rahmen */
+  border-bottom: none; /* Standard-Bottom-Border für nicht-aktive Tabs */
+
+  margin-bottom: 0; /* verhindert Abstand unter Tabs */
+  padding-bottom: 0;  /* entfernt unteren Padding */
+
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Tabs Hover */
+.nav-tabs .nav-link:hover {
+  color: #007bb5;            /* dunkleres Blau beim Hover */
+  background-color: #e6f7fb; /* leichtes Hellblau als Hintergrund */
+  text-decoration: underline; /* optional für typischen Link-Effekt */
+}
+
+/* Aktiver Tab */
+.nav-tabs .nav-link.active {
+  border-radius: 10px 10px 0 0;
+  background-color: #f8f9fa; /* aktiver Tab ebenfalls weiß */
+  border-bottom: none !important; /* sicherstellen, dass keine Linie erscheint */
+  color: #007bb5;
+
+  margin-bottom: 0; /* verhindert Abstand unter Tabs */
+  padding-bottom: 0;  /* entfernt unteren Padding */
+}
+
+/* Tab-Inhalt */
+.tab-content-inner {
+  padding: 10px;
+  background-color: #f8f9fa; /* weißer Hintergrund für Content */
+  color: #000;             /* schwarze Schrift */
+  /*border: 1px solid #009cd1;  !* optionale Umrandung *!*/
+  border-top: none;
+
+  margin-bottom: 0; /* verhindert Abstand unter Tabs */
+  padding-bottom: 0;  /* entfernt unteren Padding *//* oben kein Doppelborder */
+}
+
+ul.nav.nav-tabs {
+  border-bottom: none;
+  margin-bottom: 0; /* <- Abstand unten entfernen */
+
+
+  padding-bottom: 0;  /* entfernt unteren Padding */
+}
+
+/* Outlet direkt unter Tabs */
+[ngbNavOutlet] {
+  margin-top: 0 !important; /* mt-2 entfernen */
+}
+
+.public-panel {
+  margin-bottom: 3rem;
+}
+
+.background {
+  background-color: #f8f9fa;
+}
+
+
+

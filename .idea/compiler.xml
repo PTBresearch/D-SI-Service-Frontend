@@ -7,19 +7,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="CodataApi" />
+        <module name="ClientApi" />
         <module name="frontend" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="CodataApi" target="17" />
       <module name="D-Si_Service_Backend&amp;Frontend" target="17" />
-      <module name="frontend" target="18" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="CodataApi" options="-parameters" />
+      <module name="ClientApi" options="-parameters" />
+      <module name="CodataApi" options="" />
     </option>
   </component>
 </project>

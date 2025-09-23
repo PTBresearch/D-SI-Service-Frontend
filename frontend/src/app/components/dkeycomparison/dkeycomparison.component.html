@@ -1,193 +1,723 @@
 <div class="container comp">
-  <h2 class="font-weight-bold m-lg-2 text-md-center mb-3 mt-5 rounded text-white d-comp ">D-Comparison</h2>
-  <div class="title">
-    <h2 class="mc"><span>E = mc²</span></h2>
-  </div>
-  <div *ngIf="contributionFormGroup">
-    <form class="col card p-3 mt-5 mb-5" [formGroup]="contributionFormGroup" (ngSubmit)="addContribution()">
-      <div class="form-group mb-2">
-        <legend>Contribution:</legend>
-        <label class="form-label" for="participantName"> Participant Name: </label>
-        <input id="participantName" formControlName="participantName" placeholder="Enter Participant Name" type="text"
-               class="form-control"/>
-        <small
-          *ngIf="contributionFormGroup.controls['participantName'].errors && contributionFormGroup.controls['participantName'].touched"
-          class="text-danger">Participant Name is required</small>
-      </div>
+  <!--public panel -->
+  <!-- Login-Button -->
+    <div class="btn-login">
+      <button mat-icon-button [matMenuTriggerFor]="userMenu"
+              class="custom-icon-btn">
+        <mat-icon>{{ isLoggedIn ? 'logout' : 'login' }}</mat-icon>
+      </button>
+    </div>
+  <!--Button-Menu -->
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item *ngIf="!isLoggedIn" (click)="showLogin = true">
+      <mat-icon>login</mat-icon>
+      <span>Login</span>
+    </button>
+    <button mat-menu-item *ngIf="isLoggedIn" (click)="onLogout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+    <button mat-menu-item *ngIf="isLoggedIn" (click)="onChangePassword()">
+      <mat-icon>lock</mat-icon>
+      <span>Passwort ändern</span>
+    </button>
+  </mat-menu>
 
-      <div class="form-group mb-2" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">
-        <label class="form-label" for="pidDCC">PID DCC:</label>
-        <input id="pidDCC" formControlName="pidDCC" class="form-control" type="text"
-               placeholder="Search or enter PID DCC" list="dccList" name="search" [(ngModel)]="searchText">
-
-        <datalist id="dccList">
-          <option *ngFor="let dccPid of result.data">{{dccPid}}</option>
-        </datalist>
-        <small
-          *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].touched "
-          class="text-danger">PID DCC is required</small>
-      </div>
-
-      <mat-radio-group formControlName="selectedOption" (change)="selectedProperty($event)">
-        <mat-radio-button *ngFor="let option of options" [value]="option" color="primary">
-          {{ option }}
-        </mat-radio-button>
-      </mat-radio-group>
-
-      <div class="col text-center">
-        <button class="btn btn-primary mt-5 w-auto sub" [disabled]="this.contributionFormGroup.invalid" type="submit">
-          Add
-          Contribution
-        </button>
-      </div>
-    </form>
-  </div>
-  <ng-container *ngIf="contributions$ | async as result" [ngSwitch]="result.dataState"
-                class="container-fluid col card p-3 mt-5 mb-5">
-    <ng-container *ngSwitchCase="DataStateEnum.LOADING">Loading...</ng-container>
-    <ng-container *ngSwitchCase="DataStateEnum.ERROR">
-      <div class="alert-danger">{{result.errorMessage}}</div>
-    </ng-container>
-    <ng-container *ngSwitchCase="DataStateEnum.LOADED">
-      <div class=" card col p-3 mt-5 mb-5">
-        <div class="card-header bg-light">Contribution List</div>
-        <div class="card-body">
-          <table class="table table-striped table-bordered mb-xl-5">
-            <thead>
-            <tr>
-              <th class="w-50">Participant Name</th>
-              <th class="w-50">PID DCC</th>
-              <th class="w-50">Property</th>
-              <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td *ngIf="!result.data?.length" colspan="5">Please add some Contributions!</td>
-            <tr *ngFor="let participant of result.data">
-              <td>{{participant.participantName}}</td>
-              <td>{{participant.pidDCC}}</td>
-              <td>{{participant.property}}</td>
-              <td>
-                <button style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger"
-                        (click)="onDeleteContribution(participant)">
-                  <span class="fa fa-trash-o"></span>
-                </button>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+  <!--  Comparison-Template-->
+  <ng-template #contributionForm>
+    <h2 class="font-weight-bold m-lg-2 text-md-center mb-3 mt-5 rounded text-white d-comp ">D-Comparison</h2>
+    <div class="title">
+      <h2 class="mc"><span>E = mc²</span></h2>
+    </div>
+    <div *ngIf="contributionFormGroup" class="background">
+      <form class="col card p-3 mt-5 mb-5" [formGroup]="contributionFormGroup" (ngSubmit)="addContribution()">
+        <div class="form-group mb-2">
+          <legend>Contribution:</legend>
+          <label class="form-label" for="participantName"> Participant Name: </label>
+          <input id="participantName" formControlName="participantName" placeholder="Enter Participant Name" type="text"
+                 class="form-control"/>
+          <small
+            *ngIf="contributionFormGroup.controls['participantName'].errors && contributionFormGroup.controls['participantName'].touched"
+            class="text-danger">Participant Name is required</small>
         </div>
-      </div>
-    </ng-container>
-  </ng-container>
-  <div class="col text-center" >
-    <div *ngIf="reportFormGroup">
-      <form name="ReportForm" [formGroup]="reportFormGroup" class="col card p-3 mb-5 background"
-            (ngSubmit)="addReport()">
-        <legend class="text-md-start" >Report:</legend>
-        <div class="row-inline">
-          <div class="form-group-inline">
-            <label for="pidReport"><b>PID Report:</b></label>
-            <input type="text" id="pidReport" formControlName="pidReport" placeholder="CCM-K1" class="input-field me-2">
-            <small *ngIf="reportFormGroup.controls['pidReport'].errors && reportFormGroup.controls['pidReport'].touched"
-                   class="text-danger report">PID report is required</small>
-          </div>
-          <div class="form-group-inline">
-            <select id="smartStandardEvaluationMethod" class="form-select-sm  border border-secondary rounded-0 "
-                    formControlName="smartStandardEvaluationMethod" (change)="selectedEvalMethod($event)"
-                    class="input-field me-2">
-              <option value="" selected disabled>select evaluation method</option>
-              <option value="massIntercomparison">mass intercomparison</option>
-              <option value="radiationTempComparison">radiation temperature comparison</option>
-              <option value="laboratoryMedicineComparison">laboratory medicine comparison</option>
-              <option value="lengthComparison">length comparison</option>
-              <option value="kibbleBalanceComparison">kibble balance comparison</option>
-            </select>
-          </div>
-          <div *ngIf="contributions$ | async as result" class="form-group-inline">
-            <select class="input-field me-2" id="pilotParticipantName" formControlName="pilotParticipantName"
-                    (change)="selectedPilotParticipantName($event)">
-              <option value="" selected disabled>select pilot ParticipantName</option>
-              <option *ngFor="let contribution of result.data"
-                      [value]="contribution.participantName">{{ contribution.participantName }}</option>
-            </select>
-          </div>
-          <div class="form-group-inline">
-            <label for="destination"><b>Destination:</b></label>
-            <input type="text" id="destination" placeholder="filesystem" readonly class="input-field">
-          </div>
+
+        <div class="form-group mb-2" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">
+          <label class="form-label" for="pidDCC">PID DCC:</label>
+          <input id="pidDCC" formControlName="pidDCC" class="form-control" type="text"
+                 placeholder="Search or enter PID DCC" list="dccList" name="search" [(ngModel)]="searchText">
+
+          <datalist id="dccList">
+            <option *ngFor="let dccPid of result.data">{{dccPid}}</option>
+          </datalist>
+          <small
+            *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].touched "
+            class="text-danger">PID DCC is required</small>
         </div>
-        <div class="col text-center form-group mt-3">
-          <button [disabled]="this.reportFormGroup.invalid" style="background-color:#009cd1; border-color:#009cd1;"
-                  class="btn btn-danger" type="submit" (click)="onDownload()">
-            EVALUATE COMPARISON
+
+        <mat-radio-group formControlName="selectedOption" (change)="selectedProperty($event)">
+          <mat-radio-button *ngFor="let option of options" [value]="option" color="primary">
+            {{ option }}
+          </mat-radio-button>
+        </mat-radio-group>
+
+        <div class="col text-center">
+          <button class="btn btn-primary mt-5 w-auto sub" [disabled]="this.contributionFormGroup.invalid" type="submit">
+            Add
+            Contribution
           </button>
         </div>
       </form>
-      <a class="btn btn-danger" style="background-color:#009cd1; border-color:#009cd1; margin-bottom: 100px;"
-         href="https://d-si.ptb.de/api/d-comparison/swagger-ui/index.html#" target="_blank">Swagger UI OpenAPI</a>
     </div>
+    <ng-container *ngIf="contributions$ | async as result" [ngSwitch]="result.dataState"
+                  class="container-fluid col card p-3 mt-5 mb-5">
+      <ng-container *ngSwitchCase="DataStateEnum.LOADING">Loading...</ng-container>
+      <ng-container *ngSwitchCase="DataStateEnum.ERROR">
+        <div class="alert-danger">{{result.errorMessage}}</div>
+      </ng-container>
+      <ng-container *ngSwitchCase="DataStateEnum.LOADED">
+        <div class=" card col p-3 mt-5 mb-5">
+          <div class="card-header bg-light">Contribution List</div>
+          <div class="card-body">
+            <table class="table table-striped table-bordered mb-xl-5">
+              <thead>
+              <tr>
+                <th class="w-50">Participant Name</th>
+                <th class="w-50">PID DCC</th>
+                <th class="w-50">Property</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td *ngIf="!result.data?.length" colspan="5">Please add some Contributions!</td>
+              <tr *ngFor="let participant of result.data">
+                <td>{{participant.participantName}}</td>
+                <td>{{participant.pidDCC}}</td>
+                <td>{{participant.property}}</td>
+                <td>
+                  <button style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger"
+                          (click)="onDeleteContribution(participant)">
+                    <span class="fa fa-trash-o"></span>
+                  </button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+    <div class="col text-center" >
+      <div *ngIf="reportFormGroup">
+        <form name="ReportForm" [formGroup]="reportFormGroup" class="col card p-3 mb-5 background"
+              (ngSubmit)="addReport()">
+          <legend class="text-md-start" >Report:</legend>
+          <div class="row-inline">
+            <div class="form-group-inline">
+              <label for="pidReport"><b>PID Report:</b></label>
+              <input type="text" id="pidReport" formControlName="pidReport" placeholder="CCM-K1" class="input-field me-2">
+              <small *ngIf="reportFormGroup.controls['pidReport'].errors && reportFormGroup.controls['pidReport'].touched"
+                     class="text-danger report">PID report is required</small>
+            </div>
+            <div class="form-group-inline">
+              <select id="smartStandardEvaluationMethod" class="form-select-sm  border border-secondary rounded-0 "
+                      formControlName="smartStandardEvaluationMethod" (change)="selectedEvalMethod($event)"
+                      class="input-field me-2">
+                <option value="" selected disabled>select evaluation method</option>
+                <option value="massIntercomparison">mass intercomparison</option>
+                <option value="radiationTempComparison">radiation temperature comparison</option>
+                <option value="laboratoryMedicineComparison">laboratory medicine comparison</option>
+                <option value="lengthComparison">length comparison</option>
+                <option value="kibbleBalanceComparison">kibble balance comparison</option>
+              </select>
+            </div>
+            <div *ngIf="contributions$ | async as result" class="form-group-inline">
+              <select class="input-field me-2" id="pilotParticipantName" formControlName="pilotParticipantName"
+                      (change)="selectedPilotParticipantName($event)">
+                <option value="" selected disabled>select pilot ParticipantName</option>
+                <option *ngFor="let contribution of result.data"
+                        [value]="contribution.participantName">{{ contribution.participantName }}</option>
+              </select>
+            </div>
+            <div class="form-group-inline">
+              <label for="destination"><b>Destination:</b></label>
+              <input type="text" id="destination" placeholder="filesystem" readonly class="input-field">
+            </div>
+          </div>
+          <div class="col text-center form-group mt-3">
+            <button [disabled]="this.reportFormGroup.invalid" style="background-color:#009cd1; border-color:#009cd1;"
+                    class="btn btn-danger" type="submit" (click)="onDownload()">
+              EVALUATE COMPARISON
+            </button>
+          </div>
+        </form>
+        <a class="btn btn-danger" style="background-color:#009cd1; border-color:#009cd1; margin-bottom: 100px;"
+           href="https://d-si.ptb.de/api/d-comparison/swagger-ui/index.html#" target="_blank">Swagger UI OpenAPI</a>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="public-panel" *ngIf="!adminSignedIn && !coordinatorSignedIn">
+    <!--Login-Modal-->
+    <div class="modal-overlay" *ngIf="showLogin">
+      <div class="modal-content">
+        <h3>Login</h3>
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+          <div>
+            <label for="username"><b>Username:</b></label>
+            <input id="username" type="text" name="username" required [(ngModel)]="username" #usernameInput="ngModel" placeholder="enter username">
+            <div class="error" *ngIf="usernameInput.invalid && usernameInput.touched">Username is required.</div>
+          </div>
+          <div class="mt-2">
+            <label for="password"><b>Password:</b></label>
+            <input id="password" type="password" name="password" required [(ngModel)]="password" #passwordInput="ngModel" placeholder="enter password">
+            <div class="error" *ngIf="passwordInput.invalid && passwordInput.touched">Password is required.</div>
+          </div>
+          <div class="button-row">
+            <button type="submit" class="btn btn-primary w-auto sub" [disabled]="loginForm.invalid">Sign in</button>
+            <button type="button" class="btn btn-primary w-auto sub" (click)="showLogin = false">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!--Comparison-Template-->
+    <ng-container *ngTemplateOutlet="contributionForm"></ng-container>
+  </div>
+
+<!--  private panel-->
+  <div *ngIf="adminSignedIn || coordinatorSignedIn">
+    <h2 class="header-with-logout">
+      <span *ngIf="adminSignedIn">Admin-Panel ({{username}})</span>
+      <span *ngIf="coordinatorSignedIn">Coordinator-Panel ({{username}})</span>
+    </h2>
+
+    <div class="container mt-4">
+      <!-- Navbar mit Tabs -->
+      <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav nav-tabs">
+        <li [ngbNavItem]="1">
+          <a ngbNavLink>Evaluate</a>
+          <ng-template ngbNavContent>
+            <div class="tab-content-inner">
+              <section>
+                <!--Comparison-Template-->
+                <ng-container *ngTemplateOutlet="contributionForm"></ng-container>
+              </section>
+            </div>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+          <a ngbNavLink>DCC-List</a>
+          <ng-template ngbNavContent>
+            <div class="tab-content-inner">
+              <section class="dcc-list">
+                <div>
+                  <h2>DCC-List</h2>
+                  <button class="btn btn-primary mt-1 w-auto sub" (click)="showUploadDcc=true">&#8593; Upload DCC</button>
+                  <ng-container *ngIf="contributions$ | async as result">
+                    <table *ngIf="result.data" mat-table [dataSource]="result.data" class="mat-elevation-z2 mt-3">
+                      <!-- ID Spalte -->
+                      <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef>ID</th>
+                        <td mat-cell *matCellDef="let contribution">{{contribution.id}}</td>
+                      </ng-container>
+
+                      <!-- Valid -->
+                      <ng-container matColumnDef="valid">
+                        <th mat-header-cell *matHeaderCellDef>Valid</th>
+                        <td mat-cell *matCellDef="let contribution">{{contribution.id}}</td>
+                      </ng-container>
+
+                      <!-- PID -->
+                      <ng-container matColumnDef="pid">
+                        <th mat-header-cell *matHeaderCellDef>PID</th>
+                        <td mat-cell *matCellDef="let contribution">{{contribution.pid}}</td>
+                      </ng-container>
+
+                      <!-- Status -->
+                      <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef>Status</th>
+                        <td mat-cell *matCellDef="let contribution">{{contribution.id}}</td>
+                      </ng-container>
+
+                      <!-- Base64XML -->
+                      <ng-container matColumnDef="base64xml">
+                        <th mat-header-cell *matHeaderCellDef>Base64XML</th>
+                        <td mat-cell *matCellDef="let contribution">{{contribution.id}}</td>
+                      </ng-container>
+
+                      <!-- Aktionen -->
+                      <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef>Actions</th>
+                        <td mat-cell *matCellDef="let dcc">
+                          <!-- Button-Styling mit Angular Material Icons -->
+                          <button mat-icon-button color="primary" (click)="editDCC(dcc)" matTooltip="Edit">
+                            <span class="material-icons">edit</span>
+                          </button>
+
+                          <button mat-icon-button color="warn" (click)="deleteDCC(dcc)" matTooltip="Delete">
+                            <span class="material-icons">delete</span>
+                          </button>
+
+                          <button mat-icon-button color="accent" (click)="viewXML(dcc)" matTooltip="View XML">
+                            <span class="material-icons">description</span>
+                          </button>
+                        </td>
+                      </ng-container>
+
+                      <!-- Header und Row Definition -->
+                      <tr mat-header-row *matHeaderRowDef="displayedColumnsDcc"></tr>
+                      <tr mat-row *matRowDef="let row; columns: displayedColumnsDcc;"></tr>
+
+                    </table>
+                  </ng-container>
+                </div>
+                <!--Upload-Pop-Up-->
+                <div class="modal-overlay" *ngIf="showUploadDcc">
+                  <div class="modal-content">
+                    <h3>Add new DCC</h3>
+                    <form [formGroup]="dccUploadFormGroup" (ngSubmit)="onUploadDcc()" >
+                      <div class="mt-4">
+                        <label><b>Valid:</b></label>
+                        <select formControlName="valid" class="input-field">
+                          <option value="" disabled selected>Select validity</option>
+                          <option value="valid">valid</option>
+                          <option value="invalid">invalid</option>
+                        </select>
+                        <div *ngIf="dccUploadFormGroup.controls['valid'].invalid && dccUploadFormGroup.controls['valid'].touched" class="error">
+                          Validity is required.
+                        </div>
+                      </div>
+                      <div class="mt-4">
+                        <label><b>PID:</b></label>
+                        <input type="text" formControlName="pid" class="input-field" placeholder="Enter PID">
+                        <div *ngIf="dccUploadFormGroup.controls['pid'].invalid && dccUploadFormGroup.controls['pid'].touched" class="error">
+                          PID is required.
+                        </div>
+                      </div>
+                      <div class="mt-4">
+                        <label><b>Status:</b></label>
+                        <select formControlName="status" class="input-field">
+                          <option value="" disabled selected>Select status</option>
+                          <option value="public">public</option>
+                          <option value="private">private</option>
+                        </select>
+                        <div *ngIf="dccUploadFormGroup.controls['status'].invalid && dccUploadFormGroup.controls['status'].touched" class="error">
+                          Status is required.
+                        </div>
+                      </div>
+                      <div class="mt-4">
+                        <label><b>User-Role:</b></label>
+                        <!--                          <input type="text" formControlName="rolle" class="input-field" readonly>-->
+                        <select formControlName="rolle" class="input-field">
+                          <option value="" disabled selected>Select role</option>
+                          <option value="admin">admin</option>
+                          <option value="coordinator">coordinator</option>
+                        </select>
+                      </div>
+                      <div class="mt-4">
+                        <label><b>XML:</b></label>
+                        <input type="file" formControlName="file" class="input-field">
+                        <div *ngIf="dccUploadFormGroup.controls['file'].invalid && dccUploadFormGroup.controls['file'].touched" class="error">
+                          A file is required.
+                        </div>
+                      </div>
+                      <div class="button-row mt-4">
+                        <button type="submit" class="btn btn-primary w-auto sub" [disabled]="dccUploadFormGroup.invalid">Upload</button>
+                        <button type="button" class="btn btn-primary w-auto sub" (click)="showUploadDcc=false">Cancel</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="3">
+          <a ngbNavLink>User-List</a>
+          <ng-template ngbNavContent>
+            <div class="tab-content-inner">
+              <section class="user-list">
+                <h2>User-List</h2>
+                <button class="btn btn-primary mt-1 w-auto sub">+ Add User</button>
+                <table mat-table [dataSource]="userArray" class="mat-elevation-z2 mt-3">
+                  <ng-container matColumnDef="username">
+                    <th mat-header-cell *matHeaderCellDef>User</th>
+                    <td mat-cell *matCellDef="let user">{{user}}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="email">
+                    <th mat-header-cell *matHeaderCellDef>E-Mail</th>
+                    <td mat-cell *matCellDef="let user">{{user}}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="active">
+                    <th mat-header-cell *matHeaderCellDef>Active</th>
+                    <td mat-cell *matCellDef="let user">{{user}}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let user">
+                      <!-- editUser -->
+                      <button mat-icon-button color="primary" (click)="editUser()" matTooltip="Edit">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <!-- deleteUser -->
+                      <button mat-icon-button color="primary" (click)="deleteUser()" matTooltip="Edit">
+                        <span class="material-icons" >delete</span>
+                      </button>
+                    </td>
+                  </ng-container>
+                  <!-- Header und Row Definition -->
+                  <tr mat-header-row *matHeaderRowDef="displayedColumnsUsers"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumnsUsers;"></tr>
+                </table>
+              </section>
+            </div>
+          </ng-template>
+        </li>
+      </ul>
+      <!-- Outlet für den aktiven Tab -->
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+
+
+
+
+    <!-- navbar mit tabs -->
+<!--    <div class="container mt-4">-->
+<!--      <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav nav-tabs">-->
+<!--        <li [ngbNavItem]="1">-->
+<!--          <a ngbNavLink>Evaluate</a>-->
+<!--          <ng-template ngbNavContent>-->
+<!--            <div class="tab-content-inner">-->
+<!--              Evaluation-->
+<!--              <section>-->
+<!--                <div *ngIf="contributionFormGroup" class="background"> &lt;!&ndash; Formular wird nur angezeigt, wenn participantFormGroup-Objekt existiert &ndash;&gt;-->
+<!--                  &lt;!&ndash;Reactive Form&ndash;&gt;-->
+<!--                  <form class="col card p-3 mt-3 mb-5 background" [formGroup]="contributionFormGroup" (ngSubmit)="addContribution()"> &lt;!&ndash;Das Formular wird an ein Form-Group-Objekt in der Component-Klasse gebunden &ndash;&gt;-->
+<!--                    <div class="form-group mb-2">-->
+<!--                      <legend><b>Contribution:</b></legend>-->
+<!--                      <label class="form-label" for="name">Participant Name:</label>-->
+<!--                      <input id="name" formControlName="name" placeholder="Enter Name" type="text" class="form-control"/>-->
+<!--                      &lt;!&ndash; Validierung &ndash;&gt;-->
+<!--                      &lt;!&ndash;Zeigt eine Fehlermeldung, wenn das Feld ungültig ist und der Benutzer es schon bearbeitet hat.&ndash;&gt;-->
+<!--                      <small *ngIf="contributionFormGroup.controls['name'].errors && contributionFormGroup.controls['name'].touched"-->
+<!--                             class="text-danger">Name is required</small>-->
+<!--                    </div>-->
+
+<!--                    <div class="form-group mb-2" class="background" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">-->
+<!--                      <label class="form-label" for="pidDCC">PID DCC:</label>-->
+<!--                      <input id="pidDCC" formControlName="pidDCC" class="form-control" type="text"-->
+<!--                             placeholder="Search or enter PID DCC" list="dccList" name="search" [(ngModel)]="searchText">-->
+
+<!--                      <datalist id="dccList">-->
+<!--                        <option *ngFor="let dccPid of result.data">{{dccPid}}</option>-->
+<!--                      </datalist>-->
+<!--                      &lt;!&ndash; Validierung &ndash;&gt;-->
+<!--                      <small-->
+<!--                        *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].touched "-->
+<!--                        class="text-danger">PID DCC is required</small>-->
+<!--                    </div>-->
+<!--                    <div class="mt-2">-->
+<!--                      <label class="radio-inline">-->
+<!--                        <input type="radio" name="?">-->
+<!--                        Excluded-->
+<!--                      </label>-->
+<!--                      <label class="radio-inline ms-3">-->
+<!--                        <input type="radio" name="?">-->
+<!--                        Reference-->
+<!--                      </label>-->
+<!--                    </div>-->
+<!--                    <div class="col text-center">-->
+<!--                      <button class="btn btn-primary mt-2 w-auto sub" [disabled]="this.contributionFormGroup.invalid" type="submit">ADD-->
+<!--                        Contribution-->
+<!--                      </button>-->
+<!--                    </div>-->
+<!--                  </form>-->
+<!--                </div>-->
+
+
+<!--                <ng-container *ngIf="contributions$ | async as result" [ngSwitch]="result.dataState"-->
+<!--                              class="container-fluid col card p-3 mt-5 mb-5">-->
+<!--                  <ng-container *ngSwitchCase="DataStateEnum.LOADING">Loading...</ng-container>-->
+<!--                  <ng-container *ngSwitchCase="DataStateEnum.ERROR">-->
+<!--                    <div class="alert-danger">{{result.errorMessage}}</div>-->
+<!--                  </ng-container>-->
+<!--                  <ng-container *ngSwitchCase="DataStateEnum.LOADED">-->
+<!--                    <div class=" card col p-3 mt-5 mb-5 background">-->
+<!--                      <div class="card-header bg-light"><legend><b>Participant List:</b></legend></div>-->
+<!--                      <div class="card-body">-->
+<!--                        <table class="table table-striped table-bordered mb-xl-5">-->
+<!--                          <thead>-->
+<!--                          <tr>-->
+<!--                            <th class="w-50">Name</th>-->
+<!--                            <th class="w-50">PID DCC</th>-->
+<!--                            <th></th>-->
+<!--                          </tr>-->
+<!--                          </thead>-->
+<!--                          <tbody>-->
+<!--                          <tr>-->
+<!--                            <td *ngIf="!result.data?.length" colspan="5">Please add some Participants!</td>-->
+<!--                          <tr *ngFor="let contribution of result.data">-->
+<!--                            <td>{{contribution.name}}</td>-->
+<!--                            <td>{{nt.pidDCC}}</td>-->
+<!--                            <td>-->
+<!--                              <button style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger"-->
+<!--                                      (click)="onDeleteParticipant(participant)">-->
+<!--                                <span class="fa fa-trash-o"></span>-->
+<!--                              </button>-->
+<!--                            </td>-->
+<!--                          </tr>-->
+<!--                          </tbody>-->
+<!--                        </table>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </ng-container>-->
+<!--                </ng-container>-->
+
+
+<!--                <div >-->
+<!--                  <div *ngIf="reportFormGroup">-->
+<!--                    <form name="ReportForm" [formGroup]="reportFormGroup" class="col card p-3 mb-5 background" (ngSubmit)="addReport()">-->
+<!--                      <legend><b>Report:</b></legend>-->
+<!--                      <div class="row-inline">-->
+<!--                        <div class="form-group-inline">-->
+<!--                          <label for="pidReport"><b>PID Report:</b></label>-->
+<!--                          <input type="text" id="pidReport" formControlName="pidReport" placeholder="CCM-K1" class="input-field me-2">-->
+<!--                          <small *ngIf="reportFormGroup.controls['pidReport'].errors && reportFormGroup.controls['pidReport'].touched"-->
+<!--                                 class="text-danger report">PID report is required</small>-->
+<!--                        </div>-->
+<!--                        <div class="form-group-inline">-->
+<!--                          <label for="smartStandardEvaluationMethod"><b>Eval Method:</b></label>-->
+<!--                          <select id="smartStandardEvaluationMethod" formControlName="smartStandardEvaluationMethod"-->
+<!--                                  class="input-field me-2">-->
+<!--                            <option value="" selected disabled>select evaluation method</option>-->
+<!--                            <option value="massIntercomparison">mass intercomparison</option>-->
+<!--                            <option value="radiationTempComparison">radiation temperature comparison</option>-->
+<!--                            <option value="laboratoryMedicineComparison">laboratory medicine comparison</option>-->
+<!--                          </select>-->
+<!--                        </div>-->
+<!--                        <div class="form-group-inline">-->
+<!--                          <label for="pilotParticipantName"><b>Pilot:</b></label>-->
+<!--                          <select id="pilotParticipantName" formControlName="pilotParticipantName" class="input-field me-2">-->
+<!--                            <option value="" selected disabled>select pilot ParticipantName</option>-->
+<!--                            <option value="PTB">PTB</option>-->
+<!--                            <option value="Kriss">Kriss</option>-->
+<!--                            <option value="NIM">NIM</option>-->
+<!--                          </select>-->
+<!--                        </div>-->
+<!--                        <div class="form-group-inline">-->
+<!--                          <label for="destination"><b>Destination:</b></label>-->
+<!--                          <input type="text" id="destination" placeholder="filesystem" readonly class="input-field">-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                      <div class="col text-center form-group mt-3">-->
+<!--                        <button [disabled]="reportFormGroup.invalid" class="btn btn-danger"-->
+<!--                                style="background-color:#009cd1; border-color:#009cd1;" type="submit" (click)="onDownload()">-->
+<!--                          EVALUATE COMPARISON-->
+<!--                        </button>-->
+<!--                      </div>-->
+<!--                    </form>-->
+<!--                    <div class="col text-center form-group">-->
+<!--                      <a class="btn btn-danger" type="submit"-->
+<!--                         href="https://d-si.ptb.de/api/d-comparison/swagger-ui/index.html#" target="_blank">-->
+<!--                        Swagger UI OpenAPI-->
+<!--                      </a>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  <div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </section>-->
+<!--            </div>-->
+<!--          </ng-template>-->
+<!--        </li>-->
+<!--        <li [ngbNavItem]="2">-->
+<!--          <a ngbNavLink>DCC-List</a>-->
+<!--          <ng-template ngbNavContent>-->
+<!--            <div class="tab-content-inner">-->
+<!--              &lt;!&ndash;DCC-Liste&ndash;&gt;-->
+<!--              <section class="dcc-list">-->
+<!--                <div>-->
+<!--                  <h2 >DCC-List</h2>-->
+<!--                  <button class="btn btn-primary mt-1 w-auto sub" (click)="showDccUpload = true">&#8593; Upload DCC</button>-->
+<!--                  <table mat-table [dataSource]="dccListDummy" class="mat-elevation-z2 mt-3">-->
+<!--                    &lt;!&ndash; ID Spalte &ndash;&gt;-->
+<!--                    <ng-container matColumnDef="id">-->
+<!--                      <th mat-header-cell *matHeaderCellDef>ID</th>-->
+<!--                      <td mat-cell *matCellDef="let dcc">{{dcc.id}}</td>-->
+<!--                    </ng-container>-->
+
+<!--                    &lt;!&ndash; Valid &ndash;&gt;-->
+<!--                    <ng-container matColumnDef="valid">-->
+<!--                      <th mat-header-cell *matHeaderCellDef>Valid</th>-->
+<!--                      <td mat-cell *matCellDef="let dcc">{{dcc.valid}}</td>-->
+<!--                    </ng-container>-->
+
+<!--                    &lt;!&ndash; PID &ndash;&gt;-->
+<!--                    <ng-container matColumnDef="pid">-->
+<!--                      <th mat-header-cell *matHeaderCellDef>PID</th>-->
+<!--                      <td mat-cell *matCellDef="let dcc">{{dcc.pid}}</td>-->
+<!--                    </ng-container>-->
+
+<!--                    &lt;!&ndash; Status &ndash;&gt;-->
+<!--                    <ng-container matColumnDef="status">-->
+<!--                      <th mat-header-cell *matHeaderCellDef>Status</th>-->
+<!--                      <td mat-cell *matCellDef="let dcc">{{dcc.status}}</td>-->
+<!--                    </ng-container>-->
+
+<!--                    &lt;!&ndash; Rolle &ndash;&gt;-->
+<!--                    <ng-container matColumnDef="rolle">-->
+<!--                      <th mat-header-cell *matHeaderCellDef>Rolle</th>-->
+<!--                      <td mat-cell *matCellDef="let dcc">{{dcc.rolle}}</td>-->
+<!--                    </ng-container>-->
+
+<!--                    &lt;!&ndash; Base64XML &ndash;&gt;-->
+<!--                    <ng-container matColumnDef="base64xml">-->
+<!--                      <th mat-header-cell *matHeaderCellDef>Base64XML</th>-->
+<!--                      <td mat-cell *matCellDef="let dcc">{{dcc.base64xml}}</td>-->
+<!--                    </ng-container>-->
+
+<!--                    &lt;!&ndash; Aktionen &ndash;&gt;-->
+<!--                    <ng-container matColumnDef="actions">-->
+<!--                      <th mat-header-cell *matHeaderCellDef>Aktionen</th>-->
+<!--                      <td mat-cell *matCellDef="let dcc">-->
+<!--                        &lt;!&ndash; Button-Styling mit Angular Material Icons &ndash;&gt;-->
+<!--                        <button mat-icon-button color="primary" (click)="editDCC(dcc)" matTooltip="Edit">-->
+<!--                          <span class="material-icons">edit</span>-->
+<!--                        </button>-->
+
+<!--                        <button mat-icon-button color="warn" (click)="deleteDCC(dcc)" matTooltip="Delete">-->
+<!--                          <span class="material-icons">delete</span>-->
+<!--                        </button>-->
+
+<!--                        <button mat-icon-button color="accent" (click)="viewXML(dcc)" matTooltip="View XML">-->
+<!--                          <span class="material-icons">description</span>-->
+<!--                        </button>-->
+<!--                      </td>-->
+<!--                    </ng-container>-->
+
+<!--                    &lt;!&ndash; Header und Row Definition &ndash;&gt;-->
+<!--                    <tr mat-header-row *matHeaderRowDef="displayedColumnsDcc"></tr>-->
+<!--                    <tr mat-row *matRowDef="let row; columns: displayedColumnsDcc;"></tr>-->
+
+<!--                  </table>-->
+
+<!--                  &lt;!&ndash; Pop-Up für DCC-Upload&ndash;&gt;-->
+<!--                  <div class="modal-overlay" *ngIf="showDccUpload">-->
+<!--                    <div class="modal-content">-->
+<!--                      <h3>Add new DCC</h3>-->
+<!--                      <form [formGroup]="dccUploadFormGroup" (ngSubmit)="onUploadDcc()" >-->
+<!--                        <div class="mt-4">-->
+<!--                          <label><b>Valid:</b></label>-->
+<!--                          <select formControlName="valid" class="input-field">-->
+<!--                            <option value="" disabled selected>Select validity</option>-->
+<!--                            <option value="valid">valid</option>-->
+<!--                            <option value="invalid">invalid</option>-->
+<!--                          </select>-->
+<!--                          <div *ngIf="dccUploadFormGroup.controls['valid'].invalid && dccUploadFormGroup.controls['valid'].touched" class="error">-->
+<!--                            Validity is required.-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="mt-4">-->
+<!--                          <label><b>PID:</b></label>-->
+<!--                          <input type="text" formControlName="pid" class="input-field" placeholder="Enter PID">-->
+<!--                          <div *ngIf="dccUploadFormGroup.controls['pid'].invalid && dccUploadFormGroup.controls['pid'].touched" class="error">-->
+<!--                            PID is required.-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="mt-4">-->
+<!--                          <label><b>Status:</b></label>-->
+<!--                          <select formControlName="status" class="input-field">-->
+<!--                            <option value="" disabled selected>Select status</option>-->
+<!--                            <option value="public">public</option>-->
+<!--                            <option value="private">private</option>-->
+<!--                          </select>-->
+<!--                          <div *ngIf="dccUploadFormGroup.controls['status'].invalid && dccUploadFormGroup.controls['status'].touched" class="error">-->
+<!--                            Status is required.-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="mt-4">-->
+<!--                          <label><b>User-Role:</b></label>-->
+<!--                          &lt;!&ndash;                          <input type="text" formControlName="rolle" class="input-field" readonly>&ndash;&gt;-->
+<!--                          <select formControlName="rolle" class="input-field">-->
+<!--                            <option value="" disabled selected>Select role</option>-->
+<!--                            <option value="admin">admin</option>-->
+<!--                            <option value="coordinator">coordinator</option>-->
+<!--                          </select>-->
+<!--                        </div>-->
+<!--                        <div class="mt-4">-->
+<!--                          <label><b>XML:</b></label>-->
+<!--                          <input type="file" formControlName="file" class="input-field">-->
+<!--                          <div *ngIf="dccUploadFormGroup.controls['file'].invalid && dccUploadFormGroup.controls['file'].touched" class="error">-->
+<!--                            A file is required.-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                        <div class="button-row mt-4">-->
+<!--                          <button type="submit" class="btn btn-primary w-auto sub" [disabled]="dccUploadFormGroup.invalid">Upload</button>-->
+<!--                          <button type="button" class="btn btn-primary w-auto sub" (click)="showDccUpload = false">Cancel</button>-->
+<!--                        </div>-->
+<!--                      </form>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </section>-->
+<!--            </div>-->
+<!--          </ng-template>-->
+<!--        </li>-->
+<!--        <li [ngbNavItem]="3" *ngIf="adminSignedIn && !coordinatorSignedIn">-->
+<!--          <a ngbNavLink>User-List</a>-->
+<!--          <ng-template ngbNavContent>-->
+<!--            <div class="tab-content-inner">-->
+<!--              &lt;!&ndash;User-Liste&ndash;&gt;-->
+<!--              <section class="user-list">-->
+<!--                <h2>User-List</h2>-->
+<!--                <button class="btn btn-primary mt-1 w-auto sub">+ Add User</button>-->
+<!--                <table mat-table [dataSource]="usersDummy" class="mat-elevation-z2 mt-3">-->
+<!--                  <ng-container matColumnDef="username">-->
+<!--                    <th mat-header-cell *matHeaderCellDef>User</th>-->
+<!--                    <td mat-cell *matCellDef="let user">{{user.username}}</td>-->
+<!--                  </ng-container>-->
+<!--                  <ng-container matColumnDef="email">-->
+<!--                    <th mat-header-cell *matHeaderCellDef>E-Mail</th>-->
+<!--                    <td mat-cell *matCellDef="let user">{{user.email}}</td>-->
+<!--                  </ng-container>-->
+<!--                  <ng-container matColumnDef="role">-->
+<!--                    <th mat-header-cell *matHeaderCellDef>Role</th>-->
+<!--                    <td mat-cell *matCellDef="let user">{{user.role}}</td>-->
+<!--                  </ng-container>-->
+<!--                  <ng-container matColumnDef="active">-->
+<!--                    <th mat-header-cell *matHeaderCellDef>Active</th>-->
+<!--                    <td mat-cell *matCellDef="let user">{{user.active}}</td>-->
+<!--                  </ng-container>-->
+<!--                  <ng-container matColumnDef="actions">-->
+<!--                    <th mat-header-cell *matHeaderCellDef>Actions</th>-->
+<!--                    <td mat-cell *matCellDef="let user">-->
+<!--                      &lt;!&ndash; editUser &ndash;&gt;-->
+<!--                      <button mat-icon-button color="primary" (click)="editUser()" matTooltip="Edit">-->
+<!--                        <span class="material-icons">edit</span>-->
+<!--                      </button>-->
+<!--                      &lt;!&ndash; deleteUser &ndash;&gt;-->
+<!--                      <button mat-icon-button color="primary" (click)="deleteUser()" matTooltip="Edit">-->
+<!--                        <span class="material-icons" >delete</span>-->
+<!--                      </button>-->
+<!--                    </td>-->
+<!--                  </ng-container>-->
+<!--                  &lt;!&ndash; Header und Row Definition &ndash;&gt;-->
+<!--                  <tr mat-header-row *matHeaderRowDef="displayedColumnsUsers"></tr>-->
+<!--                  <tr mat-row *matRowDef="let row; columns: displayedColumnsUsers;"></tr>-->
+<!--                </table>-->
+<!--              </section>-->
+<!--            </div>-->
+<!--          </ng-template>-->
+<!--        </li>-->
+<!--      </ul>-->
+<!--      <div [ngbNavOutlet]="nav"></div>-->
+<!--    </div>-->
   </div>
 </div>
 
-<!--    <div *ngIf="reportFormGroup">-->
 
-<!--      <form name="ReportForm" [formGroup]="reportFormGroup" class="col card p-3 mb-5 background" (ngSubmit)="addReport()">-->
-<!--        <legend>Report:</legend>-->
-<!--        <div class="row-inline">-->
-<!--          <div class="form-group-inline">-->
-<!--            <label for="pidReport"><b>PID Report:</b></label>-->
-<!--            <input type="text" formControlName="pidReport" id="pidReport" placeholder="CCM-K1" class="input-field me-2">-->
-<!--              <small-->
-<!--                *ngIf="reportFormGroup.controls['pidReport'].errors && reportFormGroup.controls['pidReport'].touched"-->
-<!--                class="text-danger report">PID report is required</small>-->
-<!--              <div class="form-group-inline">-->
-<!--              <select id="smartStandardEvaluationMethod" class="input-field me-2 "-->
-<!--                      formControlName="smartStandardEvaluationMethod" (change)="selectedEvalMethod($event)">-->
-<!--                <option value="" selected disabled>select evaluation method</option>-->
-<!--                &lt;!&ndash;                <option value = "energyComparison">E = mc²</option>&ndash;&gt;-->
-<!--                <option value="massIntercomparison">mass intercomparison</option>-->
-<!--                <option value="radiationTempComparison">radiation temperature comparison</option>-->
-<!--                <option value="laboratoryMedicineComparison">laboratory medicine comparison</option>-->
-<!--                <div-->
-<!--                  *ngIf="reportFormGroup.controls['smartStandardEvaluationMethod'].errors && reportFormGroup.controls['smartStandardEvaluationMethod'].touched  "-->
-<!--                  class="text-danger report">evaluation method is required-->
-<!--                </div>-->
-<!--              </select>-->
-<!--              </div>-->
-<!--              <div class="form-group-inline">-->
-<!--                <label for="pilotParticipantName"><b>Pilot:</b></label>-->
-<!--                <select id="pilotParticipantName" formControlName="pilotParticipantName" class="input-field me-2">-->
-<!--                  <option value="" selected disabled>select pilot ParticipantName</option>-->
-<!--                  <option value="PTB">PTB</option>-->
-<!--                  <option value="Kriss">Kriss</option>-->
-<!--                  <option value="NIM">NIM</option>-->
-<!--                </select>-->
-<!--              </div>-->
-<!--              <div class="form-group-inline">-->
-<!--              <label for="destination" ><span>Destination:</span></label>-->
-<!--              <input type="text" class="input-field" id="destination" placeholder="filesystem" readonly class="input-field"/>-->
-<!--                </div>-->
-<!--            </div>-->
 
-<!--          <div class="col text-center form-group mt-3">-->
-<!--            <button [disabled]="this.reportFormGroup.invalid"  style="background-color:#009cd1; border-color:#009cd1;"-->
-<!--                    class="btn btn-danger" type="submit" (click)="onDownload()">-->
-<!--              EVALUATE COMPARISON-->
-<!--            </button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </form>-->
-<!--      <div class="col text-center form-group">-->
-<!--        <a style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger" type="submit"-->
-<!--           href="https://d-si.ptb.de/api/d-comparison/swagger-ui/index.html#" target="_blank">-->
-<!--          Swagger UI OpenAPI-->
-<!--        </a>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div>-->
-<!--    </div>-->
+
 
 
 

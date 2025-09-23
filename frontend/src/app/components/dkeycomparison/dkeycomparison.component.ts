@@ -31,6 +31,26 @@ export class DkeycomparisonComponent implements OnInit {
   options: string[] = ['reference', 'excluded'];
   selectedOption: string = '';
 
+  //Login
+  isLoggedIn: Boolean = false;
+  showLogin: Boolean = false;
+  username = '';
+  password = '';
+  adminSignedIn = false;
+  coordinatorSignedIn = false;
+
+  //Tab-Anzeige
+  activeTab = 1; // Startet mit dem ersten Tab
+  //order and name of columns
+  displayedColumnsDcc: string[] = ['id', 'valid', 'pid', 'status', 'base64xml', 'actions'];
+  //Upload
+  showUploadDcc: Boolean = false;
+  dccUploadFormGroup!: FormGroup; //Form-Group-Objekt (erzeugt über FormBuilder)
+  //User-List
+  userArray: string[] = ['user1', 'user2', 'user3'];
+  displayedColumnsUsers: string[] = ['username', 'email', 'active', 'actions'];
+
+
 
   constructor(private contributionsService: ContributionsService, private fb: FormBuilder) {
   }
@@ -58,7 +78,7 @@ export class DkeycomparisonComponent implements OnInit {
   }
 
   public getContributions(): void {
-    this.contributions$ = this.contributionsService.getContributions().pipe(
+       this.contributions$ = this.contributionsService.getContributions().pipe(
       map(data => ({dataState: DataStateEnum.LOADED, data: data})),
       startWith({dataState: DataStateEnum.LOADING}),
       catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
@@ -150,6 +170,51 @@ export class DkeycomparisonComponent implements OnInit {
     this.contributionFormGroup.get('property')?.setValue(value);
   }
 
+  // Klick auf Logout
+  onLogout() {
+    this.isLoggedIn = false;
+    this.adminSignedIn = false;
+    console.log('User logged out');
+  }
+
+  // Klick auf Sign in
+  onSubmit() {
+    if (this.username && this.password) {
+      this.isLoggedIn = true;
+      this.adminSignedIn = true;
+      this.showLogin = false;
+      console.log(`Logged in as ${this.username}`);
+      // Hier ggf. AuthService aufrufen
+    }
+  }
+
+  editDCC(dcc: Dcc) {
+
+  }
+
+  deleteDCC(dcc: Dcc) {
+
+  }
+
+  viewXML(dcc: Dcc) {
+
+  }
+
+  onUploadDcc() {
+
+  }
+
+  editUser() {
+
+  }
+
+  deleteUser() {
+
+  }
+
+  onChangePassword() {
+
+  }
 }
 
 
