@@ -144,6 +144,21 @@
   border-radius: 5px;
 }
 
+/* Spezielles Styling nur für Upload-Modal */
+.upload-modal .modal-content {
+  width: 50%;       /* Breiteres Modal */
+  max-width: 90%;   /* Für kleine Bildschirme */
+  padding: 3rem;    /* Innenabstand */
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.8);
+}
+
+.upload.title {
+  margin: 0.5rem;
+}
+
+
+
 /* -------------------------------
    Tabs (Bootstrap / ngbNav)
 --------------------------------*/
@@ -191,7 +206,7 @@
 
 /* Tab-Inhalt */
 .tab-content-inner {
-  padding: 10px;
+  padding: 2rem;
   background-color: #f8f9fa; /* weißer Hintergrund für Content */
   color: #000;             /* schwarze Schrift */
   /*border: 1px solid #009cd1;  !* optionale Umrandung *!*/

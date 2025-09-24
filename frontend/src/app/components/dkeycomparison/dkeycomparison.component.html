@@ -1,5 +1,6 @@
 <div class="container comp">
   <!--public panel -->
+
   <!-- Login-Button -->
     <div class="btn-login">
       <button mat-icon-button [matMenuTriggerFor]="userMenu"
@@ -19,7 +20,7 @@
     </button>
     <button mat-menu-item *ngIf="isLoggedIn" (click)="onChangePassword()">
       <mat-icon>lock</mat-icon>
-      <span>Passwort ändern</span>
+      <span>Change password</span>
     </button>
   </mat-menu>
 
@@ -162,20 +163,23 @@
     <div class="modal-overlay" *ngIf="showLogin">
       <div class="modal-content">
         <h3>Login</h3>
-        <form #loginForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <form [formGroup]="loginFormGroup" (ngSubmit)="onLogin()">
           <div>
             <label for="username"><b>Username:</b></label>
-            <input id="username" type="text" name="username" required [(ngModel)]="username" #usernameInput="ngModel" placeholder="enter username">
-            <div class="error" *ngIf="usernameInput.invalid && usernameInput.touched">Username is required.</div>
+            <input id="username" type="text" formControlName="username" placeholder="enter username">
+            <div class="error" *ngIf="loginFormGroup.controls['username'].invalid && loginFormGroup.controls['username'].touched">
+              Username is required.</div>
           </div>
           <div class="mt-2">
             <label for="password"><b>Password:</b></label>
-            <input id="password" type="password" name="password" required [(ngModel)]="password" #passwordInput="ngModel" placeholder="enter password">
-            <div class="error" *ngIf="passwordInput.invalid && passwordInput.touched">Password is required.</div>
+            <input id="password" type="password" formControlName="password" placeholder="enter password">
+            <div class="error" *ngIf="loginFormGroup.controls['password'].invalid && loginFormGroup.controls['password'].touched">
+              Password is required.</div>
           </div>
           <div class="button-row">
-            <button type="submit" class="btn btn-primary w-auto sub" [disabled]="loginForm.invalid">Sign in</button>
-            <button type="button" class="btn btn-primary w-auto sub" (click)="showLogin = false">Cancel</button>
+            <button type="submit" class="btn btn-primary w-auto sub" [disabled]="loginFormGroup.invalid">Sign in</button>
+            <button type="button" class="btn btn-primary w-auto sub" (click)="onCancelLogin()">Cancel</button>
           </div>
         </form>
       </div>
@@ -211,7 +215,7 @@
             <div class="tab-content-inner">
               <section class="dcc-list">
                 <div>
-                  <h2>DCC-List</h2>
+                  <h4 class="upload-title">DCC-List</h4>
                   <button class="btn btn-primary mt-1 w-auto sub" (click)="showUploadDcc=true">&#8593; Upload DCC</button>
                   <ng-container *ngIf="contributions$ | async as result">
                     <table *ngIf="result.data" mat-table [dataSource]="result.data" class="mat-elevation-z2 mt-3">
@@ -250,15 +254,15 @@
                         <th mat-header-cell *matHeaderCellDef>Actions</th>
                         <td mat-cell *matCellDef="let dcc">
                           <!-- Button-Styling mit Angular Material Icons -->
-                          <button mat-icon-button color="primary" (click)="editDCC(dcc)" matTooltip="Edit">
+                          <button mat-icon-button color="primary" (click)="onEditDCC(dcc)" matTooltip="Edit">
                             <span class="material-icons">edit</span>
                           </button>
 
-                          <button mat-icon-button color="warn" (click)="deleteDCC(dcc)" matTooltip="Delete">
+                          <button mat-icon-button color="warn" (click)="onDeleteDCC(dcc)" matTooltip="Delete">
                             <span class="material-icons">delete</span>
                           </button>
 
-                          <button mat-icon-button color="accent" (click)="viewXML(dcc)" matTooltip="View XML">
+                          <button mat-icon-button color="accent" (click)="onViewXML(dcc)" matTooltip="View XML">
                             <span class="material-icons">description</span>
                           </button>
                         </td>
@@ -272,58 +276,56 @@
                   </ng-container>
                 </div>
                 <!--Upload-Pop-Up-->
-                <div class="modal-overlay" *ngIf="showUploadDcc">
+                <div class="modal-overlay upload-modal" *ngIf="showUploadDcc">
                   <div class="modal-content">
                     <h3>Add new DCC</h3>
                     <form [formGroup]="dccUploadFormGroup" (ngSubmit)="onUploadDcc()" >
                       <div class="mt-4">
-                        <label><b>Valid:</b></label>
-                        <select formControlName="valid" class="input-field">
-                          <option value="" disabled selected>Select validity</option>
-                          <option value="valid">valid</option>
-                          <option value="invalid">invalid</option>
-                        </select>
-                        <div *ngIf="dccUploadFormGroup.controls['valid'].invalid && dccUploadFormGroup.controls['valid'].touched" class="error">
-                          Validity is required.
-                        </div>
-                      </div>
-                      <div class="mt-4">
-                        <label><b>PID:</b></label>
-                        <input type="text" formControlName="pid" class="input-field" placeholder="Enter PID">
+                        <label><b>PID</b></label>
+                        <input formControlName="pid" class="input-field" placeholder="Enter PID">
                         <div *ngIf="dccUploadFormGroup.controls['pid'].invalid && dccUploadFormGroup.controls['pid'].touched" class="error">
                           PID is required.
                         </div>
                       </div>
                       <div class="mt-4">
-                        <label><b>Status:</b></label>
-                        <select formControlName="status" class="input-field">
-                          <option value="" disabled selected>Select status</option>
-                          <option value="public">public</option>
-                          <option value="private">private</option>
-                        </select>
-                        <div *ngIf="dccUploadFormGroup.controls['status'].invalid && dccUploadFormGroup.controls['status'].touched" class="error">
-                          Status is required.
+                          <label><b>Status:</b></label>
+                          <select formControlName="status" class="input-field">
+                            <option value="" disabled selected>Select status</option>
+                            <option value="public">public</option>
+                            <option value="private">private</option>
+                          </select>
+                          <div *ngIf="dccUploadFormGroup.controls['status'].invalid && dccUploadFormGroup.controls['status'].touched" class="error">
+                            Status is required.
+                          </div>
+                      </div>
+                      <div class="mt-4">
+                        <label><b>Valid:</b></label>
+                        <input type="text" formControlName="valid" class="input-field" placeholder="Enter ???">
+                        <div *ngIf="dccUploadFormGroup.controls['valid'].invalid && dccUploadFormGroup.controls['valid'].touched" class="error">
+                          ??Valid is required.
                         </div>
                       </div>
                       <div class="mt-4">
                         <label><b>User-Role:</b></label>
-                        <!--                          <input type="text" formControlName="rolle" class="input-field" readonly>-->
-                        <select formControlName="rolle" class="input-field">
+                        <select formControlName="user" class="input-field">
                           <option value="" disabled selected>Select role</option>
                           <option value="admin">admin</option>
                           <option value="coordinator">coordinator</option>
                         </select>
+                        <div *ngIf="dccUploadFormGroup.controls['user'].invalid && dccUploadFormGroup.controls['user'].touched" class="error">
+                          Status is required.
+                        </div>
                       </div>
                       <div class="mt-4">
                         <label><b>XML:</b></label>
-                        <input type="file" formControlName="file" class="input-field">
-                        <div *ngIf="dccUploadFormGroup.controls['file'].invalid && dccUploadFormGroup.controls['file'].touched" class="error">
+                        <input type="file" formControlName="xml" class="input-field">
+                        <div *ngIf="dccUploadFormGroup.controls['xml'].invalid && dccUploadFormGroup.controls['xml'].touched" class="error">
                           A file is required.
                         </div>
                       </div>
                       <div class="button-row mt-4">
                         <button type="submit" class="btn btn-primary w-auto sub" [disabled]="dccUploadFormGroup.invalid">Upload</button>
-                        <button type="button" class="btn btn-primary w-auto sub" (click)="showUploadDcc=false">Cancel</button>
+                        <button type="button" class="btn btn-primary w-auto sub" (click)="onCancelUploadDcc()">Cancel</button>
                       </div>
                     </form>
                   </div>
@@ -337,7 +339,7 @@
           <ng-template ngbNavContent>
             <div class="tab-content-inner">
               <section class="user-list">
-                <h2>User-List</h2>
+                <h4 class="upload-title">User-List</h4>
                 <button class="btn btn-primary mt-1 w-auto sub">+ Add User</button>
                 <table mat-table [dataSource]="userArray" class="mat-elevation-z2 mt-3">
                   <ng-container matColumnDef="username">
@@ -348,6 +350,10 @@
                     <th mat-header-cell *matHeaderCellDef>E-Mail</th>
                     <td mat-cell *matCellDef="let user">{{user}}</td>
                   </ng-container>
+                  <ng-container matColumnDef="role">
+                    <th mat-header-cell *matHeaderCellDef>Role</th>
+                    <td mat-cell *matCellDef="let user">{{user}}</td>
+                  </ng-container>
                   <ng-container matColumnDef="active">
                     <th mat-header-cell *matHeaderCellDef>Active</th>
                     <td mat-cell *matCellDef="let user">{{user}}</td>
@@ -356,11 +362,11 @@
                     <th mat-header-cell *matHeaderCellDef>Actions</th>
                     <td mat-cell *matCellDef="let user">
                       <!-- editUser -->
-                      <button mat-icon-button color="primary" (click)="editUser()" matTooltip="Edit">
+                      <button mat-icon-button color="primary" (click)="onEditUser()" matTooltip="Edit">
                         <span class="material-icons">edit</span>
                       </button>
                       <!-- deleteUser -->
-                      <button mat-icon-button color="primary" (click)="deleteUser()" matTooltip="Edit">
+                      <button mat-icon-button color="primary" (click)="onDeleteUser()" matTooltip="Edit">
                         <span class="material-icons" >delete</span>
                       </button>
                     </td>

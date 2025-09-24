@@ -34,6 +34,7 @@ export class DkeycomparisonComponent implements OnInit {
   //Login
   isLoggedIn: Boolean = false;
   showLogin: Boolean = false;
+  loginFormGroup!: FormGroup;
   username = '';
   password = '';
   adminSignedIn = false;
@@ -41,14 +42,15 @@ export class DkeycomparisonComponent implements OnInit {
 
   //Tab-Anzeige
   activeTab = 1; // Startet mit dem ersten Tab
-  //order and name of columns
+  //dcc-list
+  dccArray: string[] = ['dcc1', 'dcc2', 'dcc3'];
   displayedColumnsDcc: string[] = ['id', 'valid', 'pid', 'status', 'base64xml', 'actions'];
   //Upload
   showUploadDcc: Boolean = false;
   dccUploadFormGroup!: FormGroup; //Form-Group-Objekt (erzeugt über FormBuilder)
   //User-List
   userArray: string[] = ['user1', 'user2', 'user3'];
-  displayedColumnsUsers: string[] = ['username', 'email', 'active', 'actions'];
+  displayedColumnsUsers: string[] = ['username', 'email','role', 'active', 'actions'];
 
 
 
@@ -75,6 +77,20 @@ export class DkeycomparisonComponent implements OnInit {
     })
     this.clearContributionsList();
 
+    //Login-FormGroup
+    this.loginFormGroup = this.fb.group({
+      username: ["", Validators.required],
+      password: ["", Validators.required]
+    });
+
+    // Upload-FormGroup
+    this.dccUploadFormGroup = this.fb.group({
+      pid: ["", Validators.required],
+      status:["", Validators.required],
+      valid: ["", Validators.required],
+      user: ["", Validators.required],
+      xml: [null, Validators.required]
+    });
   }
 
   public getContributions(): void {
@@ -170,33 +186,37 @@ export class DkeycomparisonComponent implements OnInit {
     this.contributionFormGroup.get('property')?.setValue(value);
   }
 
-  // Klick auf Logout
+  onLogin() {
+    this.isLoggedIn = true;
+    this.adminSignedIn = true;
+    this.showLogin = false;
+    this.loginFormGroup.reset();
+  }
+
+  onCancelLogin() {
+    this.showLogin = false;
+    this.loginFormGroup.reset();
+  }
+
   onLogout() {
     this.isLoggedIn = false;
     this.adminSignedIn = false;
     console.log('User logged out');
   }
 
-  // Klick auf Sign in
-  onSubmit() {
-    if (this.username && this.password) {
-      this.isLoggedIn = true;
-      this.adminSignedIn = true;
-      this.showLogin = false;
-      console.log(`Logged in as ${this.username}`);
-      // Hier ggf. AuthService aufrufen
-    }
-  }
-
-  editDCC(dcc: Dcc) {
+  onChangePassword() {
 
   }
 
-  deleteDCC(dcc: Dcc) {
+  onEditDCC(dcc: Dcc) {
 
   }
 
-  viewXML(dcc: Dcc) {
+  onDeleteDCC(dcc: Dcc) {
+
+  }
+
+  onViewXML(dcc: Dcc) {
 
   }
 
@@ -204,15 +224,17 @@ export class DkeycomparisonComponent implements OnInit {
 
   }
 
-  editUser() {
+  onCancelUploadDcc() {
+    this.showUploadDcc = false;
+    this.dccUploadFormGroup.reset();
+  }
+
+
+  onEditUser() {
 
   }
 
-  deleteUser() {
-
-  }
-
-  onChangePassword() {
+  onDeleteUser() {
 
   }
 }
