@@ -60,4 +60,9 @@ export class ContributionsService {
     return this.http.get<Dcc[]>(`${this.apiServerUrl}/d-dcc/dccPidList`);
   }
 
+  //
+  public uploadDcc(): Observable<Dcc> {
+
+  }
+
 }

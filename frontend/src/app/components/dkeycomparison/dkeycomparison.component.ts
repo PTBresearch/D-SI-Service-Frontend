@@ -36,7 +36,6 @@ export class DkeycomparisonComponent implements OnInit {
   showLogin: Boolean = false;
   loginFormGroup!: FormGroup;
   username = '';
-  password = '';
   adminSignedIn = false;
   coordinatorSignedIn = false;
 
@@ -101,7 +100,6 @@ export class DkeycomparisonComponent implements OnInit {
     );
   }
 
-
   public onDeleteContribution(c: Contribution) {
     if (confirm("Are you sure to delete " + c.participantName))
       this.contributionsService.onDeleteContribution(c.id).subscribe(data => {
@@ -114,6 +112,8 @@ export class DkeycomparisonComponent implements OnInit {
 
     });
   }
+
+
 
   public addContribution() {
     this.contributionsService.addContribution(this.contributionFormGroup?.value)
@@ -196,11 +196,17 @@ export class DkeycomparisonComponent implements OnInit {
   onCancelLogin() {
     this.showLogin = false;
     this.loginFormGroup.reset();
+
+    const username = this.loginFormGroup.value.username;
+    const password = this.loginFormGroup.value.password;
+
+    //Call Auth-Service (Login)
   }
 
   onLogout() {
     this.isLoggedIn = false;
     this.adminSignedIn = false;
+    this.username = '';
     console.log('User logged out');
   }
 
@@ -221,14 +227,23 @@ export class DkeycomparisonComponent implements OnInit {
   }
 
   onUploadDcc() {
-
+    //contributionService
   }
 
   onCancelUploadDcc() {
+
+
     this.showUploadDcc = false;
-    this.dccUploadFormGroup.reset();
+    this.dccUploadFormGroup.reset({
+      status: '',
+      user: ''});
+
+
   }
 
+  onAddUser() {
+
+  }
 
   onEditUser() {
 
@@ -237,6 +252,8 @@ export class DkeycomparisonComponent implements OnInit {
   onDeleteUser() {
 
   }
+
+
 }
 
 

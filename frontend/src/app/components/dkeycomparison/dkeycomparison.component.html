@@ -163,7 +163,6 @@
     <div class="modal-overlay" *ngIf="showLogin">
       <div class="modal-content">
         <h3>Login</h3>
-
         <form [formGroup]="loginFormGroup" (ngSubmit)="onLogin()">
           <div>
             <label for="username"><b>Username:</b></label>
@@ -290,7 +289,7 @@
                       <div class="mt-4">
                           <label><b>Status:</b></label>
                           <select formControlName="status" class="input-field">
-                            <option value="" disabled selected>Select status</option>
+                            <option value="" disabled>Select status</option>
                             <option value="public">public</option>
                             <option value="private">private</option>
                           </select>
@@ -308,7 +307,7 @@
                       <div class="mt-4">
                         <label><b>User-Role:</b></label>
                         <select formControlName="user" class="input-field">
-                          <option value="" disabled selected>Select role</option>
+                          <option value="" disabled>Select role</option>
                           <option value="admin">admin</option>
                           <option value="coordinator">coordinator</option>
                         </select>
@@ -319,7 +318,7 @@
                       <div class="mt-4">
                         <label><b>XML:</b></label>
                         <input type="file" formControlName="xml" class="input-field">
-                        <div *ngIf="dccUploadFormGroup.controls['xml'].invalid && dccUploadFormGroup.controls['xml'].touched" class="error">
+                        <div *ngIf="dccUploadFormGroup.controls['xml'].invalid && dccUploadFormGroup.controls['xml'].valueChanges && dccUploadFormGroup.controls['xml'].touched" class="error">
                           A file is required.
                         </div>
                       </div>
@@ -340,7 +339,7 @@
             <div class="tab-content-inner">
               <section class="user-list">
                 <h4 class="upload-title">User-List</h4>
-                <button class="btn btn-primary mt-1 w-auto sub">+ Add User</button>
+                <button (click)="onAddUser()" class="btn btn-primary mt-1 w-auto sub">+ Add User</button>
                 <table mat-table [dataSource]="userArray" class="mat-elevation-z2 mt-3">
                   <ng-container matColumnDef="username">
                     <th mat-header-cell *matHeaderCellDef>User</th>
