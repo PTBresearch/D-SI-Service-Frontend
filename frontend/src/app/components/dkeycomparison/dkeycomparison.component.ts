@@ -40,7 +40,7 @@ export class DkeycomparisonComponent implements OnInit {
     this.getDccList();
     this.contributionFormGroup = this.fb.group({
       participantName: ["", Validators.required],
-        pidDCC: ["", Validators.required],
+      pidDCC: ["", Validators.required],
       pilotParticipantName: ["select pilot ParticipantName"],
       selectedOption: new FormControl(''),
       property: new FormControl('')

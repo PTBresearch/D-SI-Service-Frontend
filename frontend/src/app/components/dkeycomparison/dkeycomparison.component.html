@@ -24,7 +24,7 @@
           <option *ngFor="let dccPid of result.data">{{dccPid}}</option>
         </datalist>
         <small
-          *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].touched "
+          *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].ch.touched "
           class="text-danger">PID DCC is required</small>
       </div>
 
