@@ -21,6 +21,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {MatTableModule} from "@angular/material/table";
 import {MatMenuModule} from "@angular/material/menu";
 import { MatIconModule } from '@angular/material/icon';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 
 
@@ -37,23 +38,24 @@ import { MatIconModule } from '@angular/material/icon';
     DsiconverterComponent,
 
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    FormsModule,
-    Ng2SearchPipeModule,
-    BrowserModule,
-    FormsModule,
-    BrowserAnimationsModule,
-    MatRadioModule,
-    MatButtonModule,
-    NgbModule,
-    MatTableModule,
-    MatMenuModule,
-    MatIconModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        FormsModule,
+        Ng2SearchPipeModule,
+        BrowserModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        MatRadioModule,
+        MatButtonModule,
+        NgbModule,
+        MatTableModule,
+        MatMenuModule,
+        MatIconModule,
+        MatProgressSpinnerModule
+    ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]
 })

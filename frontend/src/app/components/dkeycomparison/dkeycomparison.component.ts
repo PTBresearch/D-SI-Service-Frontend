@@ -6,11 +6,13 @@ import {
   FormGroup,
   Validators
 } from "@angular/forms";
-import {catchError, map, Observable, of, startWith} from "rxjs";
+import {catchError, finalize, map, Observable, of, startWith, tap} from "rxjs";
 import {AppDataState, DataStateEnum} from "../../state/participant.state";
 import {Report} from "../../model/report.model";
 import {Dcc} from "../../model/Dcc.model";
 import {MatRadioChange} from "@angular/material/radio";
+import {User} from "../../model/User.model";
+import {MatTableDataSource} from "@angular/material/table";
 
 
 @Component({
@@ -20,17 +22,17 @@ import {MatRadioChange} from "@angular/material/radio";
 })
 export class DkeycomparisonComponent implements OnInit {
   title = 'dsi-Services';
-  public contributions$?: Observable<AppDataState<Contribution[]>>;
-  public dccPidList$?: Observable<AppDataState<Dcc[]>>;
-  contributionFormGroup?: FormGroup;
+  contributions$?: Observable<AppDataState<Contribution[]>>;
+  dccPidList$?: Observable<AppDataState<Dcc[]>>;
+  contributionFormGroup!: FormGroup;
   readonly DataStateEnum = DataStateEnum;
-  public reports$?: Observable<AppDataState<Report>>;
+  reports$?: Observable<AppDataState<Report>>;
   reportFormGroup?: FormGroup<any>;
   searchText: any;
   property: string = '';
   options: string[] = ['reference', 'excluded'];
   selectedOption: string = '';
-
+  submitted = false;
   //Login
   isLoggedIn: Boolean = false;
   showLogin: Boolean = false;
@@ -42,32 +44,41 @@ export class DkeycomparisonComponent implements OnInit {
   //Tab-Anzeige
   activeTab = 1; // Startet mit dem ersten Tab
   //dcc-list
-  dccArray: string[] = ['dcc1', 'dcc2', 'dcc3'];
-  displayedColumnsDcc: string[] = ['id', 'valid', 'pid', 'status', 'base64xml', 'actions'];
-  //Upload
-  showUploadDcc: Boolean = false;
-  dccUploadFormGroup!: FormGroup; //Form-Group-Objekt (erzeugt über FormBuilder)
-  //User-List
-  userArray: string[] = ['user1', 'user2', 'user3'];
-  displayedColumnsUsers: string[] = ['username', 'email','role', 'active', 'actions'];
+  // dccArray: string[] = ['dcc1', 'dcc2', 'dcc3'];
+  // displayedColumnsDcc: string[] = ['id', 'valid', 'pid', 'status', 'base64xml', 'actions'];
+  // //Upload
+  // showUploadDcc: Boolean = false;
+  // dccUploadFormGroup!: FormGroup; //Form-Group-Objekt (erzeugt über FormBuilder)
+  // //User-List
+  // userArray: string[] = ['user1', 'user2', 'user3'];
+  // displayedColumnsUsers: string[] = ['username', 'email','role', 'active', 'actions'];
+  dccList$: Observable<Dcc[]> | undefined;
+  showUploadDcc = false;
+  dccUploadFormGroup!: FormGroup;
 
+  userList: User[] = [];
+  dccList = this.contributionsService.getDccList();
 
-
+  displayedColumnsDcc: string[] = [ 'pid',  'information', 'status','createdAt', 'xmlBase64', 'actions'];
+  selectedFile: File | null = null;
   constructor(private contributionsService: ContributionsService, private fb: FormBuilder) {
   }
 
   ngOnInit() {
     this.getContributions();
     this.getDccList();
+    this.getPublicDccList();
     this.contributionFormGroup = this.fb.group({
       participantName: ["", Validators.required],
-        pidDCC: ["", Validators.required],
+      pidDCC: ["", Validators.required],
       pilotParticipantName: ["select pilot ParticipantName"],
       selectedOption: new FormControl(''),
       property: new FormControl('')
       }
     )
 
+    this.contributionFormGroup.get('pidDCC')?.valueChanges.subscribe(value => {});
+    // this.loadUsers();
     this.getReports();
     this.reportFormGroup = this.fb.group({
       pidReport: ["", Validators.required],
@@ -82,15 +93,108 @@ export class DkeycomparisonComponent implements OnInit {
       password: ["", Validators.required]
     });
 
-    // Upload-FormGroup
+    this.reloadDccList();
+
     this.dccUploadFormGroup = this.fb.group({
-      pid: ["", Validators.required],
-      status:["", Validators.required],
-      valid: ["", Validators.required],
-      user: ["", Validators.required],
-      xml: [null, Validators.required]
+      pid: ['', Validators.required],
+      information: ['', Validators.required],
+      status: ['', Validators.required],
+      xmlFile: [null, Validators.required]
     });
   }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      this.dccUploadFormGroup.patchValue({
+        xmlFile: this.selectedFile
+      });
+      this.dccUploadFormGroup.get('xmlFile')?.markAsTouched();
+      this.dccUploadFormGroup.get('xmlFile')?.updateValueAndValidity();
+    }
+  }
+  onUploadDcc(): void {
+    this.submitted = true;
+    if (this.dccUploadFormGroup.invalid || !this.selectedFile) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append('pid', this.dccUploadFormGroup.value.pid);
+    formData.append('status', this.dccUploadFormGroup.value.status);
+    formData.append('information', this.dccUploadFormGroup.value.information);
+    formData.append('file', this.selectedFile);
+
+
+    this.contributionsService.uploadDcc(formData)
+      .pipe(finalize(() => {
+        this.reloadDccList();
+      }))
+      .subscribe({
+        next: () => this.closeUploadPopup(),
+        error: (err) => {
+          if (err.status === 202) {
+            this.closeUploadPopup();
+          } else {
+            console.error('Upload failed', err);
+
+          }
+        }
+      });
+  }
+
+  closeUploadPopup() {
+    this.showUploadDcc = false;
+    this.dccUploadFormGroup.reset();
+    this.selectedFile = null;
+
+  }
+
+  onCancelUploadDcc(): void {
+    this.dccUploadFormGroup.reset();
+   this.selectedFile = null;
+    this.showUploadDcc = false;
+  }
+
+  // reloadDccList(): void {
+  //   this.dccPidList$ = this.contributionsService.getDccList().pipe(
+  //     map(data => ({ dataState: DataStateEnum.LOADED, data: data })),
+  //     startWith({ dataState: DataStateEnum.LOADING }),
+  //     catchError(err => of({ dataState: DataStateEnum.ERROR, errorMessage: err.message }))
+  //   );
+  // }
+  reloadDccList(): void {
+    this.dccList$ = this.contributionsService.getAll().pipe(
+      tap(dccs => console.log('Neue DCCs geladen:', dccs)),
+      catchError(() => of([]))
+    );
+  }
+
+  onEditDcc(dcc: Dcc): void {
+    console.log('Edit clicked for:', dcc);
+  }
+
+  onDeleteDcc(dcc: Dcc): void {
+    console.log('Delete clicked for:', dcc);
+  }
+
+  onViewXml(dcc: Dcc): void {
+    console.log('View XML clicked for:', dcc);
+  }
+
+  // onDeleteDcc(dcc: Dcc): void {
+  //   this.contributionsService.deleteDcc(dcc.id).subscribe(() => {
+  //     this.loadDccs();
+  //   });
+  // }
+  //
+
+  //
+  // onViewXml(dcc: Dcc): void {
+  //   const xmlWindow = window.open('', '_blank');
+  //   xmlWindow?.document.write(`<pre>${atob(dcc.xmlBase64)}</pre>`);
+  // }
 
   public getContributions(): void {
        this.contributions$ = this.contributionsService.getContributions().pipe(
@@ -121,12 +225,9 @@ export class DkeycomparisonComponent implements OnInit {
         this.getContributions()
       });
     this.contributionFormGroup?.reset();
-// Setze den Wert auf null (keine Auswahl)
     this.contributionFormGroup?.get('selectedOption')?.setValue(null);
 
     console.log('selectedOption value after reset:', this.contributionFormGroup?.get('selectedOption')?.value);
-
-    //sessionStorage.setItem('participnatsList', JSON.stringify( this.participantsService.getParticipants()))
   }
 
   public getReports(): void {
@@ -165,13 +266,21 @@ export class DkeycomparisonComponent implements OnInit {
   }
 
   public getDccList(): void {
+    this.dccList$ = this.contributionsService.getDccList().pipe(
+      map(data => data),
+      catchError(err => {
+        console.error('Fehler beim Laden der DCCs:', err);
+        return of([]);
+      })
+    );
+  }
+  public getPublicDccList(): void {
     this.dccPidList$ = this.contributionsService.getDccList().pipe(
       map(data => ({dataState: DataStateEnum.LOADED, data: data})),
       startWith({dataState: DataStateEnum.LOADING}),
       catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
     );
   }
-
   selectedEvalMethod(e: any) {
     console.log("smartStandardEvaluationMethod: ", e.target.value)
   }
@@ -226,20 +335,6 @@ export class DkeycomparisonComponent implements OnInit {
 
   }
 
-  onUploadDcc() {
-    //contributionService
-  }
-
-  onCancelUploadDcc() {
-
-
-    this.showUploadDcc = false;
-    this.dccUploadFormGroup.reset({
-      status: '',
-      user: ''});
-
-
-  }
 
   onAddUser() {
 
@@ -255,5 +350,3 @@ export class DkeycomparisonComponent implements OnInit {
 
 
 }
-
-

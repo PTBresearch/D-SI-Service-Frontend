@@ -41,7 +41,7 @@ export class ContributionsService {
   }
 
   public getPidReport(): Observable<string> {
-    return this.http.get<string>(`${this.apiServerUrl}client/report/{pidReport}`);
+    return this.http.get<string>(`${this.apiServerUrl}/client/report/{pidReport}`);
   }
 
   public addReport(report: Report): Observable<Report> {
@@ -56,13 +56,19 @@ export class ContributionsService {
   }
 
   public getDccList(): Observable<Dcc[]> {
-    // return this.http.get<Dcc[]>(`${this.apiServerDCCUrl}/d-dcc/dccPidList`);
-    return this.http.get<Dcc[]>(`${this.apiServerUrl}/d-dcc/dccPidList`);
+    return this.http.get<Dcc[]>(`${this.apiServerDCCUrl}/d-dcc/dccPidList`);
+    // return this.http.get<Dcc[]>(`${this.apiServerUrl}/d-dcc/dccPidList`);
+  }
+  public  getAll(): Observable< Dcc[] > {
+    return this.http.get< Dcc[] >(`${this.apiServerDCCUrl}/d-dcc/dccList`);
   }
 
-  //
-  public uploadDcc(): Observable<Dcc> {
+  public uploadDcc(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiServerDCCUrl}/d-dcc/upload`, formData);
+  }
 
+  public deleteDcc(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiServerDCCUrl}/d-dcc/delete/${id}`);
   }
 
 }

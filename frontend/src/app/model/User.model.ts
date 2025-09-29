@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023  Physikalisch-Technische Bundesanstalt (PTB), all rights reserved.
+ * Copyright (c) 2022-2025  Physikalisch-Technische Bundesanstalt (PTB), all rights reserved.
  * This source code and software is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, version 3 of the License.
@@ -12,21 +12,17 @@
  * CONTACT: 		info@ptb.de
  * DEVELOPMENT:		https://d-si.ptb.de
  * AUTHORS:		Wafa El Jaoua, Tobias Hoffmann, Clifford Brown, Daniel Hutzschenreuter
- * LAST MODIFIED:		 23.10.23, 11:54
+ * LAST MODIFIED:		 26.09.25, 17:25
  */
-import {User} from "./User.model";
 
-export interface Dcc{
-  id:string;
-  pid:string;
-  xmlBase64:string;
-  isDccValid:boolean;
-  createdAt: number[];
-  status: string;
-  information:string;
-  user?: {
-    id: string;
-    userName: string;
-    role: string;
-  };
+import {Dcc} from "./Dcc.model";
+
+export interface User {
+  id: string;
+  userName: string;
+  email: string;
+  password?: string; // TODO
+  role: string;
+  isActiv: boolean;
+  dccList?: Dcc[];
 }
