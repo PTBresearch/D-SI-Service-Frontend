@@ -7,6 +7,7 @@ import {environment} from "../../environments/environment";
 import {Report} from "../model/report.model";
 
 import {Dcc} from "../model/Dcc.model";
+import {User} from "../model/User.model";
 
 
 @Injectable({
@@ -70,5 +71,7 @@ export class ContributionsService {
   public deleteDcc(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiServerDCCUrl}/d-dcc/delete/${id}`);
   }
-
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiServerDCCUrl}/d-dcc/users`);
+  }
 }

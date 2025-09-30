@@ -22,8 +22,10 @@ import {MatTableModule} from "@angular/material/table";
 import {MatMenuModule} from "@angular/material/menu";
 import { MatIconModule } from '@angular/material/icon';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { ChangePasswordDialogComponent } from './components/change-password-dialog/change-password-dialog.component';
+import {MatFormFieldModule} from "@angular/material/form-field";
 
-
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -36,26 +38,29 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     ErrorComponent,
     SawaggerComponent,
     DsiconverterComponent,
+    ChangePasswordDialogComponent,
 
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        FormsModule,
-        Ng2SearchPipeModule,
-        BrowserModule,
-        FormsModule,
-        BrowserAnimationsModule,
-        MatRadioModule,
-        MatButtonModule,
-        NgbModule,
-        MatTableModule,
-        MatMenuModule,
-        MatIconModule,
-        MatProgressSpinnerModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    FormsModule,
+    Ng2SearchPipeModule,
+    BrowserModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    MatRadioModule,
+    MatButtonModule,
+    NgbModule,
+    MatTableModule,
+    MatMenuModule,
+    MatIconModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    MatFormFieldModule
+  ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
   bootstrap: [AppComponent]
 })

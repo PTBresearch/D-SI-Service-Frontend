@@ -12,16 +12,22 @@
  * CONTACT: 		info@ptb.de
  * DEVELOPMENT:		https://d-si.ptb.de
  * AUTHORS:		Wafa El Jaoua, Tobias Hoffmann, Clifford Brown, Daniel Hutzschenreuter
- * LAST MODIFIED:		 26.09.25, 17:25
+ * LAST MODIFIED:		 29.09.25, 23:59
  */
 
-import {Dcc} from "./Dcc.model";
+import { TestBed } from '@angular/core/testing';
 
-export interface User {
-  // id: string;
-  userName: string;
-  email: string;
-  role: string;
-  active: boolean;
- // dccList?: Dcc[];
-}
+import { AuthServiceService } from './auth-service.service';
+
+describe('AuthServiceService', () => {
+  let service: AuthServiceService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(AuthServiceService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});

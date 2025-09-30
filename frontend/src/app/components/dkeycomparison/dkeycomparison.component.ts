@@ -13,6 +13,9 @@ import {Dcc} from "../../model/Dcc.model";
 import {MatRadioChange} from "@angular/material/radio";
 import {User} from "../../model/User.model";
 import {MatTableDataSource} from "@angular/material/table";
+import {AuthServiceService} from "../../services/auth-service.service";
+import {ChangePasswordDialogComponent} from "../change-password-dialog/change-password-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 
 @Component({
@@ -27,41 +30,33 @@ export class DkeycomparisonComponent implements OnInit {
   contributionFormGroup!: FormGroup;
   readonly DataStateEnum = DataStateEnum;
   reports$?: Observable<AppDataState<Report>>;
-  reportFormGroup?: FormGroup<any>;
+  reportFormGroup?: FormGroup;
   searchText: any;
   property: string = '';
   options: string[] = ['reference', 'excluded'];
   selectedOption: string = '';
   submitted = false;
   //Login
-  isLoggedIn: Boolean = false;
+
   showLogin: Boolean = false;
   loginFormGroup!: FormGroup;
   username = '';
   adminSignedIn = false;
   coordinatorSignedIn = false;
+  isLoggedIn = false;
 
   //Tab-Anzeige
   activeTab = 1; // Startet mit dem ersten Tab
-  //dcc-list
-  // dccArray: string[] = ['dcc1', 'dcc2', 'dcc3'];
-  // displayedColumnsDcc: string[] = ['id', 'valid', 'pid', 'status', 'base64xml', 'actions'];
-  // //Upload
-  // showUploadDcc: Boolean = false;
-  // dccUploadFormGroup!: FormGroup; //Form-Group-Objekt (erzeugt über FormBuilder)
-  // //User-List
-  // userArray: string[] = ['user1', 'user2', 'user3'];
-  // displayedColumnsUsers: string[] = ['username', 'email','role', 'active', 'actions'];
   dccList$: Observable<Dcc[]> | undefined;
   showUploadDcc = false;
   dccUploadFormGroup!: FormGroup;
 
-  userList: User[] = [];
+  users: User[] = [];
+  displayedColumnsUser: string[] = ['userName', 'email', 'role', 'active' ,'actions'];
   dccList = this.contributionsService.getDccList();
-
-  displayedColumnsDcc: string[] = [ 'pid',  'information', 'status','createdAt', 'xmlBase64', 'actions'];
+  displayedColumnsDcc: string[] = [ 'pid',  'information', 'status','createdAt', 'actions'];
   selectedFile: File | null = null;
-  constructor(private contributionsService: ContributionsService, private fb: FormBuilder) {
+  constructor(private contributionsService: ContributionsService, private fb: FormBuilder, private authService:AuthServiceService, private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -78,7 +73,7 @@ export class DkeycomparisonComponent implements OnInit {
     )
 
     this.contributionFormGroup.get('pidDCC')?.valueChanges.subscribe(value => {});
-    // this.loadUsers();
+    this.loadUsers();
     this.getReports();
     this.reportFormGroup = this.fb.group({
       pidReport: ["", Validators.required],
@@ -101,8 +96,18 @@ export class DkeycomparisonComponent implements OnInit {
       status: ['', Validators.required],
       xmlFile: [null, Validators.required]
     });
-  }
 
+    this.isLoggedIn = this.authService.isLoggedIn();
+
+    // Du kannst auch auf Änderungen reagieren, falls AuthService ein Observable bietet:
+    this.authService.currentUser.subscribe(user => {
+      this.isLoggedIn = !!user;
+    });
+  }
+  // onChangePassword() {
+  //   // Hier kannst du z. B. ein Dialog-Fenster für Passwortänderung öffnen
+  //   console.log('Change password clicked');
+  // }
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
 
@@ -157,13 +162,6 @@ export class DkeycomparisonComponent implements OnInit {
     this.showUploadDcc = false;
   }
 
-  // reloadDccList(): void {
-  //   this.dccPidList$ = this.contributionsService.getDccList().pipe(
-  //     map(data => ({ dataState: DataStateEnum.LOADED, data: data })),
-  //     startWith({ dataState: DataStateEnum.LOADING }),
-  //     catchError(err => of({ dataState: DataStateEnum.ERROR, errorMessage: err.message }))
-  //   );
-  // }
   reloadDccList(): void {
     this.dccList$ = this.contributionsService.getAll().pipe(
       tap(dccs => console.log('Neue DCCs geladen:', dccs)),
@@ -296,10 +294,42 @@ export class DkeycomparisonComponent implements OnInit {
   }
 
   onLogin() {
-    this.isLoggedIn = true;
-    this.adminSignedIn = true;
-    this.showLogin = false;
-    this.loginFormGroup.reset();
+    if (this.loginFormGroup.invalid) {
+      console.warn('Form invalid');
+      return;
+    }
+    const credentials = {
+      userName: this.loginFormGroup.value.username,
+      password: this.loginFormGroup.value.password
+    };
+
+    this.authService.login(credentials).subscribe({
+      next: (user) => {
+        console.log('Login success:', user);
+        this.isLoggedIn = true;
+        this.username = user.userName;
+
+        // Rollen prüfen
+        if (user.role === 'ADMIN') {
+          this.adminSignedIn = true;
+        } else if (user.role === 'COORDINATOR') {
+          this.coordinatorSignedIn = true;
+        }
+
+        this.showLogin = false;
+        this.loginFormGroup.reset();
+      },
+      error: (err) => {
+        alert('Login failed: ' + (err.error?.message || 'Invalid credentials'));
+      }
+    });
+  }
+  onLogout() {
+    this.authService.logout();
+    this.isLoggedIn = false;
+    this.adminSignedIn = false;
+    this.coordinatorSignedIn = false;
+    this.username = '';
   }
 
   onCancelLogin() {
@@ -311,25 +341,53 @@ export class DkeycomparisonComponent implements OnInit {
 
     //Call Auth-Service (Login)
   }
+  onChangePassword() {
+    const dialogRef = this.dialog.open(ChangePasswordDialogComponent, {
+      width: '400px'
+    });
 
-  onLogout() {
-    this.isLoggedIn = false;
-    this.adminSignedIn = false;
-    this.username = '';
-    console.log('User logged out');
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.authService.changePassword(result.oldPassword, result.newPassword).subscribe({
+          next: () => alert('Password changed successfully.'),
+          error: err => alert('Failed to change password: ' + err.error?.message || err.message),
+        });
+      }
+    });
+  }
+  loadUsers(): void {
+    this.contributionsService.getAllUsers().subscribe({
+      next: (data) => {
+        this.users = data.map(user => ({
+          userName: user.userName,
+          email: user.email,
+          role: user.role,
+          active: user.activ
+        }));
+      },
+      error: (err) => {
+        console.error('Error loading users:', err);
+      }
+    });
   }
 
-  onChangePassword() {
 
+
+  onEditUser(user: User) {
+    // implement edit logic
+    console.log('Edit user:', user);
+  }
+
+  onDeleteUser(user: User) {
+    // implement delete logic
+    console.log('Delete user:', user);
   }
 
   onEditDCC(dcc: Dcc) {
 
   }
 
-  onDeleteDCC(dcc: Dcc) {
 
-  }
 
   onViewXML(dcc: Dcc) {
 
@@ -340,13 +398,6 @@ export class DkeycomparisonComponent implements OnInit {
 
   }
 
-  onEditUser() {
-
-  }
-
-  onDeleteUser() {
-
-  }
 
 
 }
