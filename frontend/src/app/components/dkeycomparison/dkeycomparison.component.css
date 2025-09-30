@@ -157,6 +157,20 @@
   margin: 0.5rem;
 }
 
+.form-row {
+  display: flex;
+  align-items: center;   /* vertikal zentrieren */
+  gap: 20px;             /* Abstand zwischen Label und Radios */
+  flex-wrap: nowrap;     /* keine Zeilenumbrüche */
+}
+
+.form-row label {
+  display: flex;
+  align-items: center;
+  gap: 5px;              /* Abstand zwischen Radio-Button und Text */
+  flex-wrap: nowrap;     /* keine Zeilenumbrüche */
+}
+
 
 
 /* -------------------------------
@@ -236,6 +250,8 @@ ul.nav.nav-tabs {
 .background {
   background-color: #f8f9fa;
 }
+
+/*    */
 
 
 

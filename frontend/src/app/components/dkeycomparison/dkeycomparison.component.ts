@@ -38,6 +38,8 @@ export class DkeycomparisonComponent implements OnInit {
   username = '';
   adminSignedIn = false;
   coordinatorSignedIn = false;
+  showForgotPassword = false;
+  failedLoginAttempts = 0;
 
   //Tab-Anzeige
   activeTab = 1; // Startet mit dem ersten Tab
@@ -187,10 +189,25 @@ export class DkeycomparisonComponent implements OnInit {
   }
 
   onLogin() {
-    this.isLoggedIn = true;
-    this.adminSignedIn = true;
-    this.showLogin = false;
-    this.loginFormGroup.reset();
+
+    //login-check
+    const { username, password } = this.loginFormGroup.value;
+    const loginSuccess = username === 'admin' && password === '1234';
+    if(loginSuccess) {
+      this.failedLoginAttempts = 0;
+      this.showLogin = false;
+      this.isLoggedIn = true;
+      this.adminSignedIn = true;
+      this.showLogin = false;
+      this.loginFormGroup.reset();
+    } else {
+      this.failedLoginAttempts++;
+    }
+    // Show Pop-Up after 2 failed logon-attempts
+    if (this.failedLoginAttempts >= 2) {
+      this.showLogin = false;
+      this.showForgotPassword = true;
+    }
   }
 
   onCancelLogin() {
@@ -212,6 +229,11 @@ export class DkeycomparisonComponent implements OnInit {
 
   onChangePassword() {
 
+  }
+
+  onForgotPassword() {
+    this.showLogin = false;
+    this.showForgotPassword = true;
   }
 
   onEditDCC(dcc: Dcc) {
@@ -252,6 +274,7 @@ export class DkeycomparisonComponent implements OnInit {
   onDeleteUser() {
 
   }
+
 
 
 }

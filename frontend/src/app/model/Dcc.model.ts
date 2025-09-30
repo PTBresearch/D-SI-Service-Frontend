@@ -17,6 +17,8 @@
 export interface Dcc{
   id:string;
   pid:string;
+  information: string;
   xmlBase64:string;
- isDccValid:boolean;
+  isDccValid:boolean;
+  date: string;
 }
