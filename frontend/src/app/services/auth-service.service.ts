@@ -1,83 +1,122 @@
-/*
- * Copyright (c) 2022-2025  Physikalisch-Technische Bundesanstalt (PTB), all rights reserved.
- * This source code and software is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License as published
- * by the Free Software Foundation, version 3 of the License.
- * The software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- * You should have received a copy of the GNU Lesser General Public License
- * along with this Code.  If not, see http://www.gnu.org/licenses.
- * CONTACT: 		info@ptb.de
- * DEVELOPMENT:		https://d-si.ptb.de
- * AUTHORS:		Wafa El Jaoua, Tobias Hoffmann, Clifford Brown, Daniel Hutzschenreuter
- * LAST MODIFIED:		 29.09.25, 23:59
- */
-
 import { Injectable } from '@angular/core';
-import {environment} from "../../environments/environment";
-import {BehaviorSubject, Observable, tap} from "rxjs";
-import {User} from "../model/User.model";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { User } from '../model/User.model';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from "../../environments/environment";
+import { LoginResponse } from "../model/LoginResponse.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthServiceService {
   private apiServerDCCUrl = environment.apiDCCUrl;
+
   private currentUserSubject = new BehaviorSubject<User | null>(this.getStoredUser());
-  constructor(private http: HttpClient) { }
+  public currentUser$ = this.currentUserSubject.asObservable();
 
+  private userRoleSubject = new BehaviorSubject<string | null>(this.getStoredUser()?.role ?? null);
+  public userRole$ = this.userRoleSubject.asObservable();
 
-  login(credentials: { userName: string; password: string }): Observable<any> {
-    return this.http.post<User>(`${this.apiServerDCCUrl}/d-dcc/login`, credentials, {
-      context: undefined,
-      observe: "body",
-      params: undefined,
-      reportProgress: false,
-      withCredentials: false,
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-    });
+  private credentials: { userName: string; password: string } | null = null;
+
+  constructor(private http: HttpClient) {}
+
+  login(credentials: { userName: string; password: string }): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(
+      `${this.apiServerDCCUrl}/d-dcc/login`,
+      credentials,
+      {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+      }
+    ).pipe(
+      tap(response => {
+        // Speichern
+        sessionStorage.setItem('user', JSON.stringify(response));
+        sessionStorage.setItem('credentials', JSON.stringify(credentials));
+
+        // Interner State setzen
+        const user = response as unknown as User;
+        this.currentUserSubject.next(user);
+        this.userRoleSubject.next(user.role);
+        this.credentials = credentials;
+      })
+    );
   }
 
-  logout() {
-    localStorage.removeItem('username');
+  logout(): void {
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('credentials');
     this.currentUserSubject.next(null);
+    this.userRoleSubject.next(null);
+    this.credentials = null;
   }
 
-  get currentUser(): Observable<User | null> {
-    return this.currentUserSubject.asObservable();
-  }
-
+  // Aktuellen Benutzer als Snapshot holen
   getCurrentUserSnapshot(): User | null {
     return this.currentUserSubject.value;
   }
 
-
-  getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
+  // Benutzername aus Credentials holen
+  getCurrentUserName(): string | null {
+    return this.getCredentials()?.userName || null;
   }
 
-  isLoggedIn(): boolean {
-    return this.getCurrentUser() !== null;
-  }
-
-  isAdmin(): boolean {
-    const user = this.getCurrentUser();
-    return user?.role === 'ADMIN';
-  }
-
-  isCoordinator(): boolean {
-    const user = this.getCurrentUser();
-    return user?.role === 'COORDINATOR';
-  }
-
-  private getStoredUser(): User | null {
-    const userJson = localStorage.getItem('user');
+  // Aus gespeicherten Userdaten lesen
+  getStoredUser(): User | null {
+    const userJson = sessionStorage.getItem('user');
     return userJson ? JSON.parse(userJson) : null;
   }
 
+  getCredentials(): { userName: string; password: string } | null {
+    const stored = sessionStorage.getItem('credentials');
+    return stored ? JSON.parse(stored) : null;
+  }
+
+  // Rolle abrufen
+  getUserRole(): string | null {
+    return this.userRoleSubject.value;
+  }
+
+  // Rolle setzen (z. B. manuell nach Rollenwechsel)
+  setUserRole(role: string): void {
+    const user = this.getStoredUser();
+    if (user) {
+      user.role = role;
+      sessionStorage.setItem('user', JSON.stringify(user));
+      this.currentUserSubject.next(user);
+      this.userRoleSubject.next(role);
+    }
+  }
+
+  isAdmin(): boolean {
+    return this.getUserRole() === 'ADMIN';
+  }
+
+  isCoordinator(): boolean {
+    return this.getUserRole() === 'COORDINATOR';
+  }
+
+  isPublic(): boolean {
+    return this.getUserRole() === null;
+  }
+
+  isLoggedIn(): boolean {
+    return this.getStoredUser() !== null;
+  }
+
+  // Session aus sessionStorage wiederherstellen
+  restoreSession(): void {
+    const user = this.getStoredUser();
+    const credentials = this.getCredentials();
+
+    if (user && credentials) {
+      this.currentUserSubject.next(user);
+      this.userRoleSubject.next(user.role);
+      this.credentials = credentials;
+    }
+  }
+
+  // Passwort ändern
   changePassword(oldPassword: string, newPassword: string): Observable<any> {
     return this.http.put(`${this.apiServerDCCUrl}/d-dcc/change-password`, {
       oldPassword,

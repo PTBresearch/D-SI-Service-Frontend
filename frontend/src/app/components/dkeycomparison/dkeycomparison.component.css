@@ -237,5 +237,37 @@ ul.nav.nav-tabs {
   background-color: #f8f9fa;
 }
 
+.custom-blue-icon {
+  color: #009cd1;
+}
 
+.icon-button mat-icon {
+  color: #009cd1;
+  font-size: 24px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
 
+/* Hover-Effekt für alle Icons */
+.icon-button:hover mat-icon {
+  color: #007bb5;        /* dunkleres Blau */
+  transform: scale(1.2); /* leicht vergrößert */
+  cursor: pointer;
+}
+
+/* Delete-Icon extra hervorheben */
+.delete-button mat-icon {
+  color: #d32f2f;
+  font-size: 28px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.delete-button:hover mat-icon {
+  color: #b71c1c;        /* dunkleres Rot */
+  transform: scale(1.3);
+}
+.text-success {
+  color: #4caf50;
+}
+.text-danger {
+  color: #f44336;
+}

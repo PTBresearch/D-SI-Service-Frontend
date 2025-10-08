@@ -2,12 +2,12 @@
   <!--public panel -->
 
   <!-- Login-Button -->
-    <div class="btn-login">
-      <button mat-icon-button [matMenuTriggerFor]="userMenu"
-              class="custom-icon-btn">
-        <mat-icon>{{ isLoggedIn ? 'logout' : 'login' }}</mat-icon>
-      </button>
-    </div>
+  <div class="btn-login">
+    <button mat-icon-button [matMenuTriggerFor]="userMenu"
+            class="custom-icon-btn">
+      <mat-icon>{{ isLoggedIn ? 'logout' : 'login' }}</mat-icon>
+    </button>
+  </div>
   <!--Button-Menu -->
   <mat-menu #userMenu="matMenu">
     <button mat-menu-item *ngIf="!isLoggedIn" (click)="showLogin = true">
@@ -33,7 +33,7 @@
       <form class="col card p-3 mt-5 mb-5" [formGroup]="contributionFormGroup" (ngSubmit)="addContribution()">
         <div class="form-group mb-2">
           <legend>Contribution:</legend>
-          <label  class="form-label"  for="participantName"> Participant Name: </label>
+          <label class="form-label" for="participantName"> Participant Name: </label>
           <input id="participantName" formControlName="participantName" placeholder="Enter Participant Name" type="text"
                  class="form-control"/>
           <small
@@ -42,18 +42,23 @@
         </div>
 
         <div class="form-group mb-2" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">
-          <label class="form-label" for="pidDCC">PID DCC:</label>
-          <input id="pidDCC" formControlName="pidDCC" class="form-control" type="text"
-                 placeholder="Search or enter PID DCC" list="dccList" name="search" >
+          <div *ngSwitchCase="DataStateEnum.LOADING">Loading...</div>
+          <div *ngSwitchCase="DataStateEnum.ERROR" class="text-danger">
+            {{ result.errorMessage }}
+          </div>
+          <div *ngSwitchCase="DataStateEnum.LOADED">
+            <label class="form-label" for="pidDCC">PID DCC:</label>
+            <input id="pidDCC" formControlName="pidDCC" class="form-control" type="text"
+                   placeholder="Search or enter PID DCC" list="dccList" name="search">
 
-          <datalist id="dccList">
-            <option *ngFor="let dccPid of result.data">{{dccPid}}</option>
-          </datalist>
-          <small
-            *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].touched "
-            class="text-danger">PID DCC is required</small>
+            <datalist id="dccList">
+              <option *ngFor="let dccPid of result.data " [value]="dccPid">{{dccPid}}</option>
+            </datalist>
+            <small
+              *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].touched "
+              class="text-danger">PID DCC is required</small>
+          </div>
         </div>
-
         <mat-radio-group formControlName="selectedOption" (change)="selectedProperty($event)">
           <mat-radio-button *ngFor="let option of options" [value]="option" color="primary">
             {{ option }}
@@ -107,17 +112,19 @@
         </div>
       </ng-container>
     </ng-container>
-    <div class="col text-center" >
+    <div class="col text-center">
       <div *ngIf="reportFormGroup">
         <form name="ReportForm" [formGroup]="reportFormGroup" class="col card p-3 mb-5 background"
               (ngSubmit)="addReport()">
-          <legend class="text-md-start" >Report:</legend>
+          <legend class="text-md-start">Report:</legend>
           <div class="row-inline">
             <div class="form-group-inline">
               <label for="pidReport"><b>PID Report:</b></label>
-              <input type="text" id="pidReport" formControlName="pidReport" placeholder="CCM-K1" class="input-field me-2">
-              <small *ngIf="reportFormGroup.controls['pidReport'].errors && reportFormGroup.controls['pidReport'].touched"
-                     class="text-danger report">PID report is required</small>
+              <input type="text" id="pidReport" formControlName="pidReport" placeholder="CCM-K1"
+                     class="input-field me-2">
+              <small
+                *ngIf="reportFormGroup.controls['pidReport'].errors && reportFormGroup.controls['pidReport'].touched"
+                class="text-danger report">PID report is required</small>
             </div>
             <div class="form-group-inline">
               <select id="smartStandardEvaluationMethod" class="form-select-sm  border border-secondary rounded-0 "
@@ -166,17 +173,22 @@
           <div>
             <label for="username"><b>Username:</b></label>
             <input id="username" type="text" formControlName="username" placeholder="enter username">
-            <div class="error" *ngIf="loginFormGroup.controls['username'].invalid && loginFormGroup.controls['username'].touched">
-              Username is required.</div>
+            <div class="error"
+                 *ngIf="loginFormGroup.controls['username'].invalid && loginFormGroup.controls['username'].touched">
+              Username is required.
+            </div>
           </div>
           <div class="mt-2">
             <label for="password"><b>Password:</b></label>
             <input id="password" type="password" formControlName="password" placeholder="enter password">
-            <div class="error" *ngIf="loginFormGroup.controls['password'].invalid && loginFormGroup.controls['password'].touched">
-              Password is required.</div>
+            <div class="error"
+                 *ngIf="loginFormGroup.controls['password'].invalid && loginFormGroup.controls['password'].touched">
+              Password is required.
+            </div>
           </div>
           <div class="button-row">
-            <button type="submit" class="btn btn-primary w-auto sub" [disabled]="loginFormGroup.invalid">Sign in</button>
+            <button type="submit" class="btn btn-primary w-auto sub" [disabled]="loginFormGroup.invalid">Sign in
+            </button>
             <button type="button" class="btn btn-primary w-auto sub" (click)="onCancelLogin()">Cancel</button>
           </div>
         </form>
@@ -186,7 +198,7 @@
     <ng-container *ngTemplateOutlet="contributionForm"></ng-container>
   </div>
 
-<!--  private panel -->
+  <!--  private panel -->
   <div *ngIf="adminSignedIn || coordinatorSignedIn">
     <h2 class="header-with-logout">
       <span *ngIf="adminSignedIn">Admin-Panel ({{username}})</span>
@@ -215,13 +227,12 @@
               <section class="dcc-list">
                 <div>
                   <h4 class="upload-title">DCC-List</h4>
-                  <button class="btn btn-primary mt-1 w-auto sub" (click)="showUploadDcc = true">
-                    &#8593; Upload DCC
+                  <button class="btn btn-primary mt-1 w-auto sub" (click)="showUploadDcc = true">Upload DCC & Sign
                   </button>
 
                   <ng-container *ngIf="dccList$ | async as dccs">
 
-                      <table mat-table [dataSource]="dccs" class="mat-elevation-z2 mt-3">
+                    <table mat-table [dataSource]="dccs" class="mat-elevation-z2 mt-3">
 
 
                       <!-- PID -->
@@ -229,10 +240,10 @@
                         <th mat-header-cell *matHeaderCellDef>PID</th>
                         <td mat-cell *matCellDef="let dcc">{{ dcc.pid }}</td>
                       </ng-container>
-                        <ng-container matColumnDef="information">
-                          <th mat-header-cell *matHeaderCellDef>Information</th>
-                          <td mat-cell *matCellDef="let dcc">{{ dcc.information}}</td>
-                        </ng-container>
+                      <ng-container matColumnDef="information">
+                        <th mat-header-cell *matHeaderCellDef>Information</th>
+                        <td mat-cell *matCellDef="let dcc">{{ dcc.information}}</td>
+                      </ng-container>
                       <!-- Status -->
                       <ng-container matColumnDef="status">
                         <th mat-header-cell *matHeaderCellDef>Status</th>
@@ -246,20 +257,29 @@
                       </ng-container>
 
 
-
                       <!-- Actions -->
                       <ng-container matColumnDef="actions">
                         <th mat-header-cell *matHeaderCellDef>Actions</th>
                         <td mat-cell *matCellDef="let dcc">
-                          <button mat-icon-button color="primary" (click)="onEditDcc(dcc)" matTooltip="Edit DCC">
-                            <span class="material-icons">edit</span>
+                          <!-- Validate -->
+                          <button mat-icon-button (click)="onVerifyTsr(dcc)" matTooltip="Verify Timestamp request"
+                                  class="icon-button">
+                            <img src="assets/img/validate.png" alt="Validate Icon" width="24" height="24"
+                                 style="border-radius: 4px;">
                           </button>
-                          <button mat-icon-button color="warn" (click)="onDeleteDcc(dcc)" matTooltip="Delete DCC">
-                            <span class="material-icons">delete</span>
+
+                          <!-- View XML -->
+                          <button mat-icon-button (click)="onViewXml(dcc)" matTooltip="View XML" class="icon-button">
+                            <img src="assets/img/xml1.png" alt="View XmlIcon" width="26" height="24"
+                                 style="border-radius: 4px;">
                           </button>
-                          <button mat-icon-button color="accent" (click)="onViewXml(dcc)" matTooltip="View XML">
-                            <span class="material-icons">description</span>
+
+                          <!-- Delete (hervorgehoben) -->
+                          <button mat-icon-button (click)="confirmDelete(dcc)" matTooltip="Delete DCC"
+                                  class="icon-button delete-button">
+                            <mat-icon>delete</mat-icon>
                           </button>
+
                         </td>
                       </ng-container>
 
@@ -267,6 +287,7 @@
                       <tr mat-header-row *matHeaderRowDef="displayedColumnsDcc"></tr>
                       <tr mat-row *matRowDef="let row; columns: displayedColumnsDcc;"></tr>
                     </table>
+
                   </ng-container>
 
                 </div>
@@ -279,16 +300,20 @@
 
                       <div class="mt-4">
                         <label><b>PID</b></label>
-                        <input formControlName="pid" class="input-field" placeholder="Enter PID" />
-                        <div *ngIf="dccUploadFormGroup.controls['pid'].invalid && dccUploadFormGroup.controls['pid'].touched" class="error">
+                        <input formControlName="pid" class="input-field" placeholder="Enter PID"/>
+                        <div
+                          *ngIf="dccUploadFormGroup.controls['pid'].invalid && dccUploadFormGroup.controls['pid'].touched"
+                          class="error">
                           PID is required.
                         </div>
                       </div>
 
                       <div class="mt-4">
                         <label><b>Information</b></label>
-                        <input formControlName="information" class="input-field" placeholder="Enter Information" />
-                        <div *ngIf="dccUploadFormGroup.controls['information'].invalid && dccUploadFormGroup.controls['information'].touched" class="error">
+                        <input formControlName="information" class="input-field" placeholder="Enter Information"/>
+                        <div
+                          *ngIf="dccUploadFormGroup.controls['information'].invalid && dccUploadFormGroup.controls['information'].touched"
+                          class="error">
                           Information is required.
                         </div>
                       </div>
@@ -300,21 +325,26 @@
                           <option value="public">public</option>
                           <option value="private">private</option>
                         </select>
-                        <div *ngIf="dccUploadFormGroup.controls['status'].invalid && dccUploadFormGroup.controls['status'].touched" class="error">
+                        <div
+                          *ngIf="dccUploadFormGroup.controls['status'].invalid && dccUploadFormGroup.controls['status'].touched"
+                          class="error">
                           Status is required.
                         </div>
                       </div>
 
                       <div class="mt-4">
                         <label><b>XML File:</b></label>
-                        <input type="file" (change)="onFileSelected($event)" formControlName="xmlFile" class="input-field" />
-                        <div *ngIf="dccUploadFormGroup.controls['xmlFile'].invalid  && dccUploadFormGroup.controls['xmlFile'].touched|| (submitted && dccUploadFormGroup.controls['xmlFile'].invalid)" class="error">
+                        <input type="file" (change)="onFileSelected($event)" class="input-field"/>
+                        <div
+                          *ngIf="dccUploadFormGroup.controls['xmlFile'].invalid  && dccUploadFormGroup.controls['xmlFile'].touched|| (submitted && dccUploadFormGroup.controls['xmlFile'].invalid)"
+                          class="error">
                           A file is required.
                         </div>
                       </div>
 
                       <div class="button-row mt-4">
-                        <button type="submit" class="btn btn-primary w-auto sub" [disabled]="dccUploadFormGroup.invalid">
+                        <button type="submit" class="btn btn-primary w-auto sub"
+                                [disabled]="dccUploadFormGroup.invalid">
                           Upload & Sign
                         </button>
                         <button type="button" class="btn btn-secondary w-auto sub" (click)="onCancelUploadDcc()">
@@ -337,7 +367,11 @@
               <section class="user-list">
                 <h4 class="upload-title">User-List</h4>
                 <button (click)="onAddUser()" class="btn btn-primary mt-1 w-auto sub">+ Add User</button>
-                <table mat-table [dataSource]="users" class="mat-elevation-z2 mt-3">
+                <p *ngIf="!users || users.length === 0">user not find.</p>
+
+                <!--                &lt;!&ndash; Debug-Ausgabe der users-Daten &ndash;&gt;-->
+                <!--                <pre>{{ users | json }}</pre>-->
+                <table *ngIf="users && users.length > 0" mat-table [dataSource]="users" class="mat-elevation-z2 mt-3">
                   <!-- Username Column -->
                   <ng-container matColumnDef="userName">
                     <th mat-header-cell *matHeaderCellDef>User</th>
@@ -381,6 +415,7 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumnsUser"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumnsUser;"></tr>
                 </table>
+
               </section>
             </div>
           </ng-template>
@@ -391,14 +426,3 @@
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-

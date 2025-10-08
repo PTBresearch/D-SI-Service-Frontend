@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Verifikationsergebnis</h2>
+
+<div mat-dialog-content>
+  <p><strong>Status:</strong>
+    <span [ngClass]="{'text-success': data.granted, 'text-danger': !data.granted}">
+      {{ data.granted ? 'Valid' : 'Invalid' }}
+    </span>
+  </p>
+  <p><strong>Status-Beschreibung:</strong> {{ data.statusDescription }}</p>
+  <p><strong>Timestamp:</strong> {{ data.timestamp | date: 'short' }}</p>
+  <p><strong>Serialnummer:</strong> {{ data.serialNumber }}</p>
+  <p><strong>Policy:</strong> {{ data.policy }}</p>
+  <p><strong>Hash-Algorithmus:</strong> {{ data.hashAlgorithm }}</p>
+  <p><strong>Message Imprint:</strong> {{ data.messageImprint }}</p>
+  <p><strong>TSA:</strong> {{ data.tsa }}</p>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Schließen</button>
+</div>

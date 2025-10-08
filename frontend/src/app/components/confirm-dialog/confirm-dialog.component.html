@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>Bestätigung</h2>
+<mat-dialog-content>
+  <p>{{ message }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Abbrechen</button>
+  <button mat-button color="warn" (click)="onConfirm()">Löschen</button>
+</mat-dialog-actions>
+

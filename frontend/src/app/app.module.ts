@@ -6,7 +6,7 @@ import { HomeComponent } from './components/home/home.component';
 import { ConstantComponent } from './components/constant/constant.component';
 import { DkeycomparisonComponent } from './components/dkeycomparison/dkeycomparison.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
 import {Ng2SearchPipeModule} from "ng2-search-filter";
@@ -26,6 +26,10 @@ import { ChangePasswordDialogComponent } from './components/change-password-dial
 import {MatFormFieldModule} from "@angular/material/form-field";
 
 import { MatDialogModule } from '@angular/material/dialog';
+import {BasicAuthInterceptor} from "./core.interceptors/basic-auth.interceptor";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import { TimestampVerificationDialogComponent } from './components/timestamp-verification-dialog/timestamp-verification-dialog.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -39,29 +43,39 @@ import { MatDialogModule } from '@angular/material/dialog';
     SawaggerComponent,
     DsiconverterComponent,
     ChangePasswordDialogComponent,
+    TimestampVerificationDialogComponent,
+    ConfirmDialogComponent,
 
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    FormsModule,
-    Ng2SearchPipeModule,
-    BrowserModule,
-    FormsModule,
-    BrowserAnimationsModule,
-    MatRadioModule,
-    MatButtonModule,
-    NgbModule,
-    MatTableModule,
-    MatMenuModule,
-    MatIconModule,
-    MatDialogModule,
-    MatProgressSpinnerModule,
-    MatFormFieldModule
-  ],
-  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        FormsModule,
+        Ng2SearchPipeModule,
+        BrowserModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        MatRadioModule,
+        MatButtonModule,
+        NgbModule,
+        MatTableModule,
+        MatMenuModule,
+        MatIconModule,
+        MatDialogModule,
+        MatProgressSpinnerModule,
+        MatFormFieldModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatProgressSpinnerModule,
+        MatTooltipModule
+    ],
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: BasicAuthInterceptor,
+    multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

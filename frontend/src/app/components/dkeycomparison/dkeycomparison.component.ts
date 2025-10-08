@@ -6,16 +6,20 @@ import {
   FormGroup,
   Validators
 } from "@angular/forms";
-import {catchError, finalize, map, Observable, of, startWith, tap} from "rxjs";
+import {BehaviorSubject, catchError, finalize, map, Observable, of, startWith, tap} from "rxjs";
 import {AppDataState, DataStateEnum} from "../../state/participant.state";
 import {Report} from "../../model/report.model";
 import {Dcc} from "../../model/Dcc.model";
 import {MatRadioChange} from "@angular/material/radio";
 import {User} from "../../model/User.model";
-import {MatTableDataSource} from "@angular/material/table";
 import {AuthServiceService} from "../../services/auth-service.service";
 import {ChangePasswordDialogComponent} from "../change-password-dialog/change-password-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+import {TimestampVerificationResult} from "../../model/timestampVerificationResult.model";
+import {
+  TimestampVerificationDialogComponent
+} from "../timestamp-verification-dialog/timestamp-verification-dialog.component";
+import {ConfirmDialogComponent} from "../confirm-dialog/confirm-dialog.component";
 
 
 @Component({
@@ -25,70 +29,121 @@ import {MatDialog} from "@angular/material/dialog";
 })
 export class DkeycomparisonComponent implements OnInit {
   title = 'dsi-Services';
-  contributions$?: Observable<AppDataState<Contribution[]>>;
-  dccPidList$?: Observable<AppDataState<Dcc[]>>;
-  contributionFormGroup!: FormGroup;
-  readonly DataStateEnum = DataStateEnum;
-  reports$?: Observable<AppDataState<Report>>;
-  reportFormGroup?: FormGroup;
-  searchText: any;
-  property: string = '';
-  options: string[] = ['reference', 'excluded'];
-  selectedOption: string = '';
-  submitted = false;
-  //Login
 
-  showLogin: Boolean = false;
-  loginFormGroup!: FormGroup;
-  username = '';
+  // Auth & User
+  isLoggedIn = false;
+  username: string | null = '';
   adminSignedIn = false;
   coordinatorSignedIn = false;
-  isLoggedIn = false;
+  showLogin: boolean = false;
 
-  //Tab-Anzeige
-  activeTab = 1; // Startet mit dem ersten Tab
-  dccList$: Observable<Dcc[]> | undefined;
-  showUploadDcc = false;
+  // FormGroups
+  contributionFormGroup!: FormGroup;
+  reportFormGroup?: FormGroup;
+  loginFormGroup!: FormGroup;
   dccUploadFormGroup!: FormGroup;
 
-  users: User[] = [];
-  displayedColumnsUser: string[] = ['userName', 'email', 'role', 'active' ,'actions'];
-  dccList = this.contributionsService.getDccList();
-  displayedColumnsDcc: string[] = [ 'pid',  'information', 'status','createdAt', 'actions'];
+  // Contribution & Report
+  contributions$?: Observable<AppDataState<Contribution[]>>;
+  reports$?: Observable<AppDataState<Report>>;
+  searchText: any;
+
+  // DCC
+  private dccListSubject = new BehaviorSubject<Dcc[]>([]);
+  public dccList$ = this.dccListSubject.asObservable();
+  dccList = this.contributionsService.getPublicCoordinatorDccList();
+  dccPidList$?: Observable<AppDataState<string[]>>;
+  showUploadDcc = false;
   selectedFile: File | null = null;
-  constructor(private contributionsService: ContributionsService, private fb: FormBuilder, private authService:AuthServiceService, private dialog: MatDialog) {
+  displayedColumnsDcc: string[] = ['pid', 'information', 'status', 'createdAt', 'actions'];
+
+ // verification
+  verificationResult: TimestampVerificationResult | null = null;
+  verificationError: string | null = null;
+  isLoadingVerification = false;
+
+  // Users
+  users: any[] = [];
+  displayedColumnsUser: string[] = ['userName', 'email', 'role', 'active', 'actions'];
+
+  // UI
+  activeTab = 1;
+  submitted = false;
+
+  // Auswahloptionen
+  options: string[] = ['reference', 'excluded'];
+  selectedOption: string = '';
+  property: string = '';
+  readonly DataStateEnum = DataStateEnum;
+
+  constructor(
+    private contributionsService: ContributionsService,
+    private fb: FormBuilder,
+    private authService: AuthServiceService,
+    private dialog: MatDialog
+  ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.authService.restoreSession();
+
+    this.initForms();
     this.getContributions();
-    this.getDccList();
-    this.getPublicDccList();
+    this.getReports();
+    this.clearContributionsList();
+
+    const role = this.authService.getUserRole();
+    if (role === 'ADMIN') this.adminSignedIn = true;
+    if (role === 'COORDINATOR') this.coordinatorSignedIn = true;
+
+    // DCC-Liste basierend auf Rolle laden
+    if (!this.adminSignedIn && !this.coordinatorSignedIn) {
+      this.loadPublicDccListOnly();
+    }
+    this.loadDccListByRole();
+    this.reloadDccList();
+
+    // Benutzer laden (nur Admin)
+    if (this.authService.isAdmin()) {
+      this.loadUsers();
+    }
+
+    // Rolle ändern → DCCs und User aktualisieren
+    this.authService.userRole$.subscribe(role => {
+      this.reloadDccList();
+      if (role === 'ADMIN') this.loadUsers();
+    });
+
+    // Loginstatus überwachen
+    this.authService.currentUser$.subscribe(user => {
+      this.isLoggedIn = !!user;
+    });
+
+    this.username = this.authService.getCurrentUserName();
+
+    // Reagiere auf PID-DCC-Änderungen
+    this.contributionFormGroup.get('pidDCC')?.valueChanges.subscribe();
+  }
+
+  private initForms(): void {
     this.contributionFormGroup = this.fb.group({
       participantName: ["", Validators.required],
       pidDCC: ["", Validators.required],
       pilotParticipantName: ["select pilot ParticipantName"],
       selectedOption: new FormControl(''),
       property: new FormControl('')
-      }
-    )
+    });
 
-    this.contributionFormGroup.get('pidDCC')?.valueChanges.subscribe(value => {});
-    this.loadUsers();
-    this.getReports();
     this.reportFormGroup = this.fb.group({
       pidReport: ["", Validators.required],
       smartStandardEvaluationMethod: ["", Validators.required],
-      pilotParticipantName:["", Validators.required],
-    })
-    this.clearContributionsList();
-
-    //Login-FormGroup
-    this.loginFormGroup = this.fb.group({
-      username: ["", Validators.required],
-      password: ["", Validators.required]
+      pilotParticipantName: ["", Validators.required]
     });
 
-    this.reloadDccList();
+    this.loginFormGroup = this.fb.group({
+      username: ["", Validators.required],
+      password: ['', [Validators.required, Validators.minLength(12)]]
+    });
 
     this.dccUploadFormGroup = this.fb.group({
       pid: ['', Validators.required],
@@ -96,208 +151,14 @@ export class DkeycomparisonComponent implements OnInit {
       status: ['', Validators.required],
       xmlFile: [null, Validators.required]
     });
-
-    this.isLoggedIn = this.authService.isLoggedIn();
-
-    // Du kannst auch auf Änderungen reagieren, falls AuthService ein Observable bietet:
-    this.authService.currentUser.subscribe(user => {
-      this.isLoggedIn = !!user;
-    });
-  }
-  // onChangePassword() {
-  //   // Hier kannst du z. B. ein Dialog-Fenster für Passwortänderung öffnen
-  //   console.log('Change password clicked');
-  // }
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      this.dccUploadFormGroup.patchValue({
-        xmlFile: this.selectedFile
-      });
-      this.dccUploadFormGroup.get('xmlFile')?.markAsTouched();
-      this.dccUploadFormGroup.get('xmlFile')?.updateValueAndValidity();
-    }
-  }
-  onUploadDcc(): void {
-    this.submitted = true;
-    if (this.dccUploadFormGroup.invalid || !this.selectedFile) {
-      return;
-    }
-    const formData = new FormData();
-    formData.append('pid', this.dccUploadFormGroup.value.pid);
-    formData.append('status', this.dccUploadFormGroup.value.status);
-    formData.append('information', this.dccUploadFormGroup.value.information);
-    formData.append('file', this.selectedFile);
-
-
-    this.contributionsService.uploadDcc(formData)
-      .pipe(finalize(() => {
-        this.reloadDccList();
-      }))
-      .subscribe({
-        next: () => this.closeUploadPopup(),
-        error: (err) => {
-          if (err.status === 202) {
-            this.closeUploadPopup();
-          } else {
-            console.error('Upload failed', err);
-
-          }
-        }
-      });
   }
 
-  closeUploadPopup() {
-    this.showUploadDcc = false;
-    this.dccUploadFormGroup.reset();
-    this.selectedFile = null;
-
-  }
-
-  onCancelUploadDcc(): void {
-    this.dccUploadFormGroup.reset();
-   this.selectedFile = null;
-    this.showUploadDcc = false;
-  }
-
-  reloadDccList(): void {
-    this.dccList$ = this.contributionsService.getAll().pipe(
-      tap(dccs => console.log('Neue DCCs geladen:', dccs)),
-      catchError(() => of([]))
-    );
-  }
-
-  onEditDcc(dcc: Dcc): void {
-    console.log('Edit clicked for:', dcc);
-  }
-
-  onDeleteDcc(dcc: Dcc): void {
-    console.log('Delete clicked for:', dcc);
-  }
-
-  onViewXml(dcc: Dcc): void {
-    console.log('View XML clicked for:', dcc);
-  }
-
-  // onDeleteDcc(dcc: Dcc): void {
-  //   this.contributionsService.deleteDcc(dcc.id).subscribe(() => {
-  //     this.loadDccs();
-  //   });
-  // }
-  //
-
-  //
-  // onViewXml(dcc: Dcc): void {
-  //   const xmlWindow = window.open('', '_blank');
-  //   xmlWindow?.document.write(`<pre>${atob(dcc.xmlBase64)}</pre>`);
-  // }
-
-  public getContributions(): void {
-       this.contributions$ = this.contributionsService.getContributions().pipe(
-      map(data => ({dataState: DataStateEnum.LOADED, data: data})),
-      startWith({dataState: DataStateEnum.LOADING}),
-      catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
-    );
-  }
-
-  public onDeleteContribution(c: Contribution) {
-    if (confirm("Are you sure to delete " + c.participantName))
-      this.contributionsService.onDeleteContribution(c.id).subscribe(data => {
-        this.getContributions();
-      });
-  }
-
-  public clearContributionsList() {
-    this.contributionsService.onDeleteAll().subscribe(data => {
-
-    });
-  }
-
-
-
-  public addContribution() {
-    this.contributionsService.addContribution(this.contributionFormGroup?.value)
-      .subscribe(data => {
-        this.getContributions()
-      });
-    this.contributionFormGroup?.reset();
-    this.contributionFormGroup?.get('selectedOption')?.setValue(null);
-
-    console.log('selectedOption value after reset:', this.contributionFormGroup?.get('selectedOption')?.value);
-  }
-
-  public getReports(): void {
-
-    this.reports$ = this.contributionsService.getReports().pipe(
-      map(data => ({dataState: DataStateEnum.LOADED, data: data})),
-      startWith({dataState: DataStateEnum.LOADING}),
-      catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
-    );
-  }
-
-  public addReport() {
-    this.contributionsService.addReport(this.reportFormGroup?.value)
-      .subscribe(data => {
-        this.getReports()
-        // alert("added successfully")
-      });
-    this.reportFormGroup?.reset({smartStandardEvaluationMethod: ""});
-  }
-
-  public onDownload(): any {
-    this.addReport();
-    this.contributionsService.getPidReport();
-    this.contributionsService.download().subscribe(
-      response => {
-        let fileName = (response.headers.get('Content-Disposition').split(';')[1].split('filename')[1].split('=')[1].trim());
-        let blob: Blob = response.body as Blob;
-        let a = document.createElement('a');
-        console.log("file: ", fileName)
-        a.download = fileName ;
-        a.href = window.URL.createObjectURL(blob);
-        a.click();
-      }
-    );
-    this.contributionsService.getPidReport();
-  }
-
-  public getDccList(): void {
-    this.dccList$ = this.contributionsService.getDccList().pipe(
-      map(data => data),
-      catchError(err => {
-        console.error('Fehler beim Laden der DCCs:', err);
-        return of([]);
-      })
-    );
-  }
-  public getPublicDccList(): void {
-    this.dccPidList$ = this.contributionsService.getDccList().pipe(
-      map(data => ({dataState: DataStateEnum.LOADED, data: data})),
-      startWith({dataState: DataStateEnum.LOADING}),
-      catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
-    );
-  }
-  selectedEvalMethod(e: any) {
-    console.log("smartStandardEvaluationMethod: ", e.target.value)
-  }
-  selectedPilotParticipantName(e: any) {
-    console.log("PilotParticipantName: ", e.target.value)
-  }
-  selectedProperty(event: MatRadioChange) {
-    const value = event.value;
-    // @ts-ignore
-    this.contributionFormGroup.get('selectedOption')?.setValue(value);
-    // @ts-ignore
-    this.contributionFormGroup.get('property')?.setValue(value);
-  }
-
-  onLogin() {
+  onLogin(): void {
     if (this.loginFormGroup.invalid) {
       console.warn('Form invalid');
       return;
     }
+
     const credentials = {
       userName: this.loginFormGroup.value.username,
       password: this.loginFormGroup.value.password
@@ -305,17 +166,12 @@ export class DkeycomparisonComponent implements OnInit {
 
     this.authService.login(credentials).subscribe({
       next: (user) => {
-        console.log('Login success:', user);
         this.isLoggedIn = true;
         this.username = user.userName;
+        this.adminSignedIn = user.role === 'ADMIN';
+        this.coordinatorSignedIn = user.role === 'COORDINATOR';
 
-        // Rollen prüfen
-        if (user.role === 'ADMIN') {
-          this.adminSignedIn = true;
-        } else if (user.role === 'COORDINATOR') {
-          this.coordinatorSignedIn = true;
-        }
-
+        this.loadDccListByRole();
         this.showLogin = false;
         this.loginFormGroup.reset();
       },
@@ -324,27 +180,25 @@ export class DkeycomparisonComponent implements OnInit {
       }
     });
   }
-  onLogout() {
+
+  onLogout(): void {
     this.authService.logout();
     this.isLoggedIn = false;
     this.adminSignedIn = false;
     this.coordinatorSignedIn = false;
     this.username = '';
+    this.loadDccListByRole();
+    this.contributionFormGroup.reset();
+    this.reportFormGroup?.reset();
   }
 
-  onCancelLogin() {
+  onCancelLogin(): void {
     this.showLogin = false;
     this.loginFormGroup.reset();
-
-    const username = this.loginFormGroup.value.username;
-    const password = this.loginFormGroup.value.password;
-
-    //Call Auth-Service (Login)
   }
-  onChangePassword() {
-    const dialogRef = this.dialog.open(ChangePasswordDialogComponent, {
-      width: '400px'
-    });
+
+  onChangePassword(): void {
+    const dialogRef = this.dialog.open(ChangePasswordDialogComponent, {width: '400px'});
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -355,49 +209,353 @@ export class DkeycomparisonComponent implements OnInit {
       }
     });
   }
-  loadUsers(): void {
-    this.contributionsService.getAllUsers().subscribe({
-      next: (data) => {
-        this.users = data.map(user => ({
-          userName: user.userName,
-          email: user.email,
-          role: user.role,
-          active: user.activ
-        }));
+
+// Contributions laden (Observable mit State)
+  public getContributions(): void {
+    this.contributions$ = this.contributionsService.getContributions().pipe(
+      map(data => ({dataState: DataStateEnum.LOADED, data})),
+      startWith({dataState: DataStateEnum.LOADING}),
+      catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
+    );
+  }
+
+// Contribution hinzufügen
+  public addContribution(): void {
+    if (this.contributionFormGroup.invalid) return;
+
+    this.contributionsService.addContribution(this.contributionFormGroup.value).subscribe(() => {
+      this.getContributions();
+    });
+
+    this.contributionFormGroup.reset();
+    this.contributionFormGroup.get('selectedOption')?.setValue(null);
+
+    console.log('selectedOption value after reset:', this.contributionFormGroup.get('selectedOption')?.value);
+  }
+
+// Contribution löschen mit Bestätigung
+  public onDeleteContribution(c: Contribution): void {
+    if (confirm("Are you sure to delete " + c.participantName)) {
+      this.contributionsService.onDeleteContribution(c.id).subscribe(() => {
+        this.getContributions();
+      });
+    }
+  }
+
+// Alle Contributions löschen (leeren)
+  public clearContributionsList(): void {
+    this.contributionsService.onDeleteAll().subscribe(() => {
+      // Optional: Nach dem Löschen erneut laden
+      this.getContributions();
+    });
+  }
+
+// Reports laden (Observable mit State)
+  public getReports(): void {
+    this.reports$ = this.contributionsService.getReports().pipe(
+      map(data => ({dataState: DataStateEnum.LOADED, data})),
+      startWith({dataState: DataStateEnum.LOADING}),
+      catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
+    );
+  }
+
+// Report hinzufügen
+  public addReport(): void {
+    if (this.reportFormGroup?.invalid) return;
+
+    this.contributionsService.addReport(this.reportFormGroup?.value).subscribe(() => {
+      this.getReports();
+    });
+
+    this.reportFormGroup?.reset({smartStandardEvaluationMethod: ""});
+  }
+
+// Download auslösen (erst Report hinzufügen, dann Datei anfragen)
+  public onDownload(): void {
+    this.addReport();
+    this.contributionsService.getPidReport();
+    this.contributionsService.download().subscribe(response => {
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let fileName = 'downloaded_file';
+      if (contentDisposition) {
+        const matches = /filename="?([^"]+)"?/.exec(contentDisposition);
+        if (matches && matches[1]) {
+          fileName = matches[1];
+        }
+      }
+      const blob: Blob = response.body as Blob;
+      const a = document.createElement('a');
+      a.download = fileName;
+      a.href = window.URL.createObjectURL(blob);
+      a.click();
+    });
+  }
+
+  selectedEvalMethod(e: any): void {
+    console.log("smartStandardEvaluationMethod: ", e.target.value);
+  }
+
+  selectedPilotParticipantName(e: any): void {
+    console.log("PilotParticipantName: ", e.target.value);
+  }
+
+  selectedProperty(event: MatRadioChange): void {
+    const value = event.value;
+    this.contributionFormGroup.get('selectedOption')?.setValue(value);
+    this.contributionFormGroup.get('property')?.setValue(value);
+  }
+
+// DCC Liste je nach Rolle laden
+//   reloadDccList(): void {
+//     let request$: Observable<Dcc[]>;
+//
+//     if (this.authService.isAdmin()) {
+//       request$ = this.contributionsService.getAllDccList(); // Admin
+//     } else if (this.authService.isCoordinator()) {
+//       request$ = this.contributionsService.getPublicCoordinatorDccList(); // Koordinator
+//     } else {
+//       request$ = of([]); // Public, leer
+//     }
+//
+//     this.dccList$ = request$.pipe(
+//       tap(dccs => console.log('DCCs geladen:', dccs)),
+//       catchError(err => {
+//         console.error('Fehler beim Laden der DCCs:', err);
+//         return of([]);
+//       })
+//     );
+//   }
+
+  reloadDccList(): void {
+    console.log(' reloadDccList wurde aufgerufen');
+
+    let request$: Observable<Dcc[]>;
+
+    if (this.authService.isAdmin()) {
+      request$ = this.contributionsService.getAllDccList();
+    } else if (this.authService.isCoordinator()) {
+      request$ = this.contributionsService.getPublicCoordinatorDccList();
+    } else {
+      request$ = of([]);
+    }
+
+    request$
+      .pipe(
+        catchError(err => {
+          console.error(' Fehler beim Laden der DCCs:', err);
+          return of([]);
+        })
+      )
+      .subscribe(dccs => {
+        console.log('Neue DCCs geladen:', dccs);
+        this.dccListSubject.next(dccs);
+      });
+  }
+
+
+// Laden der DCC PID Liste je nach Rolle (Observable mit DataState)
+  loadDccListByRole(): void {
+    let request$: Observable<string[]>;
+
+    if (this.authService.isAdmin()) {
+      request$ = this.contributionsService.getAllDccPidList();
+    } else if (this.authService.isCoordinator()) {
+      request$ = this.contributionsService.getOwnAndPublicDccList();
+    } else {
+      request$ = this.contributionsService.getPublicDccList();
+    }
+
+    this.dccPidList$ = request$.pipe(
+      tap(data => console.log('Loaded PIDs:', data)),
+      map(data => ({dataState: DataStateEnum.LOADED, data})),
+      startWith({dataState: DataStateEnum.LOADING}),
+      catchError(err => of({
+        dataState: DataStateEnum.ERROR,
+        errorMessage: err.message || 'Error loading the DCC list'
+      }))
+    );
+  }
+
+// Optional: Nur Public DCC laden (für nicht angemeldete Nutzer)
+  loadPublicDccListOnly(): void {
+    this.dccPidList$ = this.contributionsService.getPublicDccList().pipe(
+      map(data => ({dataState: DataStateEnum.LOADED, data})),
+      startWith({dataState: DataStateEnum.LOADING}),
+      catchError(err => of({
+        dataState: DataStateEnum.ERROR,
+        errorMessage: err.message || 'Error loading the Public DCC list'
+      }))
+    );
+  }
+
+// VerifyTsr
+
+  onVerifyTsr(dcc: any): void {
+    this.contributionsService.verifyTsr(dcc.pid).subscribe({
+      next: (result) => {
+        this.dialog.open(TimestampVerificationDialogComponent, {
+          width: '600px',
+          data: result
+        });
       },
       error: (err) => {
-        console.error('Error loading users:', err);
+        alert('Verification failed: ' + (err?.error || 'Unknown error'));
+      }
+    });
+  }
+  onDeleteDcc(dcc: Dcc): void {
+    console.log('Delete clicked for:', dcc);
+  }
+
+  confirmDelete(dcc: any): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: `Do you really want to delete the DCC with PID "${dcc.pid}" ?`
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteDccByPid(dcc.pid);
       }
     });
   }
 
+  deleteDccByPid(pid: string): void {
+    this.contributionsService.deleteDccByPid(pid).subscribe({
+      next: () => {
+        console.log('DCC gelöscht mit PID:', pid);
+        this.reloadDccList();
+      },
+      error: (err) => {
+        alert('Delete failed: ' + (err?.error?.message || 'Unknown error'));
+      }
+    });
+  }
 
+// Download
+  onViewXml(dcc: any): void {
+    this.contributionsService.onViewXml(dcc.pid).subscribe({
+      next: response => {
+        const blob = new Blob([response.body!], { type: 'application/xml' });
 
-  onEditUser(user: User) {
-    // implement edit logic
+        // Filename aus Content-Disposition Header extrahieren
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = 'dcc.xml';
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="?([^"]+)"?/);
+          if (match && match[1]) {
+            filename = match[1];
+          }
+        }
+
+        // Download starten
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: err => {
+        if (err.status === 404) {
+          alert('DCC not fond.');
+        } else if (err.status === 204) {
+          alert('DCC has no content.');
+        } else {
+          alert('Error downloading the file.');
+        }
+      }
+    });
+  }
+
+// Datei auswählen und validieren (nur .xml erlaubt)
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      const fileName = file.name.toLowerCase();
+
+      if (!fileName.endsWith('.xml')) {
+        alert('Please upload a valid XML file with the extension .xml.');
+        input.value = ''; // Reset Input
+        return;
+      }
+
+      this.selectedFile = file;
+      this.dccUploadFormGroup.patchValue({xmlFile: this.selectedFile});
+      this.dccUploadFormGroup.get('xmlFile')?.markAsTouched();
+      this.dccUploadFormGroup.get('xmlFile')?.updateValueAndValidity();
+    }
+  }
+
+// DCC Upload ausführen
+  onUploadDcc(): void {
+    this.submitted = true;
+    if (this.dccUploadFormGroup.invalid || !this.selectedFile) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('pid', this.dccUploadFormGroup.value.pid);
+    formData.append('status', this.dccUploadFormGroup.value.status);
+    formData.append('information', this.dccUploadFormGroup.value.information);
+    formData.append('file', this.selectedFile);
+
+    this.contributionsService.uploadDcc(formData)
+      .pipe(finalize(() => this.reloadDccList()))
+      .subscribe({
+        next: () => this.closeUploadPopup(),
+        error: (err) => {
+          if (err.status === 202) {
+            this.closeUploadPopup();
+          } else {
+            console.error('Upload failed', err);
+          }
+        }
+      });
+  }
+
+// Upload Popup schließen und Form zurücksetzen
+  closeUploadPopup(): void {
+    this.showUploadDcc = false;
+    this.dccUploadFormGroup.reset();
+    this.selectedFile = null;
+  }
+
+// Upload abbrechen
+  onCancelUploadDcc(): void {
+    this.dccUploadFormGroup.reset();
+    this.selectedFile = null;
+    this.showUploadDcc = false;
+  }
+
+// Benutzer laden (nur Admins)
+  loadUsers(): void {
+    this.contributionsService.getAllUsers().subscribe({
+      next: (data) => {
+        console.log('Data loaded:', data);
+        this.users = data;
+      },
+      error: (err) => {
+        console.error('Error loading the user:', err);
+      }
+    });
+  }
+
+// User bearbeiten (Platzhalter)
+  onEditUser(user: User): void {
     console.log('Edit user:', user);
   }
 
-  onDeleteUser(user: User) {
-    // implement delete logic
+// User löschen (Platzhalter)
+  onDeleteUser(user: User): void {
     console.log('Delete user:', user);
   }
 
-  onEditDCC(dcc: Dcc) {
-
+// User hinzufügen (Platzhalter)
+  onAddUser(): void {
+    console.log('Add user clicked');
   }
-
-
-
-  onViewXML(dcc: Dcc) {
-
-  }
-
-
-  onAddUser() {
-
-  }
-
-
 
 }
