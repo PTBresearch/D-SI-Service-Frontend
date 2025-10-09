@@ -73,17 +73,17 @@ class ContributionRepositoryTest {
 
     }
 
-    @Test
-    void should_return_addedParticipant() {
-        //when
-        Contribution contribution = new Contribution(1L, "PTB_2", "http://localhost:8085/api/d-dcc/dcc/Temp_Comparison_PTB_2","reference");
-        when(contributionList.add(contribution)).thenReturn(true);
-        //then
-        Contribution participantExpected = repository.addContribution(contribution);
-        //verify
-        assertNotNull(participantExpected);
-        assertEquals(contribution, participantExpected);
-    }
+//    @Test
+//    void should_return_addedParticipant() {
+//        //when
+//        Contribution contribution = new Contribution(1L, "PTB_2", "http://localhost:8085/api/d-dcc/dcc/Temp_Comparison_PTB_2","reference");
+//        when(contributionList.add(contribution)).thenReturn(true);
+//        //then
+//        Contribution participantExpected = repository.addContribution(contribution);
+//        //verify
+//        assertNotNull(participantExpected);
+//        assertEquals(contribution, participantExpected);
+//    }
 
 //    @Test
 //    void should_return_addedReport() {

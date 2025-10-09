@@ -64,6 +64,7 @@ public class ContributionRepository {
         Contribution contribution = new Contribution();
         contribution.setId(p.getId());
         contribution.setParticipantName(p.getParticipantName());
+        contribution.setContributionName(p.getContributionName());
         contribution.setPidDCC(p.getPidDCC());
         contributionList.add(contribution);
         return contribution;
@@ -73,6 +74,7 @@ public class ContributionRepository {
         Contribution contribution = new Contribution();
         contribution.setId(c.getId());
         contribution.setParticipantName(c.getParticipantName());
+        contribution.setContributionName(c.getContributionName());
         contribution.setPidDCC(c.getPidDCC());
         contributionList.add(contribution);
         contribution.setProperty(c.getProperty());

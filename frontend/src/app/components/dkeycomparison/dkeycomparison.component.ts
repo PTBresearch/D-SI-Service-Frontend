@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit, ElementRef, ViewChild} from '@angular/core';
 import {ContributionsService} from "../../services/contributions.service";
 import {Contribution} from "../../model/contribution.model";
 import {
@@ -30,7 +30,7 @@ export class DkeycomparisonComponent implements OnInit {
   property: string = '';
   options: string[] = ['reference', 'excluded'];
   selectedOption: string = '';
-
+  @ViewChild('radioGroupElement') radioGroupElement!: ElementRef;
 
   constructor(private contributionsService: ContributionsService, private fb: FormBuilder) {
   }
@@ -40,6 +40,7 @@ export class DkeycomparisonComponent implements OnInit {
     this.getDccList();
     this.contributionFormGroup = this.fb.group({
       participantName: ["", Validators.required],
+      contributionName: ['', Validators.required],
       pidDCC: ["", Validators.required],
       pilotParticipantName: ["select pilot ParticipantName"],
       selectedOption: new FormControl(''),
@@ -57,6 +58,14 @@ export class DkeycomparisonComponent implements OnInit {
 
   }
 
+  // Klick außerhalb des Radio-Bereichs -> Auswahl löschen
+  @HostListener('document:click', ['$event'])
+  handleClick(event: MouseEvent) {
+    if (this.radioGroupElement && !this.radioGroupElement.nativeElement.contains(event.target)) {
+      // @ts-ignore
+      this.contributionFormGroup.get('selectedOption')?.setValue('');
+    }
+  }
   public getContributions(): void {
     this.contributions$ = this.contributionsService.getContributions().pipe(
       map(data => ({dataState: DataStateEnum.LOADED, data: data})),

@@ -1,11 +1,11 @@
-<div class="container comp">
-  <h2 class="font-weight-bold m-lg-2 text-md-center mb-3 mt-5 rounded text-white d-comp ">D-Comparison</h2>
+<div class="container-fluid comp">
+  <h2 class=" d-comp animate ">D-Comparison</h2>
   <div class="title">
     <h2 class="mc"><span>E = mc²</span></h2>
   </div>
   <div *ngIf="contributionFormGroup">
     <form class="col card p-3 mt-5 mb-5" [formGroup]="contributionFormGroup" (ngSubmit)="addContribution()">
-      <div class="form-group mb-2">
+      <div class="form-group mb-3">
         <legend>Contribution:</legend>
         <label class="form-label" for="participantName"> Participant Name: </label>
         <input id="participantName" formControlName="participantName" placeholder="Enter Participant Name" type="text"
@@ -14,8 +14,15 @@
           *ngIf="contributionFormGroup.controls['participantName'].errors && contributionFormGroup.controls['participantName'].touched"
           class="text-danger">Participant Name is required</small>
       </div>
-
-      <div class="form-group mb-2" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">
+      <!-- Contribution Name -->
+      <div class="form-group mb-3">
+        <label class="form-label" for="contributionName"> Contribution Name: </label>
+        <input id="contributionName" formControlName="contributionName" placeholder="Enter Contribution Name" type="text"
+               class="form-control"/>
+        <small *ngIf="contributionFormGroup.controls['contributionName'].errors && contributionFormGroup.controls['contributionName'].touched"
+               class="text-danger">Contribution Name is required</small>
+      </div>
+      <div class="form-group mb-3" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">
         <label class="form-label" for="pidDCC">PID DCC:</label>
         <input id="pidDCC" formControlName="pidDCC" class="form-control" type="text"
                placeholder="Search or enter PID DCC" list="dccList" name="search" [(ngModel)]="searchText">
@@ -24,16 +31,16 @@
           <option *ngFor="let dccPid of result.data">{{dccPid}}</option>
         </datalist>
         <small
-          *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].ch.touched "
+          *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].touched "
           class="text-danger">PID DCC is required</small>
       </div>
-
+      <div #radioGroupElement>
       <mat-radio-group formControlName="selectedOption" (change)="selectedProperty($event)">
         <mat-radio-button *ngFor="let option of options" [value]="option" color="primary">
           {{ option }}
         </mat-radio-button>
       </mat-radio-group>
-
+      </div>
       <div class="col text-center">
         <button class="btn btn-primary mt-5 w-auto sub" [disabled]="this.contributionFormGroup.invalid" type="submit">
           Add
@@ -51,26 +58,28 @@
     <ng-container *ngSwitchCase="DataStateEnum.LOADED">
       <div class=" card col p-3 mt-5 mb-5">
         <div class="card-header bg-light">Contribution List</div>
-        <div class="card-body">
-          <table class="table table-striped table-bordered mb-xl-5">
+        <div class="card-body table-responsive">
+          <table class="table table-striped table-bordered mb-xl-5 text-center align-middle">
             <thead>
             <tr>
-              <th class="w-50">Participant Name</th>
-              <th class="w-50">PID DCC</th>
-              <th class="w-50">Property</th>
+              <th style="width: 20%;">Participant Name</th>
+              <th style="width: 20%;">Contribution Name</th>
+              <th style="width: 45%;">PID DCC</th>
+              <th style="width: 15%;">Property</th>
               <th></th>
             </tr>
             </thead>
             <tbody>
             <tr>
               <td *ngIf="!result.data?.length" colspan="5">Please add some Contributions!</td>
-            <tr *ngFor="let participant of result.data">
-              <td>{{participant.participantName}}</td>
-              <td>{{participant.pidDCC}}</td>
-              <td>{{participant.property}}</td>
+            <tr *ngFor="let contribution of result.data">
+              <td>{{contribution.participantName}}</td>
+              <td>{{contribution.contributionName}}</td>
+              <td>{{contribution.pidDCC}}</td>
+              <td>{{contribution.property}}</td>
               <td>
                 <button style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger"
-                        (click)="onDeleteContribution(participant)">
+                        (click)="onDeleteContribution(contribution)">
                   <span class="fa fa-trash-o"></span>
                 </button>
               </td>

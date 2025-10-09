@@ -36,8 +36,10 @@ public class Contribution implements Serializable {
 
     @Schema(name = "id", example = "1")
     private  Long  id;
-    @Schema(name = "name", example = "NPL")
+    @Schema(name = " participantName", example = "NPL")
     private  String participantName;
+    @Schema(name = "contributionName", example = "NPL1")
+    private  String contributionName;
     @Schema(name = "pidDCC", example = "CCM.M-K1-NPL9507")
     private String  pidDCC;
     @Schema(name = "property", example = "reference")
