@@ -20,12 +20,14 @@ package de.ptb.codataapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
+@EnableAspectJAutoProxy
 public class CorsConfig {
     /**
      * Defines a CORS (Cross-Origin Resource Sharing) configuration for the Spring Web application.
@@ -40,10 +42,10 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:4200","https://d-si.ptb.de","https://d-si.ptb.de/swagger-ui/index.html","http://localhost:8082","http://localhost:8084/api/client/v3/api-docs","http://localhost:8084/api/client/swagger-ui/index.html")
-                        .allowedMethods("GET","POST","PUT","DELETE")
+                        .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
                         .allowedHeaders("*")
                         .exposedHeaders("header1","header2")
-                        .allowCredentials(false).maxAge(3600);;
+                        .allowCredentials(true);
             }
         };
     }

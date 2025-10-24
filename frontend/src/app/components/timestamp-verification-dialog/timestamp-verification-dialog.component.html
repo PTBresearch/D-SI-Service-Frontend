@@ -1,12 +1,12 @@
 <h2 mat-dialog-title>Verifikationsergebnis</h2>
 
-<div mat-dialog-content>
+<div mat-dialog-content class="modal-content">
   <p><strong>Status:</strong>
     <span [ngClass]="{'text-success': data.granted, 'text-danger': !data.granted}">
       {{ data.granted ? 'Valid' : 'Invalid' }}
     </span>
   </p>
-  <p><strong>Status-Beschreibung:</strong> {{ data.statusDescription }}</p>
+  <p><strong>Status Description:</strong> {{ data.statusDescription }}</p>
   <p><strong>Timestamp:</strong> {{ data.timestamp | date: 'short' }}</p>
   <p><strong>Serialnummer:</strong> {{ data.serialNumber }}</p>
   <p><strong>Policy:</strong> {{ data.policy }}</p>
@@ -16,5 +16,5 @@
 </div>
 
 <div mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Schließen</button>
+  <button mat-button mat-dialog-close>close</button>
 </div>

@@ -18,10 +18,10 @@
 import {Dcc} from "./Dcc.model";
 
 export interface User {
-  // id: string;
+  id: string;
   userName: string;
   email: string;
   role: string;
   active: boolean;
- // dccList?: Dcc[];
+  // dccList?: Dcc[];
 }

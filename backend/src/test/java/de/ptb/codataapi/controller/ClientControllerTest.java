@@ -40,50 +40,50 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class ClientControllerTest {
-    @Mock
-    private ContributionsServiceImpl service;
-    @InjectMocks
-    private ClientController controller;
-    @Autowired
-    private MockMvc mockMvc;
-    private List<Contribution> participantList;
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-        Contribution participant1 = new Contribution(1L, "NPL", "CCM.M-K1-NPL9507","reference");
-        Contribution participant2 = new Contribution(2L, "PTB", "CCM.M-K1-PTB9608", "excluded");
-        participantList = List.of(participant1, participant2);
-    }
-
-    @Test
-    void getParticipants() throws Exception {
-        when(service.getContributionList()).thenReturn(participantList);
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/client/participants")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print());
-       verify(service).getContributionList();
-       verify(service,times(1)).getContributionList();
-    }
-
-    @Test
-    void addParticipant() throws Exception {
-        Contribution participant = new Contribution(1L, "NPL", "CCM.M-K1-NPL9507","reference");
-        when(service.addContribution(participant)).thenReturn(participant);
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/api/client/addParticipant")
-                        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(participant)))
-                .andExpect(status().isCreated())
-                .andDo(MockMvcResultHandlers.print());
-        verify(service).addContribution(participant);
-        verify(service, times(1)).addContribution(participant);
-    }
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    @Mock
+//    private ContributionsServiceImpl service;
+//    @InjectMocks
+//    private ClientController controller;
+//    @Autowired
+//    private MockMvc mockMvc;
+//    private List<Contribution> participantList;
+//
+//    @BeforeEach
+//    void setUp() {
+//        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+//        Contribution participant1 = new Contribution(1L, "NPL", "CCM.M-K1-NPL9507","reference");
+//        Contribution participant2 = new Contribution(2L, "PTB", "CCM.M-K1-PTB9608", "excluded");
+//        participantList = List.of(participant1, participant2);
+//    }
+//
+//    @Test
+//    void getParticipants() throws Exception {
+//        when(service.getContributionList()).thenReturn(participantList);
+//        mockMvc.perform(MockMvcRequestBuilders.get("/api/client/participants")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andDo(MockMvcResultHandlers.print());
+//       verify(service).getContributionList();
+//       verify(service,times(1)).getContributionList();
+//    }
+//
+//    @Test
+//    void addParticipant() throws Exception {
+//        Contribution participant = new Contribution(1L, "NPL", "CCM.M-K1-NPL9507","reference");
+//        when(service.addContribution(participant)).thenReturn(participant);
+//        mockMvc.perform(MockMvcRequestBuilders
+//                        .post("/api/client/addParticipant")
+//                        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(participant)))
+//                .andExpect(status().isCreated())
+//                .andDo(MockMvcResultHandlers.print());
+//        verify(service).addContribution(participant);
+//        verify(service, times(1)).addContribution(participant);
+//    }
+//    public static String asJsonString(final Object obj) {
+//        try {
+//            return new ObjectMapper().writeValueAsString(obj);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

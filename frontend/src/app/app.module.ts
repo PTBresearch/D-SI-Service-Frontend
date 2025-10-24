@@ -24,12 +24,17 @@ import { MatIconModule } from '@angular/material/icon';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import { ChangePasswordDialogComponent } from './components/change-password-dialog/change-password-dialog.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { MatDialogModule } from '@angular/material/dialog';
 import {BasicAuthInterceptor} from "./core.interceptors/basic-auth.interceptor";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import { TimestampVerificationDialogComponent } from './components/timestamp-verification-dialog/timestamp-verification-dialog.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import {MatInputModule} from "@angular/material/input";
+import { UserAddDialogComponent } from './components/user-add-dialog/user-add-dialog.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
 
 @NgModule({
   declarations: [
@@ -45,32 +50,38 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     ChangePasswordDialogComponent,
     TimestampVerificationDialogComponent,
     ConfirmDialogComponent,
+    UserAddDialogComponent,
+
 
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        FormsModule,
-        Ng2SearchPipeModule,
-        BrowserModule,
-        FormsModule,
-        BrowserAnimationsModule,
-        MatRadioModule,
-        MatButtonModule,
-        NgbModule,
-        MatTableModule,
-        MatMenuModule,
-        MatIconModule,
-        MatDialogModule,
-        MatProgressSpinnerModule,
-        MatFormFieldModule,
-        MatDialogModule,
-        MatButtonModule,
-        MatProgressSpinnerModule,
-        MatTooltipModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    FormsModule,
+    Ng2SearchPipeModule,
+    BrowserModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    MatRadioModule,
+    MatButtonModule,
+    NgbModule,
+    MatTableModule,
+    MatMenuModule,
+    MatIconModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatSnackBarModule,
+    MatCheckboxModule
+  ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},  {
     provide: HTTP_INTERCEPTORS,
     useClass: BasicAuthInterceptor,

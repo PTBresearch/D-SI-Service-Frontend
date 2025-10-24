@@ -1,3 +1,13 @@
 .menu{
-  font-weight: bold
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: #009cd1;
+}
+.menu.active {
+  color: #009cd1;
 }

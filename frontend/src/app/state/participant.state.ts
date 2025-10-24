@@ -1,7 +1,8 @@
 export enum DataStateEnum {
   LOADING,
   LOADED,
-  ERROR
+  ERROR,
+  EMPTY
 }
 
 export interface AppDataState<T>{

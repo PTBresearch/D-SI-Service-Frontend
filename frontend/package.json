@@ -32,6 +32,7 @@
     "rxjs": "~7.5.0",
     "swagger-ui-dist": "^4.19.0",
     "tslib": "^2.3.0",
+    "uuid": "^8.3.2",
     "zone.js": "~0.12.0"
   },
   "devDependencies": {
@@ -40,13 +41,15 @@
     "@angular/compiler-cli": "15.2.10",
     "@types/file-saver": "^2.0.5",
     "@types/jasmine": "~4.3.0",
+    "@types/node": "^18.19.129",
     "@types/swagger-ui-dist": "^3.30.1",
+    "@types/uuid": "^10.0.0",
     "jasmine-core": "~4.5.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
-    "typescript": "~4.9.5"
+    "typescript": "4.9.5"
   }
 }

@@ -17,6 +17,7 @@
 package de.ptb.codataapi.controller;
 
 import de.ptb.codataapi.model.*;
+
 import de.ptb.codataapi.service.ContributionsService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -24,7 +25,8 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.io.*;
@@ -46,21 +48,30 @@ import java.util.*;
 
         })
 @Tag(name = "Client-Api", description = "D-Si_Service Client API")
-@AllArgsConstructor
 @RestController
 @RequestMapping(path = "/api/client")
-public class ClientController {
 
+public class ClientController {
+    @Autowired
     private final ContributionsService contributionsService;
-    private static final String VALID_DCC = "PTB-DCC-4711";
+
+    public ClientController(ContributionsService contributionsService) {
+        this.contributionsService = contributionsService;
+    }
+
 
     /**
      * <p>method retrieves a List of contributions through an HTTP GET request.</p>
      * @return ResponseEntity, which return a List of contributions in JSON format as a response Entity with an HTTP status of 200 (OK).
      */
-    @RequestMapping(value = "/contributions", method = RequestMethod.GET)
-    public ResponseEntity<List<Contribution>> getContributions() {
-        return new ResponseEntity<>(contributionsService.getContributionList(), HttpStatus.OK);
+//    @RequestMapping(value = "/contributions", method = RequestMethod.GET)
+//    public ResponseEntity<List<Contribution>> getContributions(String sessionId) {
+//        return new ResponseEntity<>(contributionsService.getContributionList(sessionId), HttpStatus.OK);
+//    }
+    @GetMapping("/contributions")
+    public ResponseEntity<List<Contribution>> getContributions(@RequestParam("sessionId") String sessionId) {
+        List<Contribution> contributions = contributionsService.getContributionList(sessionId);
+        return new ResponseEntity<>(contributions, HttpStatus.OK);
     }
 
     /**
@@ -68,43 +79,106 @@ public class ClientController {
      * @return ResponseEntity, which return a new contribution as a response Entity with an HTTP status of 201 (CREATED).
      */
 
-    @RequestMapping(value = "/addContribution", method = RequestMethod.POST)
-    public ResponseEntity<Contribution> addContribution(@RequestBody Contribution contribution) {
-        return new ResponseEntity<>(contributionsService.addContribution(contribution), HttpStatus.CREATED);
+//
+    @PostMapping("/addContribution")
+    public ResponseEntity<Contribution> addContribution(@RequestParam("sessionId") String sessionId, @RequestBody Contribution contribution) {
+        Contribution addedContribution = contributionsService.addContribution(sessionId, contribution);
+        System.out.println("Session: " + sessionId);
+        System.out.println("Contribution: " + contribution); // braucht gutes toString()
+
+        return new ResponseEntity<>(addedContribution, HttpStatus.CREATED);
     }
+//    @PostMapping("/addContribution")
+//    public ResponseEntity<Contribution> addContribution(@RequestBody Contribution contribution) {
+//        try {
+//            // Logging der empfangenen Contribution-Daten
+//            System.out.println("Received Contribution: " + contribution);
+//
+//            // Validierung hinzufügen, z.B. ob die Contribution korrekt ist
+//            if (contribution == null) {
+//                throw new IllegalArgumentException("Contribution cannot be null");
+//            }
+//
+//            if (contribution.getParticipantName() == null || contribution.getParticipantName().isEmpty()) {
+//                throw new IllegalArgumentException("Participant name is required");
+//            }
+//
+//            if (contribution.getContributionName() == null || contribution.getContributionName().isEmpty()) {
+//                throw new IllegalArgumentException("Contribution name is required");
+//            }
+//
+//            if (contribution.getPidDCC() == null || contribution.getPidDCC().isEmpty()) {
+//                throw new IllegalArgumentException("PID DCC is required");
+//            }
+//
+//            // Contribution speichern
+//            Contribution savedContribution = contributionRepository.addContribution(contribution);
+//
+//            // Erfolgreiche Antwort zurückgeben
+//            return ResponseEntity.ok(savedContribution);
+//
+//        } catch (IllegalArgumentException e) {
+//            // Bei ungültigen Argumenten eine Bad Request-Antwort zurückgeben
+//            System.out.println("Error in contribution: " + e.getMessage());
+//            return ResponseEntity.badRequest().body(null);
+//
+//        } catch (Exception e) {
+//            // Bei anderen Fehlern eine interne Server-Fehler-Antwort zurückgeben
+//            System.out.println("General error: " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+//        }
+//    }
+
 
     /**
      * <p>method deletes a  specific contribution through an HTTP DELETE request.</p>
      * @return ResponseEntity, which return  a response Entity with an HTTP status of 200(OK).
      */
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Long> delete(@PathVariable("id") Long id) {
-        contributionsService.delete(Math.toIntExact(id));
+    public ResponseEntity<Long> delete(@PathVariable("id") Long id, @RequestHeader("sessionId") String sessionId) {
+        contributionsService.delete(sessionId, Math.toIntExact(id));
         return new ResponseEntity<>(HttpStatus.OK);
     }
+//    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+//    public ResponseEntity<Long> delete(@PathVariable("id") Long id, String sessionId) {
+//        contributionsService.delete(sessionId,Math.toIntExact(id));
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 
     /**
      * <p>method deletes all contributions through an HTTP DELETE request.</p>
      * @return ResponseEntity, which return a response Entity with an HTTP status of 200 (OK).
      */
+    // Delete all contributions
     @DeleteMapping("/deleteAll")
-    public ResponseEntity<Long> deleteAll() {
-        contributionsService.deleteAll();
+    public ResponseEntity<Long> deleteAll(@RequestHeader("sessionId") String sessionId) {
+        contributionsService.deleteAll(sessionId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+//    @DeleteMapping("/deleteAll")
+//    public ResponseEntity<Long> deleteAll(String sessionId) {
+//        contributionsService.deleteAll(sessionId);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 
     /**
      * <p>method retrieves a report through an HTTP GET request.</p>
      * @return ResponseEntity, which return a report with the PidReport and the List of contributions in JSON format as a response Entity with an HTTP status of 200 (OK).
      */
+//    @RequestMapping(value = "/report", method = RequestMethod.GET)
+//    public ResponseEntity<Report> getReport(String sessionId) {
+//        Report r = new Report();
+//        r.setPidReport(contributionsService.getReport(sessionId).getPidReport());
+//        r.setSmartStandardEvaluationMethod(contributionsService.getReport(sessionId).getSmartStandardEvaluationMethod());
+//        r.setContributionList(contributionsService.getContributionList(sessionId));
+//        r.setPilotParticipantName(contributionsService.getReport(sessionId).getPilotParticipantName());
+//        return new ResponseEntity<>(r, HttpStatus.OK);
+//    }
     @RequestMapping(value = "/report", method = RequestMethod.GET)
-    public ResponseEntity<Report> getReport() {
-        Report r = new Report();
-        r.setPidReport(contributionsService.getReport().getPidReport());
-        r.setSmartStandardEvaluationMethod(contributionsService.getReport().getSmartStandardEvaluationMethod());
-        r.setContributionList(contributionsService.getContributionList());
-        r.setPilotParticipantName(contributionsService.getReport().getPilotParticipantName());
-        return new ResponseEntity<>(r, HttpStatus.OK);
+    public ResponseEntity<Report> getReport(@RequestHeader("sessionId") String sessionId) {
+        Report report = contributionsService.getReport(sessionId);
+        return new ResponseEntity<>(report, HttpStatus.OK);
     }
 
     /**
@@ -112,9 +186,14 @@ public class ClientController {
      * @return ResponseEntity, which return a report as a response Entity with an HTTP status of 201 (CREATED).
      */
     @RequestMapping(value = "/addReport", method = RequestMethod.POST)
-    public ResponseEntity<Report> addReport(@RequestBody Report report) {
-        return new ResponseEntity<>(contributionsService.addReport(report), HttpStatus.CREATED);
+    public ResponseEntity<Report> addReport(@RequestBody Report report, @RequestHeader("sessionId") String sessionId) {
+        Report addedReport = contributionsService.addReport(sessionId, report);
+        return new ResponseEntity<>(addedReport, HttpStatus.CREATED);
     }
+//    @RequestMapping(value = "/addReport", method = RequestMethod.POST)
+//    public ResponseEntity<Report> addReport(@RequestBody Report report,String sessionId) {
+//        return new ResponseEntity<>(contributionsService.addReport(sessionId,report), HttpStatus.CREATED);
+//    }
 
     /**
      * <p>method to download the XML report through an HTTP GET request from the DKCR_Backend API with POST request,
@@ -124,9 +203,10 @@ public class ClientController {
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public void downloadReportXML(HttpServletResponse response) throws IOException {
-            contributionsService.downloadAndSaveReport(response);
+    public void downloadReportXML(HttpServletResponse response, @RequestHeader("sessionId") String sessionId) throws IOException {
+            contributionsService.downloadAndSaveReport(sessionId,response);
         }
+
 
 }
 

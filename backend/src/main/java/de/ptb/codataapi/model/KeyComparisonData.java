@@ -22,6 +22,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * Pojo for KeyComparisonData
  * @author Wafa El jaoua
@@ -30,6 +32,8 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeyComparisonData {
+public class KeyComparisonData implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     Report r;
 }

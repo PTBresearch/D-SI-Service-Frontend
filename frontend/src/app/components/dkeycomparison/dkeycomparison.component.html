@@ -1,37 +1,42 @@
-<div class="container comp">
-  <!--public panel -->
-
-  <!-- Login-Button -->
-  <div class="btn-login">
+<body>
+ <div  class=" login ">
+<!--   Login-Button-->
+  <div  class="btn-login login  ">
     <button mat-icon-button [matMenuTriggerFor]="userMenu"
-            class="custom-icon-btn">
+            class="custom-icon-btn ">
       <mat-icon>{{ isLoggedIn ? 'logout' : 'login' }}</mat-icon>
     </button>
   </div>
   <!--Button-Menu -->
-  <mat-menu #userMenu="matMenu">
-    <button mat-menu-item *ngIf="!isLoggedIn" (click)="showLogin = true">
+  <mat-menu #userMenu="matMenu"  >
+    <button mat-menu-item *ngIf="!isLoggedIn" (click)="onOpenLogin()" >
       <mat-icon>login</mat-icon>
-      <span>Login</span>
+      <span  class=" login ">Login</span>
     </button>
-    <button mat-menu-item *ngIf="isLoggedIn" (click)="onLogout()">
+
+    <button mat-menu-item *ngIf="isLoggedIn" (click)="onLogout()" class="btn-login" >
       <mat-icon>logout</mat-icon>
       <span>Logout</span>
     </button>
-    <button mat-menu-item *ngIf="isLoggedIn" (click)="onChangePassword()">
+    <button mat-menu-item *ngIf="isLoggedIn" (click)="onChangePassword()" class="btn-login"  >
       <mat-icon>lock</mat-icon>
       <span>Change password</span>
     </button>
   </mat-menu>
+ </div>
+  <div class="container">
+
   <!--  Comparison-Template für alle-->
   <ng-template #contributionForm>
-    <h2 class="font-weight-bold m-lg-2 text-md-center mb-3 mt-5 rounded text-white d-comp ">D-Comparison</h2>
+    <h2 class=" d-comp animate ">D-Comparison</h2>
+
+
     <div class="title">
       <h2 class="mc"><span>E = mc²</span></h2>
     </div>
     <div *ngIf="contributionFormGroup" class="background">
-      <form class="col card p-3 mt-5 mb-5" [formGroup]="contributionFormGroup" (ngSubmit)="addContribution()">
-        <div class="form-group mb-2">
+      <form class="col card p-3 mt-5 mb-5" [formGroup]="contributionFormGroup" (ngSubmit)="onAddContribution()">
+        <div class="form-group mb-3">
           <legend>Contribution:</legend>
           <label class="form-label" for="participantName"> Participant Name: </label>
           <input id="participantName" formControlName="participantName" placeholder="Enter Participant Name" type="text"
@@ -40,8 +45,15 @@
             *ngIf="contributionFormGroup.controls['participantName'].errors && contributionFormGroup.controls['participantName'].touched"
             class="text-danger">Participant Name is required</small>
         </div>
-
-        <div class="form-group mb-2" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">
+        <!-- Contribution Name -->
+        <div class="form-group mb-3">
+          <label class="form-label" for="contributionName"> Contribution Name: </label>
+          <input id="contributionName" formControlName="contributionName" placeholder="Enter Contribution Name" type="text"
+                 class="form-control"/>
+          <small *ngIf="contributionFormGroup.controls['contributionName'].errors && contributionFormGroup.controls['contributionName'].touched"
+                 class="text-danger">Contribution Name is required</small>
+        </div>
+        <div class="form-group mb-3" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">
           <div *ngSwitchCase="DataStateEnum.LOADING">Loading...</div>
           <div *ngSwitchCase="DataStateEnum.ERROR" class="text-danger">
             {{ result.errorMessage }}
@@ -59,12 +71,14 @@
               class="text-danger">PID DCC is required</small>
           </div>
         </div>
+
+        <div #radioGroupElement>
         <mat-radio-group formControlName="selectedOption" (change)="selectedProperty($event)">
           <mat-radio-button *ngFor="let option of options" [value]="option" color="primary">
             {{ option }}
           </mat-radio-button>
         </mat-radio-group>
-
+        </div>
         <div class="col text-center">
           <button class="btn btn-primary mt-5 w-auto sub" [disabled]="this.contributionFormGroup.invalid" type="submit">
             Add
@@ -82,27 +96,51 @@
       <ng-container *ngSwitchCase="DataStateEnum.LOADED">
         <div class=" card col p-3 mt-5 mb-5">
           <div class="card-header bg-light">Contribution List</div>
-          <div class="card-body">
-            <table class="table table-striped table-bordered mb-xl-5">
+          <div class="card-body table-responsive">
+            <table class="table  table-striped table-bordered mb-xl-5 text-center align-middle">
               <thead>
               <tr>
-                <th class="w-50">Participant Name</th>
-                <th class="w-50">PID DCC</th>
-                <th class="w-50">Property</th>
-                <th></th>
+                <th class="participant-col">Participant Name</th>
+                <th class="participant-col">Contribution Name</th>
+                <th class="pid-col">PID DCC</th>
+                <th class="property-col">Property</th>
+                <th class="actions-col text-center">Actions</th>
               </tr>
               </thead>
               <tbody>
               <tr>
                 <td *ngIf="!result.data?.length" colspan="5">Please add some Contributions!</td>
-              <tr *ngFor="let participant of result.data">
-                <td>{{participant.participantName}}</td>
-                <td>{{participant.pidDCC}}</td>
-                <td>{{participant.property}}</td>
-                <td>
-                  <button style="background-color:#009cd1; border-color:#009cd1;" class="btn btn-danger"
-                          (click)="onDeleteContribution(participant)">
-                    <span class="fa fa-trash-o"></span>
+              </tr>
+              <tr *ngFor="let contribution of result.data">
+                <td>{{contribution.participantName}}</td>
+                <td>{{contribution.contributionName}}</td>
+                <td>{{contribution.pidDCC}}</td>
+                <td>{{contribution.property}}</td>
+                <td class="text-center">
+                  <!-- Verify Timestamp -->
+                  <button
+                    mat-icon-button
+                    (click)="onVerifyTsr(contribution.pidDCC)"
+                    matTooltip="Verify Timestamp" style="margin-right: 5px;"
+                    class="icon-button">
+                    <img src="assets/img/sign1.webp" alt="Verify XML" width="26" height="24" style="border-radius: 4px;" />
+                  </button>
+                  <!-- Download XML -->
+                  <button
+                    mat-icon-button
+                    (click)="onViewXml(contribution.pidDCC)"
+                    matTooltip="Download XML" style="margin-right: 5px;"
+                    class="icon-button">
+                    <img src="assets/img/xml1.png" alt="Download XML"   width="26" height="24" style="border-radius: 4px;" />
+                  </button>
+
+                  <!-- Delete Contribution -->
+                  <button
+                    mat-icon-button
+                    (click)="onDeleteContribution(contribution)"
+                    matTooltip="Delete Contribution" style="margin-right: 5px;"
+                    class="icon-button delete-button">
+                    <mat-icon  class="icon-button delete-button">delete</mat-icon>
                   </button>
                 </td>
               </tr>
@@ -156,7 +194,16 @@
                     class="btn btn-danger" type="submit" (click)="onDownload()">
               EVALUATE COMPARISON
             </button>
+            <div *ngIf="isLoading" class="spinner-overlay">
+              <div class="spinner"></div>
+              <p>Preparing download Report......</p>
+            </div>
+            <!-- Fehlermeldung anzeigen -->
+            <div *ngIf="errorMessage" class="error-message">
+              {{ errorMessage }}
+            </div>
           </div>
+
         </form>
         <a class="btn btn-danger" style="background-color:#009cd1; border-color:#009cd1; margin-bottom: 100px;"
            href="https://d-si.ptb.de/api/d-comparison/swagger-ui/index.html#" target="_blank">Swagger UI OpenAPI</a>
@@ -187,6 +234,12 @@
             </div>
           </div>
           <div class="button-row">
+            <div class="mt-2 text-right">
+              <a href="#" (click)="onForgotPassword()" class="forgot-password-link">
+                Forgot your password?
+              </a>
+            </div>
+
             <button type="submit" class="btn btn-primary w-auto sub" [disabled]="loginFormGroup.invalid">Sign in
             </button>
             <button type="button" class="btn btn-primary w-auto sub" (click)="onCancelLogin()">Cancel</button>
@@ -225,16 +278,14 @@
           <ng-template ngbNavContent>
             <div class="tab-content-inner">
               <section class="dcc-list">
-                <div>
+                <div style="padding-bottom: 10px;">
                   <h4 class="upload-title">DCC-List</h4>
                   <button class="btn btn-primary mt-1 w-auto sub" (click)="showUploadDcc = true">Upload DCC & Sign
                   </button>
 
                   <ng-container *ngIf="dccList$ | async as dccs">
-
-                    <table mat-table [dataSource]="dccs" class="mat-elevation-z2 mt-3">
-
-
+                    <div class="dcc-container">
+                      <table mat-table [dataSource]=" dccList$" class="table  mat-elevation-z2 mt-3">
                       <!-- PID -->
                       <ng-container matColumnDef="pid">
                         <th mat-header-cell *matHeaderCellDef>PID</th>
@@ -264,13 +315,13 @@
                           <!-- Validate -->
                           <button mat-icon-button (click)="onVerifyTsr(dcc)" matTooltip="Verify Timestamp request"
                                   class="icon-button">
-                            <img src="assets/img/validate.png" alt="Validate Icon" width="24" height="24"
+                            <img src="assets/img/sign1.webp" alt="Validate Icon" width="26" height="24"
                                  style="border-radius: 4px;">
                           </button>
 
                           <!-- View XML -->
                           <button mat-icon-button (click)="onViewXml(dcc)" matTooltip="View XML" class="icon-button">
-                            <img src="assets/img/xml1.png" alt="View XmlIcon" width="26" height="24"
+                            <img src="assets/img/xml1.png" alt="View XmlIcon" width="26" height="30"
                                  style="border-radius: 4px;">
                           </button>
 
@@ -287,7 +338,13 @@
                       <tr mat-header-row *matHeaderRowDef="displayedColumnsDcc"></tr>
                       <tr mat-row *matRowDef="let row; columns: displayedColumnsDcc;"></tr>
                     </table>
-
+                      </div>
+                    <mat-paginator
+                      [length]="totalDccs"
+                      [pageSize]="pageSize"
+                      [pageSizeOptions]="[5, 10, 25]"
+                      (page)="onPageChange($event)">
+                    </mat-paginator>
                   </ng-container>
 
                 </div>
@@ -369,9 +426,8 @@
                 <button (click)="onAddUser()" class="btn btn-primary mt-1 w-auto sub">+ Add User</button>
                 <p *ngIf="!users || users.length === 0">user not find.</p>
 
-                <!--                &lt;!&ndash; Debug-Ausgabe der users-Daten &ndash;&gt;-->
                 <!--                <pre>{{ users | json }}</pre>-->
-                <table *ngIf="users && users.length > 0" mat-table [dataSource]="users" class="mat-elevation-z2 mt-3">
+                <table *ngIf="users && users.length > 0" mat-table [dataSource]="users" class=" table table-striped mat-elevation-z2 mt-3">
                   <!-- Username Column -->
                   <ng-container matColumnDef="userName">
                     <th mat-header-cell *matHeaderCellDef>User</th>
@@ -415,14 +471,14 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumnsUser"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumnsUser;"></tr>
                 </table>
-
               </section>
             </div>
           </ng-template>
         </li>
       </ul>
       <!-- Outlet für den aktiven Tab -->
-      <div [ngbNavOutlet]="nav"></div>
+      <div [ngbNavOutlet]="nav" style="padding-bottom: 10vh;"></div>
     </div>
   </div>
 </div>
+</body>

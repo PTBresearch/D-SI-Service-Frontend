@@ -21,23 +21,25 @@ package de.ptb.codataapi.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.ptb.codataapi.model.Contribution;
 import de.ptb.codataapi.model.Report;
 import de.ptb.codataapi.repository.ContributionRepository;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+
 import jakarta.xml.bind.DatatypeConverter;
-import lombok.AllArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -45,31 +47,33 @@ import java.util.List;
  * @author Wafa El jaoua
  */
 @Service
-@AllArgsConstructor
 @Slf4j
 public class ContributionsServiceImpl implements ContributionsService {
+
+
+    @Autowired
     ContributionRepository contributionRepository;
 
     @Override
-    public List<Contribution> getContributionList() {
+    public List<Contribution> getContributionList(String sessionId) {
 
-        return contributionRepository.getAllContributions() ;
+        return contributionRepository.getAllContributions(sessionId) ;
     }
 
     @Override
-    public boolean delete(long id) {
-        var isRemoved = contributionRepository.delete(id);
+    public boolean delete(String sessionId,long id ){
+        var isRemoved = contributionRepository.delete(sessionId,id);
         return  isRemoved;
     }
 
     @Override
-    public void deleteAll() {
-        contributionRepository.deleteAll();
+    public void deleteAll(String sessionId) {
+        contributionRepository.deleteAll(sessionId);
     }
 
     @Override
-    public Contribution addContribution(Contribution contribution) {
-        return  contributionRepository.addContribution(contribution);
+    public Contribution addContribution(String sessionId,Contribution contribution) {
+        return  contributionRepository.addContribution(sessionId,contribution);
     }
 
 //    @Override
@@ -78,16 +82,16 @@ public class ContributionsServiceImpl implements ContributionsService {
 //    }
 
     @Override
-    public Report addReport(Report report) {
-        return contributionRepository.addReport(report);
+    public Report addReport(String sessionId,Report report) {
+        return contributionRepository.addReport(sessionId, report);
     }
 
     @Override
-    public Report getReport() {
-        return contributionRepository.getReport();
+    public Report getReport(String sessionId) {
+        return contributionRepository.getReport(sessionId);
     }
     @Override
-    public void downloadAndSaveReport(HttpServletResponse response)throws IOException{
+    public void downloadAndSaveReport(String sessionId,HttpServletResponse response)throws IOException{
 
     RestTemplate restTemplate = new RestTemplate();
 //        String url = "https://d-si.ptb.de/api/d-comparison/evaluateComparison";
@@ -97,18 +101,39 @@ public class ContributionsServiceImpl implements ContributionsService {
     ObjectNode rootNode = objectMapper.createObjectNode();
     String url1 = "http://localhost:8084/api/client/report";
     RestTemplate restTemplate1 = new RestTemplate();
-    Report report = restTemplate1.getForObject(url1, Report.class, 200);
-    addReport(report);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("sessionId", sessionId);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<Report> reportResponse = restTemplate1.exchange(
+                url1,
+                HttpMethod.GET,
+                httpEntity,
+                Report.class
+        );
+        Report report = reportResponse.getBody();
+        // Contributions aus dem Repository laden
+        List<Contribution> contributions = contributionRepository.getAllContributions(sessionId);
+        report.setContributionList(contributions);
+// Aktualisierten Report speichern
+        addReport(sessionId, report);
+
+        System.out.println("reportNeu: " + report.toString());
+
+
+  //  Report report = restTemplate1.getForObject(url1, Report.class, 200);
+    //    Report report = getReport(sessionId);
+    addReport( sessionId, report);
     System.out.println("report: " + report.toString());
     // Retrieve the "reportJsonData" JsonNode
     String reportJson = objectMapper.writeValueAsString(report);
     JsonNode KeyCompJsonNode = objectMapper.readTree(reportJson);
     ObjectNode keyComparisonDataObjectNode = objectMapper.createObjectNode();
-    keyComparisonDataObjectNode.put("pidReport", KeyCompJsonNode.get("pidReport"));
-    keyComparisonDataObjectNode.put("smartStandardEvaluationMethod", KeyCompJsonNode.get("smartStandardEvaluationMethod"));
+    keyComparisonDataObjectNode.set("pidReport", KeyCompJsonNode.get("pidReport"));
+    keyComparisonDataObjectNode.set("smartStandardEvaluationMethod", KeyCompJsonNode.get("smartStandardEvaluationMethod"));
     JsonNode contributionListNode = KeyCompJsonNode.get("contributionList");
     keyComparisonDataObjectNode.putArray("contributionList");
-    keyComparisonDataObjectNode.put("pilotParticipantName", KeyCompJsonNode.get("pilotParticipantName"));
+    keyComparisonDataObjectNode.set("pilotParticipantName", KeyCompJsonNode.get("pilotParticipantName"));
     for (JsonNode contributionNode : contributionListNode) {
         ObjectNode contributionObjectNode = objectMapper.createObjectNode();
         contributionObjectNode.set("contribution", contributionNode);
@@ -119,7 +144,7 @@ public class ContributionsServiceImpl implements ContributionsService {
         // Convert the updated JsonNode to a JSON String
         String updatedJsonString = objectMapper.writeValueAsString(rootNode);
         System.out.println("postRequest: " + updatedJsonString);
-        HttpHeaders headers = new HttpHeaders();
+       // HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<String>(updatedJsonString, headers);
         // POST Request with base64String and reportName as response

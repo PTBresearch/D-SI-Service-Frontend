@@ -10,7 +10,7 @@ import { LoginResponse } from "../model/LoginResponse.model";
 })
 export class AuthServiceService {
   private apiServerDCCUrl = environment.apiDCCUrl;
-
+  private apiServerUrl = environment.apiBaseUrl;
   private currentUserSubject = new BehaviorSubject<User | null>(this.getStoredUser());
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -22,8 +22,8 @@ export class AuthServiceService {
   constructor(private http: HttpClient) {}
 
   login(credentials: { userName: string; password: string }): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(
-      `${this.apiServerDCCUrl}/d-dcc/login`,
+    return this.http.post<LoginResponse>(`${this.apiServerDCCUrl}/d-dcc/login`,
+    //  return this.http.post<LoginResponse>(`${this.apiServerUrl}/d-dcc/login`,
       credentials,
       {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -51,17 +51,15 @@ export class AuthServiceService {
     this.credentials = null;
   }
 
-  // Aktuellen Benutzer als Snapshot holen
+
   getCurrentUserSnapshot(): User | null {
     return this.currentUserSubject.value;
   }
 
-  // Benutzername aus Credentials holen
   getCurrentUserName(): string | null {
     return this.getCredentials()?.userName || null;
   }
 
-  // Aus gespeicherten Userdaten lesen
   getStoredUser(): User | null {
     const userJson = sessionStorage.getItem('user');
     return userJson ? JSON.parse(userJson) : null;
@@ -72,12 +70,10 @@ export class AuthServiceService {
     return stored ? JSON.parse(stored) : null;
   }
 
-  // Rolle abrufen
   getUserRole(): string | null {
     return this.userRoleSubject.value;
   }
 
-  // Rolle setzen (z. B. manuell nach Rollenwechsel)
   setUserRole(role: string): void {
     const user = this.getStoredUser();
     if (user) {
@@ -104,7 +100,6 @@ export class AuthServiceService {
     return this.getStoredUser() !== null;
   }
 
-  // Session aus sessionStorage wiederherstellen
   restoreSession(): void {
     const user = this.getStoredUser();
     const credentials = this.getCredentials();
@@ -116,10 +111,12 @@ export class AuthServiceService {
     }
   }
 
-  // Passwort ändern
+
   changePassword(oldPassword: string, newPassword: string): Observable<any> {
     return this.http.put(`${this.apiServerDCCUrl}/d-dcc/change-password`, {
-      oldPassword,
+      // return this.http.put(`${this.apiServerUrl}/d-dcc/change-password`, {
+
+        oldPassword,
       newPassword
     });
   }

@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>{{ data ? 'Edit User' : 'Add User' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="userForm" class="user-form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="userName" required>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" required>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="!isEditMode" appearance="fill" class="full-width">
+      <mat-label>Password</mat-label>
+      <input matInput formControlName="password" type="password" required>
+    </mat-form-field>
+
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Role</mat-label>
+      <input matInput formControlName="role" required>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="active">Active</mat-checkbox>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="onSubmit()">
+    {{ data?.id ? 'Edit' : 'Add' }}
+  </button>
+
+</mat-dialog-actions>
+
+

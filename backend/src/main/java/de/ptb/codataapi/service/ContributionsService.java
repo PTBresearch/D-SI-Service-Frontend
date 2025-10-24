@@ -20,6 +20,7 @@ package de.ptb.codataapi.service;
 import de.ptb.codataapi.model.Contribution;
 import de.ptb.codataapi.model.Report;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,12 +29,12 @@ import java.util.List;
  * @author Wafa El jaoua
  */
 public interface ContributionsService {
-    List<Contribution> getContributionList();
-    boolean delete(long id);
-    void deleteAll();
-    Contribution addContribution(Contribution contribution);
+    List<Contribution> getContributionList(String sessionId);
+    boolean delete(String sessionId,long id);
+    void deleteAll(String sessionId);
+    Contribution addContribution(String sessionId,Contribution contribution);
 //    Contribution update(Contribution p);
-    Report addReport(Report report);
-    Report getReport();
-    void downloadAndSaveReport(HttpServletResponse response)throws IOException ;
+    Report addReport(String sessionId,Report report);
+    Report getReport(String sessionId);
+    void downloadAndSaveReport(String sessionId,HttpServletResponse response)throws IOException ;
 }

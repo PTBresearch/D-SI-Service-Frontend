@@ -1,8 +1,45 @@
 .comp{
   margin-bottom: 120px;
+  width: 85%;
+  margin-left: auto;
+  margin-right: auto;
 }
-.d-comp{
-  width:28%;background-color: #009cd1; text-align:left;
+.d-comp {
+  position: relative;
+  display: inline-block;
+  padding: 15px 25px;
+  margin: 40px 0;
+  color: #009cd1;
+  font-size: 1.8rem;
+  font-weight: 500;
+  background-color: #f2f2f2;
+  border-radius: 6px;
+  text-align: left;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: visible; /* damit ::after sichtbar ist */
+}
+.modal-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  min-width: 300px;
+  max-width: 90vw;
+}
+.d-comp::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  height:10px;
+  width: 0;
+  background-color: #009cd1;
+  transition: width 0.6s ease;
+  border-radius: 2px;
+}
+.d-comp.animate::after {
+  width: 100%;
 }
 .title {
   text-align: center;
@@ -15,6 +52,12 @@
   font-style: italic;
   border: 1px solid #009cd1;
   padding: 0.5rem 1rem;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
 }
 .sub{
   background-color:#009cd1;
@@ -29,7 +72,6 @@
 .background {
   background-color: #f8f9fa;
 }
-
 .form-group-inline {
   display: flex;
   align-items: center;
@@ -37,37 +79,28 @@
   flex: 1;
   white-space: nowrap;
 }
-
-
 .input-field {
   width: 100%;
 }
-
-
 .row-inline {
   display: flex;
   flex-wrap: nowrap;
 }
+::ng-deep .custom-radio.mat-radio-checked .mat-radio-inner-circle {
+  background-color: #009cd1;
+}
+::ng-deep .custom-radio.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #009cd1;
+}
+::ng-deep .custom-radio .mat-radio-ripple .mat-ripple-element {
+  background-color: rgba(0, 156, 209, 0.3) ;
+}
 
-/*::ng-deep .custom-radio.mat-radio-checked .mat-radio-inner-circle {*/
-/*  background-color: #009cd1;*/
-/*}*/
-
-/*::ng-deep .custom-radio.mat-radio-checked .mat-radio-outer-circle {*/
-/*  border-color: #009cd1;*/
-/*}*/
-
-/*::ng-deep .custom-radio .mat-radio-ripple .mat-ripple-element {*/
-/*  background-color: rgba(0, 156, 209, 0.3) ;*/
-/*}*/
-
-/* Container für den Button, rechts ausgerichtet */
 .btn-login {
   display: flex;
   justify-content: flex-end; /* Button rechts */
   align-items: center;
 }
-
 .logout-btn {
   background-color: red;
   color: white;
@@ -79,36 +112,26 @@
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
-
 .logout-btn:hover {
   background-color: #d0f0ff;
   transform: scale(1.05);
 }
-
-/* Icon */
 .icon {
   width: 40px;
   height: 40px;
   transition: transform 0.2s;
-  display: block; /* sorgt dafür, dass es im Button zentriert */
-  pointer-events: none; /* verhindert, dass img Hover blockiert */
+  display: block;
+  pointer-events: none;
 }
-
 .custom-icon-btn:hover .icon {
   transform: scale(1.2);
 }
 
-
 .button-row {
-  margin-top: 20px; /* Abstand über der Zeile */
-  display: flex;     /* optional, falls Buttons nebeneinander */
-  gap: 10px;         /* Abstand zwischen Buttons */
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
 }
-
-
-/* -------------------------------
-   Modal / Pop-Up
---------------------------------*/
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -119,9 +142,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* hoch genug, damit es über allem liegt */
+  z-index: 1000;
 }
-
 .modal-content {
   background: white;
   padding: 5rem;
@@ -130,12 +152,10 @@
   max-width: 80%;
   box-shadow: 0 0 15px rgba(0,0,0,0.8);
 }
-
 .modal-content h3 {
   text-align: center;
   margin-bottom: 1rem;
 }
-
 .modal-content input {
   width: 100%;
   padding: 0.5rem;
@@ -144,130 +164,193 @@
   border-radius: 5px;
 }
 
-/* Spezielles Styling nur für Upload-Modal */
 .upload-modal .modal-content {
-  width: 50%;       /* Breiteres Modal */
-  max-width: 90%;   /* Für kleine Bildschirme */
-  padding: 3rem;    /* Innenabstand */
+  width: 50%;
+  max-width: 90%;
+  padding: 3rem;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0,0,0,0.8);
 }
-
 .upload.title {
   margin: 0.5rem;
 }
-
-
-
-/* -------------------------------
-   Tabs (Bootstrap / ngbNav)
---------------------------------*/
 .nav-tabs {
-  border-bottom: none; /* normale Linie unter der Tab-Leiste */
+  border-bottom: none;
 }
-
 .nav-tabs .nav-item {
-  margin-bottom: 0; /* verhindert Abstand unter Tabs */
-  padding-bottom: 0;  /* entfernt unteren Padding */
+  margin-bottom: 0;
+  padding-bottom: 0;
   font-size: 1.3rem;
 }
 
-/* Tabs normal */
 .nav-tabs .nav-link {
-  background-color: white; /* Tabs immer weiß */
-  color: #009cd1;          /* Schriftfarbe */
-  /*font-weight: bold;*/
-  border: none;  /* leichter Rahmen */
-  border-bottom: none; /* Standard-Bottom-Border für nicht-aktive Tabs */
-
-  margin-bottom: 0; /* verhindert Abstand unter Tabs */
-  padding-bottom: 0;  /* entfernt unteren Padding */
-
+  background-color: white;
+  color: #009cd1;
+  border: none;
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-/* Tabs Hover */
 .nav-tabs .nav-link:hover {
-  color: #007bb5;            /* dunkleres Blau beim Hover */
-  background-color: #e6f7fb; /* leichtes Hellblau als Hintergrund */
-  text-decoration: underline; /* optional für typischen Link-Effekt */
+  color: #007bb5;
+  background-color: #e6f7fb;
+  text-decoration: underline;
 }
-
-/* Aktiver Tab */
 .nav-tabs .nav-link.active {
   border-radius: 10px 10px 0 0;
-  background-color: #f8f9fa; /* aktiver Tab ebenfalls weiß */
-  border-bottom: none !important; /* sicherstellen, dass keine Linie erscheint */
+  background-color: #f8f9fa;
+  border-bottom: none !important;
   color: #007bb5;
-
-  margin-bottom: 0; /* verhindert Abstand unter Tabs */
-  padding-bottom: 0;  /* entfernt unteren Padding */
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
-
-/* Tab-Inhalt */
 .tab-content-inner {
   padding: 2rem;
-  background-color: #f8f9fa; /* weißer Hintergrund für Content */
-  color: #000;             /* schwarze Schrift */
-  /*border: 1px solid #009cd1;  !* optionale Umrandung *!*/
+  background-color: #f8f9fa;
+  color: #000;
   border-top: none;
-
-  margin-bottom: 0; /* verhindert Abstand unter Tabs */
-  padding-bottom: 0;  /* entfernt unteren Padding *//* oben kein Doppelborder */
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
-
 ul.nav.nav-tabs {
   border-bottom: none;
-  margin-bottom: 0; /* <- Abstand unten entfernen */
-
-
-  padding-bottom: 0;  /* entfernt unteren Padding */
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
-/* Outlet direkt unter Tabs */
 [ngbNavOutlet] {
-  margin-top: 0 !important; /* mt-2 entfernen */
+  margin-top: 0 !important;
 }
-
 .public-panel {
   margin-bottom: 3rem;
 }
-
 .background {
   background-color: #f8f9fa;
 }
-
 .custom-blue-icon {
   color: #009cd1;
 }
-
 .icon-button mat-icon {
   color: #009cd1;
   font-size: 24px;
   transition: color 0.3s ease, transform 0.3s ease;
 }
-
-/* Hover-Effekt für alle Icons */
 .icon-button:hover mat-icon {
   color: #007bb5;        /* dunkleres Blau */
   transform: scale(1.2); /* leicht vergrößert */
   cursor: pointer;
 }
-
-/* Delete-Icon extra hervorheben */
 .delete-button mat-icon {
   color: #d32f2f;
   font-size: 28px;
   transition: color 0.3s ease, transform 0.3s ease;
 }
-
 .delete-button:hover mat-icon {
   color: #b71c1c;        /* dunkleres Rot */
   transform: scale(1.3);
+}
+.dcc-container {
+  max-height: 70vh; /* Setzt eine maximale Höhe */
+  overflow-y: auto; /* Ermöglicht vertikales Scrollen */
 }
 .text-success {
   color: #4caf50;
 }
 .text-danger {
   color: #f44336;
+}
+.forgot-password-link {
+  font-size: 0.9em;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.forgot-password-link:hover {
+  color: #0056b3;
+}
+.icon-button img {
+  vertical-align: middle;
+}
+.icon-button {
+  margin-right: 5px;
+}
+.participant-col {
+  width: 12.5%;
+}
+.pid-col {
+  width: 40%;
+}
+
+.property-col {
+  width:8%;
+}
+
+.actions-col {
+  width: 17%;
+  white-space: nowrap;
+}
+.big-icon {
+  font-size: 30px;
+}
+.modal-content {
+  width: 600px;
+  max-width: 95%;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+}
+.spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.error-message {
+  color: #0c5460;
+  background-color: #d1ecf1;
+  border: 1px solid #bee5eb;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.login {
+  margin-right: auto;
+  text-align: center;
+  color: #009cd1;
+  font-weight: bold;
+  font-style: italic;
+  padding: 0.5rem 1rem;
+
+}
+
+mat-menu button {
+  padding: 8px 16px;
+  color: #009cd1;
+}
+mat-menu button:hover {
+  background-color: #f0f8ff;
 }

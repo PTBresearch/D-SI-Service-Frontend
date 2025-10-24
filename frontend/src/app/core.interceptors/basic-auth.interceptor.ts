@@ -34,7 +34,7 @@ export class BasicAuthInterceptor implements HttpInterceptor {
 
     if (credentials) {
       const authHeader = 'Basic ' + btoa(`${credentials.userName}:${credentials.password}`);
-      console.log('Setze Auth Header:', authHeader); // <--- Debug-Ausgabe
+
       const authReq = req.clone({
         setHeaders: {
           Authorization: authHeader

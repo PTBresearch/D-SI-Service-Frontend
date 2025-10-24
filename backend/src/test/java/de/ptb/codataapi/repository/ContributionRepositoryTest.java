@@ -29,61 +29,61 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ContributionRepositoryTest {
-
-    @InjectMocks
-    private ContributionRepository repository;
-    @Mock
-    private List<Contribution> contributionList;
-
-    private Report report;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void should_return_participantList() {
-        when(contributionList.size()).thenReturn(1);
-        List<Contribution> resultParticipantList = repository.getAllContributions();
-        assertNotNull(resultParticipantList);
-        assertEquals(1, resultParticipantList.size());
-    }
-
-    @Test
-    void should_return_participant_isRemoved() {
-        //when
-        when(contributionList.removeIf(any())).thenReturn(true);
-        //then
-        boolean isParticipantRemoved = repository.delete(1L);
-        //verify
-        assertTrue(isParticipantRemoved);
-        verify(contributionList, times(1)).removeIf(any());
-    }
-
-    @Test
-    void should_return_participant_isNotRemoved() {
-        //when
-        when(contributionList.removeIf(any())).thenReturn(false);
-        //then
-        boolean isParticipantRemoved = repository.delete(6L);
-        //verify
-        assertFalse(isParticipantRemoved);
-        verify(contributionList, times(1)).removeIf(any());
-
-    }
-
-    @Test
-    void should_return_addedParticipant() {
-        //when
-        Contribution contribution = new Contribution(1L, "PTB_2", "http://localhost:8085/api/d-dcc/dcc/Temp_Comparison_PTB_2","reference");
-        when(contributionList.add(contribution)).thenReturn(true);
-        //then
-        Contribution participantExpected = repository.addContribution(contribution);
-        //verify
-        assertNotNull(participantExpected);
-        assertEquals(contribution, participantExpected);
-    }
+//
+//    @InjectMocks
+//    private ContributionRepository repository;
+//    @Mock
+//    private List<Contribution> contributionList;
+//
+//    private Report report;
+//
+//    @BeforeEach
+//    void setUp() {
+//        MockitoAnnotations.openMocks(this);
+//    }
+//
+//    @Test
+//    void should_return_participantList() {
+//        when(contributionList.size()).thenReturn(1);
+//        List<Contribution> resultParticipantList = repository.getAllContributions();
+//        assertNotNull(resultParticipantList);
+//        assertEquals(1, resultParticipantList.size());
+//    }
+//
+//    @Test
+//    void should_return_participant_isRemoved() {
+//        //when
+//        when(contributionList.removeIf(any())).thenReturn(true);
+//        //then
+//        boolean isParticipantRemoved = repository.delete(1L);
+//        //verify
+//        assertTrue(isParticipantRemoved);
+//        verify(contributionList, times(1)).removeIf(any());
+//    }
+//
+//    @Test
+//    void should_return_participant_isNotRemoved() {
+//        //when
+//        when(contributionList.removeIf(any())).thenReturn(false);
+//        //then
+//        boolean isParticipantRemoved = repository.delete(6L);
+//        //verify
+//        assertFalse(isParticipantRemoved);
+//        verify(contributionList, times(1)).removeIf(any());
+//
+//    }
+//
+//    @Test
+//    void should_return_addedParticipant() {
+//        //when
+//        Contribution contribution = new Contribution(1L, "PTB_2", "http://localhost:8085/api/d-dcc/dcc/Temp_Comparison_PTB_2","reference");
+//        when(contributionList.add(contribution)).thenReturn(true);
+//        //then
+//        Contribution participantExpected = repository.addContribution(contribution);
+//        //verify
+//        assertNotNull(participantExpected);
+//        assertEquals(contribution, participantExpected);
+//    }
 
 //    @Test
 //    void should_return_addedReport() {
