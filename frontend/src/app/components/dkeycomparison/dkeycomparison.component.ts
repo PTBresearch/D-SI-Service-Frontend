@@ -75,7 +75,7 @@ export class DkeycomparisonComponent implements OnInit {
   verificationResult: TimestampVerificationResult | null = null;
   verificationError: string | null = null;
   isLoadingVerification = false;
-  errorMessage: string = '';
+  errorMessage: string | null = null;
   // Users
   users: any[] = [];
   displayedColumnsUser: string[] = ['userName', 'email', 'role', 'active', 'actions'];
@@ -106,7 +106,7 @@ export class DkeycomparisonComponent implements OnInit {
 
   ngOnInit(): void {
 
-      console.log("Init: isLoggedIn =", this.isLoggedIn);
+      // console.log("Init: isLoggedIn =", this.isLoggedIn);
 
 
     this.loadContributions(this.sessionId);
@@ -162,7 +162,8 @@ export class DkeycomparisonComponent implements OnInit {
       participantName: ['', Validators.required],
       contributionName: ['', Validators.required],
       pidDCC: ['', Validators.required],
-      property: ['', Validators.required],
+      selectedOption: new FormControl('__include__'),
+      property: new FormControl(null),
     });
   }
 
@@ -186,12 +187,19 @@ export class DkeycomparisonComponent implements OnInit {
 
     this.contributionsService.addContribution(newContribution,this.sessionId).subscribe({
       next: () => {
-        this.contributionFormGroup.reset();
+        this.contributionFormGroup = this.fb.group({
+          participantName: ["", Validators.required],
+          contributionName: ['', Validators.required],
+          pidDCC: ["", Validators.required],
+          pilotParticipantName: ["select pilot ParticipantName"],
+          selectedOption: new FormControl('__include__'),
+          property: new FormControl(null)
+        });
+
         this.loadContributions(this.sessionId);  // Liste aktualisieren
       },
       error: err => {
         console.error('Fehler beim Hinzufügen:', err);
-        // Hier kannst du auch eine Fehlermeldung anzeigen
       }
     });
   }
@@ -227,8 +235,8 @@ export class DkeycomparisonComponent implements OnInit {
       contributionName: ['', Validators.required],
       pidDCC: ["", Validators.required],
       pilotParticipantName: [""],
-      selectedOption: new FormControl(''),
-      property: new FormControl('')
+      selectedOption: new FormControl('__include__'),
+      property: new FormControl(null)
     });
 
     this.reportFormGroup = this.fb.group({
@@ -255,8 +263,8 @@ export class DkeycomparisonComponent implements OnInit {
       contributionName: ['', Validators.required],
       pidDCC: ["", Validators.required],
       pilotParticipantName: ["select pilot ParticipantName"],
-      selectedOption: new FormControl(''),
-      property: new FormControl('')
+      selectedOption: new FormControl('__include__'),
+      property: new FormControl(null)
     });
 
     this.reportFormGroup = this.fb.group({
@@ -268,7 +276,7 @@ export class DkeycomparisonComponent implements OnInit {
   onOpenLogin(): void {
     this.showLogin = true;
     document.body.classList.add('modal-open');
-    console.log('Login-Fenster geöffnet');
+    // console.log('Login-Fenster geöffnet');
   }
 
   onLogin(): void {
@@ -350,39 +358,6 @@ export class DkeycomparisonComponent implements OnInit {
       }
     });
   }
-  // Klick außerhalb des Radio-Bereichs -> Auswahl löschen
-  @HostListener('document:click', ['$event'])
-  handleClick(event: MouseEvent) {
-    if (this.radioGroupElement && !this.radioGroupElement.nativeElement.contains(event.target)) {
-      // @ts-ignore
-      this.contributionFormGroup.get('selectedOption')?.setValue('');
-    }
-  }
-
-  // public getContributions(): void {
-  //   const sessionId = this.sessionId;  // Stelle sicher, dass sessionId vorher gesetzt ist
-  //   this.contributions$ = this.contributionsService.getContributions(sessionId).pipe(
-  //     map(data => ({ dataState: DataStateEnum.LOADED, data: data })),
-  //     startWith({ dataState: DataStateEnum.LOADING }),
-  //     catchError(err => of({ dataState: DataStateEnum.ERROR, errorMessage: err.message }))
-  //   );
-  // }
-
-// Contribution hinzufügen
-//   public addContribution() {
-//     this.contributionsService.addContribution(this.contributionFormGroup?.value)
-//       .subscribe(data => {
-//
-//         this.getContributions()
-//       });
-//     this.contributionFormGroup?.reset();
-// // Setze den Wert auf null (keine Auswahl)
-//     this.contributionFormGroup?.get('selectedOption')?.setValue(null);
-//
-//     console.log('selectedOption value after reset:', this.contributionFormGroup?.get('selectedOption')?.value);
-//
-//     //sessionStorage.setItem('participnatsList', JSON.stringify( this.participantsService.getParticipants()))
-//   }
 
   public getReports(): void {
     const sessionId = this.sessionId;
@@ -404,6 +379,7 @@ export class DkeycomparisonComponent implements OnInit {
   }
 
   public onDownload(): any {
+    this.errorMessage = null;
     this.isLoading = true;
     this.contributionsService.getPidReport();
     this.contributionsService.download(this.sessionId).pipe(
@@ -463,75 +439,6 @@ export class DkeycomparisonComponent implements OnInit {
   }
 
 
-  // public getReports(): void {
-  //   this.reports$ = this.contributionsService.getReports().pipe(
-  //     map(data => ({dataState: DataStateEnum.LOADED, data:data})),
-  //     startWith({dataState: DataStateEnum.LOADING}),
-  //     catchError(err => of({dataState: DataStateEnum.ERROR, errorMessage: err.message}))
-  //   );
-  // }
-  //
-  //
-  // public addReport() {
-  //   this.contributionsService.addReport(this.reportFormGroup?.value)
-  //     .subscribe(data => {
-  //       this.getReports()
-  //       // alert("added successfully")
-  //     });
-  //
-  //   this.reportFormGroup?.reset({smartStandardEvaluationMethod: ""});
-  // }
-  //
-  //
-  // public onDownload(): any {
-  //   this.addReport();
-  //   this.contributionsService.getPidReport();
-  //   this.contributionsService.download().subscribe(
-  //     response => {
-  //       let fileName = (response.headers.get('Content-Disposition').split(';')[1].split('filename')[1].split('=')[1].trim());
-  //       let blob: Blob = response.body as Blob;
-  //       let a = document.createElement('a');
-  //       console.log("file: ", fileName)
-  //       a.download = fileName ;
-  //       a.href = window.URL.createObjectURL(blob);
-  //       a.click();
-  //     }
-  //   );
-  //   this.contributionsService.getPidReport();
-  // }
-  // public onDownload(): void {
-  //   // Beispielreport zum Senden – ggf. anpassen oder entfernen
-  //   const report: Report = {
-  //     // deine Felder hier – z. B. title, date, etc.
-  //   };
-  //
-  //   // Optional: zuerst Report speichern, dann downloaden
-  //   forkJoin([
-  //     this.addReport(report),
-  //     this.contributionsService.getPidReport()
-  //   ]).subscribe({
-  //     next: () => {
-  //       this.contributionsService.download().subscribe(response => {
-  //         const contentDisposition = response.headers.get('Content-Disposition');
-  //         let fileName = 'downloaded_file';
-  //         if (contentDisposition) {
-  //           const matches = /filename="?([^"]+)"?/.exec(contentDisposition);
-  //           if (matches && matches[1]) {
-  //             fileName = matches[1];
-  //           }
-  //         }
-  //         const blob: Blob = response.body as Blob;
-  //         const a = document.createElement('a');
-  //         a.download = fileName;
-  //         a.href = window.URL.createObjectURL(blob);
-  //         a.click();
-  //       });
-  //     },
-  //     error: err => {
-  //       console.error('Fehler beim Erzeugen des Reports oder beim Abrufen von PID:', err);
-  //     }
-  //   });
-  // }
 
   selectedEvalMethod(e: any): void {
     console.log("smartStandardEvaluationMethod: ", e.target.value);
@@ -541,10 +448,30 @@ export class DkeycomparisonComponent implements OnInit {
     console.log("PilotParticipantName: ", e.target.value);
   }
 
+  // selectedProperty(event: MatRadioChange): void {
+  //   const value = event.value;
+  //   this.contributionFormGroup.get('selectedOption')?.setValue(value);
+  //   this.contributionFormGroup.get('property')?.setValue(value);
+  // }
   selectedProperty(event: MatRadioChange): void {
     const value = event.value;
+
+    // Wenn der Wert "__include__" ist → nichts setzen
+    if (value === '__include__') {
+      this.clearSelection();
+      return;
+    }
+
     this.contributionFormGroup.get('selectedOption')?.setValue(value);
     this.contributionFormGroup.get('property')?.setValue(value);
+  }
+
+  clearSelection(event?: Event): void {
+    if (event) {
+      event.stopPropagation(); // verhindert doppeltes Triggern
+    }
+    this.contributionFormGroup.get('selectedOption')?.setValue('__include__');
+    this.contributionFormGroup.get('property')?.setValue(null);
   }
 
   reloadDccList(): void {
@@ -574,29 +501,26 @@ export class DkeycomparisonComponent implements OnInit {
       )
       .subscribe(result => {
         if (result) {
-          console.log('Neue DCCs geladen:', result.content);
+          // console.log('Neue DCCs geladen:', result.content);
           this.dccListSubject.next(result.content);
           this.totalDccs = result.totalElements;
         }
       });
   }
 
-  loadDccListByRole(): void {
-    let request$: Observable<string[]>;
-
-      request$ = this.contributionsService.getAllDccPidList();
-
-
-    this.dccPidList$ = request$.pipe(
-      tap(data => console.log('Loaded PIDs:', data)),
-      map(data => ({dataState: DataStateEnum.LOADED, data})),
-      startWith({dataState: DataStateEnum.LOADING}),
-      catchError(err => of({
-        dataState: DataStateEnum.ERROR,
-        errorMessage: err.message || 'Error loading the DCC list'
-      }))
-    );
-  }
+  // loadDccListByRole(): void {
+  //   let request$: Observable<string[]>;
+  //   request$ = this.contributionsService.getAllDccPidList();
+  //   this.dccPidList$ = request$.pipe(
+  //     tap(data => console.log('Loaded PIDs:', data)),
+  //     map(data => ({dataState: DataStateEnum.LOADED, data})),
+  //     startWith({dataState: DataStateEnum.LOADING}),
+  //     catchError(err => of({
+  //       dataState: DataStateEnum.ERROR,
+  //       errorMessage: err.message || 'Error loading the DCC list'
+  //     }))
+  //   );
+  // }
 
   loadPublicDccListOnly(): void {
     this.dccPidList$ = this.contributionsService.getAllDccPidList().pipe(
@@ -780,7 +704,7 @@ export class DkeycomparisonComponent implements OnInit {
   loadUsers(): void {
     this.contributionsService.getAllUsers().subscribe({
       next: (data) => {
-        console.log('Data loaded:', data);
+        // console.log('Data loaded:', data);
         this.users = data;
       },
       error: (err) => {
@@ -848,7 +772,52 @@ export class DkeycomparisonComponent implements OnInit {
   onForgotPassword() {
     alert(' Please contact the administrator at d-si@ptb.de to receive a new temporary login password.');
   }
+  publicDccPidList: string[] = [];
+  privateDccPidList: string[] = [];
+  filteredDccPids: string[] = [];
 
 
+
+  loadDccListByRole(): void {
+    // beide Listen parallel laden
+    forkJoin({
+      publicList: this.contributionsService.getPublicPidDccList(),
+      privateList: this.contributionsService.getPrivatePidDccList()
+    }).subscribe({
+      next: ({ publicList, privateList }) => {
+        console.log('Public DCCs:', publicList);
+        // console.log('Private DCCs:', privateList);
+        this.publicDccPidList = publicList;
+        this.privateDccPidList = privateList;
+      },
+      error: (err) => console.error('Error loading DCC lists', err)
+    });
+  }
+
+  onPidSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+
+    if (!value) {
+      this.filteredDccPids = [];
+      return;
+    }
+
+    const filteredPublic = this.publicDccPidList.filter(pid =>
+      pid.toLowerCase().includes(value.toLowerCase())
+    );
+
+    const filteredPrivate = this.privateDccPidList.filter(pid =>
+      pid === value
+    );
+
+    this.filteredDccPids = [...filteredPrivate, ...filteredPublic];
+  }
+
+
+  selectPid(pid: string): void {
+    this.contributionFormGroup.get('pidDCC')?.setValue(pid);
+    this.filteredDccPids = [];
+  }
 
 }

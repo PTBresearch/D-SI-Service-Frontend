@@ -83,52 +83,9 @@ public class ClientController {
     @PostMapping("/addContribution")
     public ResponseEntity<Contribution> addContribution(@RequestParam("sessionId") String sessionId, @RequestBody Contribution contribution) {
         Contribution addedContribution = contributionsService.addContribution(sessionId, contribution);
-        System.out.println("Session: " + sessionId);
-        System.out.println("Contribution: " + contribution); // braucht gutes toString()
 
         return new ResponseEntity<>(addedContribution, HttpStatus.CREATED);
     }
-//    @PostMapping("/addContribution")
-//    public ResponseEntity<Contribution> addContribution(@RequestBody Contribution contribution) {
-//        try {
-//            // Logging der empfangenen Contribution-Daten
-//            System.out.println("Received Contribution: " + contribution);
-//
-//            // Validierung hinzufügen, z.B. ob die Contribution korrekt ist
-//            if (contribution == null) {
-//                throw new IllegalArgumentException("Contribution cannot be null");
-//            }
-//
-//            if (contribution.getParticipantName() == null || contribution.getParticipantName().isEmpty()) {
-//                throw new IllegalArgumentException("Participant name is required");
-//            }
-//
-//            if (contribution.getContributionName() == null || contribution.getContributionName().isEmpty()) {
-//                throw new IllegalArgumentException("Contribution name is required");
-//            }
-//
-//            if (contribution.getPidDCC() == null || contribution.getPidDCC().isEmpty()) {
-//                throw new IllegalArgumentException("PID DCC is required");
-//            }
-//
-//            // Contribution speichern
-//            Contribution savedContribution = contributionRepository.addContribution(contribution);
-//
-//            // Erfolgreiche Antwort zurückgeben
-//            return ResponseEntity.ok(savedContribution);
-//
-//        } catch (IllegalArgumentException e) {
-//            // Bei ungültigen Argumenten eine Bad Request-Antwort zurückgeben
-//            System.out.println("Error in contribution: " + e.getMessage());
-//            return ResponseEntity.badRequest().body(null);
-//
-//        } catch (Exception e) {
-//            // Bei anderen Fehlern eine interne Server-Fehler-Antwort zurückgeben
-//            System.out.println("General error: " + e.getMessage());
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//        }
-//    }
-
 
     /**
      * <p>method deletes a  specific contribution through an HTTP DELETE request.</p>
@@ -139,11 +96,6 @@ public class ClientController {
         contributionsService.delete(sessionId, Math.toIntExact(id));
         return new ResponseEntity<>(HttpStatus.OK);
     }
-//    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-//    public ResponseEntity<Long> delete(@PathVariable("id") Long id, String sessionId) {
-//        contributionsService.delete(sessionId,Math.toIntExact(id));
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
 
     /**
      * <p>method deletes all contributions through an HTTP DELETE request.</p>
@@ -156,25 +108,10 @@ public class ClientController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @DeleteMapping("/deleteAll")
-//    public ResponseEntity<Long> deleteAll(String sessionId) {
-//        contributionsService.deleteAll(sessionId);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
-
     /**
      * <p>method retrieves a report through an HTTP GET request.</p>
      * @return ResponseEntity, which return a report with the PidReport and the List of contributions in JSON format as a response Entity with an HTTP status of 200 (OK).
      */
-//    @RequestMapping(value = "/report", method = RequestMethod.GET)
-//    public ResponseEntity<Report> getReport(String sessionId) {
-//        Report r = new Report();
-//        r.setPidReport(contributionsService.getReport(sessionId).getPidReport());
-//        r.setSmartStandardEvaluationMethod(contributionsService.getReport(sessionId).getSmartStandardEvaluationMethod());
-//        r.setContributionList(contributionsService.getContributionList(sessionId));
-//        r.setPilotParticipantName(contributionsService.getReport(sessionId).getPilotParticipantName());
-//        return new ResponseEntity<>(r, HttpStatus.OK);
-//    }
     @RequestMapping(value = "/report", method = RequestMethod.GET)
     public ResponseEntity<Report> getReport(@RequestHeader("sessionId") String sessionId) {
         Report report = contributionsService.getReport(sessionId);
@@ -190,10 +127,6 @@ public class ClientController {
         Report addedReport = contributionsService.addReport(sessionId, report);
         return new ResponseEntity<>(addedReport, HttpStatus.CREATED);
     }
-//    @RequestMapping(value = "/addReport", method = RequestMethod.POST)
-//    public ResponseEntity<Report> addReport(@RequestBody Report report,String sessionId) {
-//        return new ResponseEntity<>(contributionsService.addReport(sessionId,report), HttpStatus.CREATED);
-//    }
 
     /**
      * <p>method to download the XML report through an HTTP GET request from the DKCR_Backend API with POST request,

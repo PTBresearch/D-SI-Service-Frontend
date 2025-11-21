@@ -22,8 +22,8 @@ export class AuthServiceService {
   constructor(private http: HttpClient) {}
 
   login(credentials: { userName: string; password: string }): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiServerDCCUrl}/d-dcc/login`,
-    //  return this.http.post<LoginResponse>(`${this.apiServerUrl}/d-dcc/login`,
+    // return this.http.post<LoginResponse>(`${this.apiServerDCCUrl}/d-dcc/login`,
+      return this.http.post<LoginResponse>(`${this.apiServerUrl}/d-dcc/login`,
       credentials,
       {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -114,7 +114,7 @@ export class AuthServiceService {
 
   changePassword(oldPassword: string, newPassword: string): Observable<any> {
     return this.http.put(`${this.apiServerDCCUrl}/d-dcc/change-password`, {
-      // return this.http.put(`${this.apiServerUrl}/d-dcc/change-password`, {
+    //   return this.http.put(`${this.apiServerUrl}/d-dcc/change-password`, {
 
         oldPassword,
       newPassword

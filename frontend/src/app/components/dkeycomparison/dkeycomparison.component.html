@@ -58,24 +58,50 @@
           <div *ngSwitchCase="DataStateEnum.ERROR" class="text-danger">
             {{ result.errorMessage }}
           </div>
+<!--          <div *ngSwitchCase="DataStateEnum.LOADED">-->
+<!--            <label class="form-label" for="pidDCC">PID DCC:</label>-->
+<!--            <input id="pidDCC" formControlName="pidDCC" class="form-control" type="text"-->
+<!--                   placeholder="Search or enter PID DCC" list="dccList" name="search">-->
+
+<!--            <datalist id="dccList">-->
+<!--              <option *ngFor="let dccPid of result.data " [value]="dccPid">{{dccPid}}</option>-->
+<!--            </datalist>-->
+<!--            <small-->
+<!--              *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].touched "-->
+<!--              class="text-danger">PID DCC is required</small>-->
+<!--          </div>-->
           <div *ngSwitchCase="DataStateEnum.LOADED">
             <label class="form-label" for="pidDCC">PID DCC:</label>
-            <input id="pidDCC" formControlName="pidDCC" class="form-control" type="text"
-                   placeholder="Search or enter PID DCC" list="dccList" name="search">
-
-            <datalist id="dccList">
-              <option *ngFor="let dccPid of result.data " [value]="dccPid">{{dccPid}}</option>
-            </datalist>
-            <small
-              *ngIf="contributionFormGroup.controls['pidDCC'].errors && contributionFormGroup.controls['pidDCC'].touched "
-              class="text-danger">PID DCC is required</small>
+            <input
+              id="pidDCC"
+              formControlName="pidDCC"
+              class="form-control"
+              type="text"
+              placeholder="Search or enter PID DCC"
+              (input)="onPidSearch($event)" />
+            <!-- Vorschlagsliste -->
+            <ul *ngIf="filteredDccPids.length > 0" class="list-group mt-1">
+              <li *ngFor="let pid of filteredDccPids"
+                  class="list-group-item list-group-item-action"
+                  (click)="selectPid(pid)">{{ pid }}
+              </li>
+            </ul>
+            <small *ngIf="contributionFormGroup.controls['pidDCC'].errors &&
+                contributionFormGroup.controls['pidDCC'].touched"
+                   class="text-danger">
+              PID DCC is required
+            </small>
           </div>
+
         </div>
 
         <div #radioGroupElement>
         <mat-radio-group formControlName="selectedOption" (change)="selectedProperty($event)">
           <mat-radio-button *ngFor="let option of options" [value]="option" color="primary">
             {{ option }}
+          </mat-radio-button>
+          <mat-radio-button value="__include__" color="primary" >
+            included
           </mat-radio-button>
         </mat-radio-group>
         </div>
@@ -342,6 +368,7 @@
                     <mat-paginator
                       [length]="totalDccs"
                       [pageSize]="pageSize"
+                      [pageIndex]="currentPage"
                       [pageSizeOptions]="[5, 10, 25]"
                       (page)="onPageChange($event)">
                     </mat-paginator>
