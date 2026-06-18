@@ -95,7 +95,20 @@
 ::ng-deep .custom-radio .mat-radio-ripple .mat-ripple-element {
   background-color: rgba(0, 156, 209, 0.3) ;
 }
+.file-label {
+  display: inline-block;
+  min-width: 120px;
+  padding: 4px 12px;
 
+  border: 1px solid #999;
+  background: #f0f0f0;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.file-label:hover {
+  background: #e6e6e6;
+}
 .btn-login {
   display: flex;
   justify-content: flex-end; /* Button rechts */

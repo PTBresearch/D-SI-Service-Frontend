@@ -35,6 +35,8 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import {MatInputModule} from "@angular/material/input";
 import { UserAddDialogComponent } from './components/user-add-dialog/user-add-dialog.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {MatCardModule} from "@angular/material/card";
 
 @NgModule({
   declarations: [
@@ -80,7 +82,9 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
     MatPaginatorModule,
     MatInputModule,
     MatSnackBarModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatAutocompleteModule,
+    MatCardModule
   ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},  {
     provide: HTTP_INTERCEPTORS,

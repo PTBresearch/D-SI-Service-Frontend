@@ -18,6 +18,7 @@ export class ContributionsService {
   private apiServerUrl = environment.apiBaseUrl;
 
   private apiServerDCCUrl = environment.apiDCCUrl;
+  private apiServerClientBaseUrl = environment.apiClientBaseUrl;
 
   constructor(private http: HttpClient) {
   }
@@ -76,34 +77,37 @@ export class ContributionsService {
   }
 
   public getAllDccPidList(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiServerDCCUrl}/d-dcc/listAllDccPid`);
-    // return this.http.get<string[]>(`${this.apiServerUrl}/d-dcc/listAllDccPid`);
+    // return this.http.get<string[]>(`${this.apiServerDCCUrl}/d-dcc/listAllDccPid`);
+    return this.http.get<string[]>(`${this.apiServerUrl}/d-dcc/listAllDccPid`);
   }
   public getOwnAndPublicDccList(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiServerDCCUrl}/d-dcc/coordinatorListPidAndPublic`);
-    // return this.http.get<string[]>(`${this.apiServerUrl}/d-dcc/coordinatorListPidAndPublic`);
+    // return this.http.get<string[]>(`${this.apiServerDCCUrl}/d-dcc/coordinatorListPidAndPublic`);
+    return this.http.get<string[]>(`${this.apiServerUrl}/d-dcc/coordinatorListPidAndPublic`);
 
   }
-  public getPublicDccList(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiServerDCCUrl}/d-dcc/dccPublicPidList`);
-    // return this.http.get<string[]>(`${this.apiServerUrl}/d-dcc/dccPublicPidList`);
+  public getPublicPidDccList(): Observable<string[]> {
+    // return this.http.get<string[]>(`${this.apiServerDCCUrl}/d-dcc/dccPublicPidList`);
+    return this.http.get<string[]>(`${this.apiServerUrl}/d-dcc/dccPublicPidList`);
   }
-
+  public getPrivatePidDccList(): Observable<string[]> {
+    // return this.http.get<string[]>(`${this.apiServerDCCUrl}/d-dcc/privateListPid`);
+    return this.http.get<string[]>(`${this.apiServerUrl}/d-dcc/privateListPid`);
+  }
   getAllDccsPaged(page: number, size: number): Observable<Page<Dcc>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-    return this.http.get<Page<Dcc>>(`${this.apiServerDCCUrl}/d-dcc/allDccList`, { params });
-    // return this.http.get<Page<Dcc>>(`${this.apiServerUrl}/d-dcc/allDccList`, { params });
+    // return this.http.get<Page<Dcc>>(`${this.apiServerDCCUrl}/d-dcc/allDccList`, { params });
+    return this.http.get<Page<Dcc>>(`${this.apiServerUrl}/d-dcc/allDccList`, { params });
   }
 
   public uploadDcc(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiServerDCCUrl}/d-dcc/upload`, formData);
-    // return this.http.post(`${this.apiServerUrl}/d-dcc/upload`, formData);
+    // return this.http.post(`${this.apiServerDCCUrl}/d-dcc/upload`, formData);
+    return this.http.post(`${this.apiServerUrl}/d-dcc/upload`, formData);
   }
   public onViewXml(pid: string): Observable<any> {
-    return this.http.get(`${this.apiServerDCCUrl}/d-dcc/downloadXml?pid=${encodeURIComponent(pid)}`, {
-    // return this.http.get(`${this.apiServerUrl}/d-dcc/downloadXml?pid=${encodeURIComponent(pid)}`, {
+    // return this.http.get(`${this.apiServerDCCUrl}/d-dcc/downloadXml?pid=${encodeURIComponent(pid)}`, {
+    return this.http.get(`${this.apiServerUrl}/d-dcc/downloadXml?pid=${encodeURIComponent(pid)}`, {
       observe: 'response',
       responseType: 'blob'
     });
@@ -113,52 +117,61 @@ export class ContributionsService {
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<Page<Dcc>>(`${this.apiServerDCCUrl}/d-dcc/publicAndCoordinatorDccList`, { params });
-    // return this.http.get<Page<Dcc>>(`${this.apiServerUrl}/d-dcc/publicAndCoordinatorDccList`, { params });
+    // return this.http.get<Page<Dcc>>(`${this.apiServerDCCUrl}/d-dcc/publicAndCoordinatorDccList`, { params });
+    return this.http.get<Page<Dcc>>(`${this.apiServerUrl}/d-dcc/publicAndCoordinatorDccList`, { params });
   }
 
   verifyTimestamp(pid: string): Observable<string> {
     const params = new HttpParams().set('pid', pid);
-    return this.http.post(`${this.apiServerDCCUrl}/d-dcc/verify`, null, {
-      // return this.http.post(`${this.apiServerUrl}/d-dcc/verify`, null, {
+    // return this.http.post(`${this.apiServerDCCUrl}/d-dcc/verify`, null, {
+    return this.http.post(`${this.apiServerUrl}/d-dcc/verify`, null, {
       params,
       responseType: 'text'
     });
   }
   verifyTsr(pid: string): Observable<TimestampVerificationResult> {
-    const url = `${this.apiServerDCCUrl}/d-dcc/verify?pid=${encodeURIComponent(pid)}`;
-    // const url = `${this.apiServerUrl}/d-dcc/verify?pid=${encodeURIComponent(pid)}`;
+    // const url = `${this.apiServerDCCUrl}/d-dcc/verify?pid=${encodeURIComponent(pid)}`;
+    const url = `${this.apiServerUrl}/d-dcc/verify?pid=${encodeURIComponent(pid)}`;
     return this.http.post<TimestampVerificationResult>(url, null); // null, weil POST ohne Body
   }
   public deleteDccByPid(pid: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiServerDCCUrl}/d-dcc/deleteByPid/${pid}`);
-    // return this.http.delete<void>(`${this.apiServerUrl}/d-dcc/deleteByPid/${pid}`);
+    // return this.http.delete<void>(`${this.apiServerDCCUrl}/d-dcc/deleteByPid/${pid}`);
+    return this.http.delete<void>(`${this.apiServerUrl}/d-dcc/deleteByPid/${pid}`);
   }
   getAllUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiServerDCCUrl}/d-dcc/users`, { withCredentials: true });
-    // return this.http.get<any[]>(`${this.apiServerUrl}/d-dcc/users`, { withCredentials: true });
+    // return this.http.get<any[]>(`${this.apiServerDCCUrl}/d-dcc/users`, { withCredentials: true });
+    return this.http.get<any[]>(`${this.apiServerUrl}/d-dcc/users`, { withCredentials: true });
   }
   changePassword(data: { oldPassword: string; newPassword: string }): Observable<any> {
-    return this.http.put(`${this.apiServerDCCUrl}/d-dcc/change-password`, data, {
-    // return this.http.put(`${this.apiServerUrl}/d-dcc/change-password`, data, {
+    // return this.http.put(`${this.apiServerDCCUrl}/d-dcc/change-password`, data, {
+    return this.http.put(`${this.apiServerUrl}/d-dcc/change-password`, data, {
       responseType: 'text'
     });
   }
   deleteUserById(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiServerDCCUrl}/d-dcc/delete/users/${id}`);
-    // return this.http.delete<void>(`${this.apiServerUrl}/d-dcc/delete/users/${id}`);
+    // return this.http.delete<void>(`${this.apiServerDCCUrl}/d-dcc/delete/users/${id}`);
+    return this.http.delete<void>(`${this.apiServerUrl}/d-dcc/delete/users/${id}`);
 
   }
   addUser(user: User): Observable<User> {
-    return this.http.post<User>(`${this.apiServerDCCUrl}/d-dcc/addUser`, user);
-    // return this.http.post<User>(`${this.apiServerUrl}/d-dcc/addUser`, user);
+    // return this.http.post<User>(`${this.apiServerDCCUrl}/d-dcc/addUser`, user);
+    return this.http.post<User>(`${this.apiServerUrl}/d-dcc/addUser`, user);
 
   }
   updateUser(id: string, user: User): Observable<User> {
-    return this.http.put<User>(`${this.apiServerDCCUrl}/d-dcc/edit/users/${id}`, user);
-    // return this.http.put<User>(`${this.apiServerUrl}/d-dcc/edit/users/${id}`, user);
+    // return this.http.put<User>(`${this.apiServerDCCUrl}/d-dcc/edit/users/${id}`, user);
+    return this.http.put<User>(`${this.apiServerUrl}/d-dcc/edit/users/${id}`, user);
+  }
 
+  uploadXml(file: File): Observable<Blob> {
+    const formData = new FormData();
+    formData.append('file', file);
 
+   // return this.http.post(`${this.apiServerClientBaseUrl}/d-comparison/extractPngsZipFromXmlDCC`, formData, {
+      return this.http.post(`${this.apiServerUrl}/d-comparison/extractPngsZipFromXmlDCC`, formData, {
+
+        responseType: 'blob'
+    });
   }
 
 }

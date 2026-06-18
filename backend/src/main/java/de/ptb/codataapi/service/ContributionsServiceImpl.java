@@ -116,7 +116,7 @@ public class ContributionsServiceImpl implements ContributionsService {
         List<Contribution> contributions = contributionRepository.getAllContributions(sessionId);
         report.setContributionList(contributions);
 // Aktualisierten Report speichern
-        addReport(sessionId, report);
+//        addReport(sessionId, report);
 
         System.out.println("reportNeu: " + report.toString());
 
@@ -149,6 +149,12 @@ public class ContributionsServiceImpl implements ContributionsService {
         HttpEntity<String> entity = new HttpEntity<String>(updatedJsonString, headers);
         // POST Request with base64String and reportName as response
         ResponseEntity<String> answer = restTemplate.postForEntity(url, entity, String.class);
+//        ResponseEntity<String> answer = restTemplate.exchange(
+//                url,
+//                HttpMethod.POST,
+//                entity,
+//                String.class
+//        );
         JsonNode rootNode1 = objectMapper.readTree(answer.getBody());
         String base64String = String.valueOf(rootNode1.path("base64String"));
         JsonNode reportName = rootNode1.path("fileName");

@@ -10,6 +10,7 @@ export class ConfirmDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public message: string
+    // @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string }
   ) {}
 
   onCancel(): void {
@@ -19,4 +20,5 @@ export class ConfirmDialogComponent {
   onConfirm(): void {
     this.dialogRef.close(true);
   }
+
 }

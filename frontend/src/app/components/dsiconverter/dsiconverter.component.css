@@ -53,3 +53,39 @@
   margin-bottom: 20px;
 
 }
+.converter-card{
+  max-width: 450px;
+  margin: 20px auto;
+  padding: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.unit-row{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unit-field{
+  flex: 1;
+}
+
+swap-btn{
+  margin-top: 8px;
+}
+
+
+.result{
+  margin-top: 1.5rem;
+  padding: 1rem;
+  font-style: italic;
+  border-radius: 8px;
+  border-color: #009cd1;
+  border-style: inset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

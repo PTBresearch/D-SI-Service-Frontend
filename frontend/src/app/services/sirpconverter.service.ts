@@ -1,8 +1,10 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {UnitModel} from "../model/dsiconverter.model";
+import {ConversionRequest} from "../model/ConversionRequest";
+import {ConversionResponse} from "../model/ConversionResponse";
 
 
 @Injectable({
@@ -21,6 +23,11 @@ export class SirpConverterService {
     const url = `${this.apiUrl}/si/unit?entity=${name}`;
     return this.http.get<any>(url);
   }
-
+  public convert(request: ConversionRequest): Observable<ConversionResponse>{
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    return this.http.post<ConversionResponse>('http://localhost:12345/api/v1/convert', request,{headers})
+  }
 
 }

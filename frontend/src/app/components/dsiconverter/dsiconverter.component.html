@@ -1,6 +1,57 @@
 <div class="container converter section ">
+  <h2 class="  d-conv animate section">D-SI Converter</h2>
+  <mat-card class="converter-card">
+    <mat-card-title>Unit Converter</mat-card-title>
+    <form [formGroup]="form">
+      <div class="unit-row">
+
+        <mat-form-field>
+          <mat-label>From unit ...</mat-label>
+          <input type="text" matInput formControlName="fromUnit" [matAutocomplete]="auto">
+        </mat-form-field>
+
+        <mat-autocomplete #auto="matAutocomplete">
+<!--          @for(unit of units; track unit)&#123;-->
+          <mat-option [value]="units">{{ units}}</mat-option>
+<!--          }-->
+        </mat-autocomplete>
+
+        <button mat-button class="swap-btn" (click)="swap()">
+          <mat-icon color="primary">swap_horiz</mat-icon>
+        </button>
+
+        <mat-form-field>
+          <mat-label>To unit ...</mat-label>
+          <input type="text" matInput formControlName="toUnit" [matAutocomplete]="auto">
+        </mat-form-field>
+
+        <mat-autocomplete #auto="matAutocomplete">
+<!--          @for(unit of units; track unit)&#123;-->
+          <mat-option [value]="units">{{ units}}</mat-option>
+<!--          }-->
+        </mat-autocomplete>
+<!--        <mat-autocomplete #auto="matAutocomplete">-->
+<!--          @for(unit of units; track unit){-->
+<!--          <mat-option [value]="unit">{{ unit}}</mat-option>-->
+<!--          }-->
+<!--        </mat-autocomplete>-->
+      </div>
+      <mat-form-field appearance="fill" class="unit-field full-width">
+        <mat-label>Value</mat-label>
+        <input matInput type="number" formControlName="inputValue">
+      </mat-form-field>
+    </form>
+    <button mat-raised-button color="primary" class="full-width" (click)="convert()">
+      convert
+    </button>
+    <div [class.result]="(result$ | async) !== null">
+      {{ result$ | async }}
+    </div>
+  </mat-card>
 
   <h2 class="  d-conv animate section">D-SI -- SIRP Converter</h2>
+
+
 
 
   <!--  <h1>D-SI to SIRP transformation</h1>-->
