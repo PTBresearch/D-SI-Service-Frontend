@@ -48,41 +48,50 @@ export class DsiconverterComponent implements OnInit {
       toUnit: fromUnit
     });
   }
-
-  public convertSi() :void {
-
-    // const conversionRequest: ConversionRequest = {
-    //   value: this.form.value.inputValue,
-    //   fromUnit: this.form.value.fromUnit,
-    //   toUnit: this.form.value.toUnit
-    // }
+  public convertSi(): void {
 
     const xml = this.buildXml();
 
-
     this.sirpConverterService.convert(xml).subscribe({
-      next: (res: ConversionResponse): void => {
-        this.result$.next(res.result)
+      next: (res: string) => {
+        console.log('RAW Response:', res);
+
+        const value = this.parseResult(res);
+        console.log('Parsed value:', value);
+
+        this.result$.next(value ?? 0);
       },
       error: (err: HttpErrorResponse) => {
-        if (err.status === 400 && err.error) {
-          const validationError: ValidationErrorResponse = err.error;
-          const messages: string[] = [
-            validationError.message,
-            ...validationError.errors.map(e => `${e.field}: ${e.message}`)
-          ];
-          this.dialog.open(NotificationDialog, {
-            data: messages
-          });
-        } else {
-          console.error('Anderer Fehler:', err.message);
-        }
+        console.error('Error:', err);
       }
-    })
+    });
+
   }
 
+  // stabiler mit XPath
+  private parseResult(res: string): number | null {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(res, 'text/xml');
 
+    const node = xmlDoc.getElementsByTagNameNS(
+      'https://ptb.de/si',
+      'value'
+    )[0];
 
+    return node?.textContent ? Number(node.textContent) : null;
+  }
+
+  // Robuste Methode
+  // private parseResult(res: string): number | null {
+  //   const parser = new DOMParser();
+  //   const xmlDoc = parser.parseFromString(res, 'text/xml');
+  //
+  //   const valueNode = xmlDoc.getElementsByTagName('si:value')[0];
+  //
+  //   const value = valueNode?.textContent;
+  //
+  //   return value ? Number(value) : null;
+  // }
   convert() {
     this.sirpConverterService.getUnitData(this.inputValue).subscribe(
       (response: HttpResponse<any>) => {
@@ -98,25 +107,25 @@ export class DsiconverterComponent implements OnInit {
     this.unitData = {};
   }
 
-  private  buildXml(){
-    const data = this.form.value
-    const xml:string = `
-    <?xml version="1.0" encoding="UTF-8"?>
-    <conversionInput xmlns="https://ptb.de/si/conversion">
-    <fromQuantityValue>
-      <real xmlns="https://ptb.de/si">
+  private buildXml(): string {
+    const data = this.form.value;
+
+    const xml =
+      `<?xml version="1.0" encoding="UTF-8"?>
+<conversionInput xmlns="https://ptb.de/si/conversion">
+  <fromQuantityValue>
+    <real xmlns="https://ptb.de/si">
       <value>${data.inputValue}</value>
       <unit>${data.fromUnit}</unit>
     </real>
-    </fromQuantityValue>
-    <toUnit>
+  </fromQuantityValue>
+  <toUnit>
     <unit>${data.toUnit}</unit>
-    </toUnit>
-    </conversionInput>`
-    const xmlDoc = this.parser.parseFromString(xml, 'application/xml');
+  </toUnit>
+</conversionInput>`;
 
-    return xmlDoc;
-
+    return xml.trim();
   }
+
 }
 
