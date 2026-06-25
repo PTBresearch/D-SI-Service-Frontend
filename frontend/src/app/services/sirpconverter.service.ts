@@ -23,11 +23,12 @@ export class SirpConverterService {
     const url = `${this.apiUrl}/si/unit?entity=${name}`;
     return this.http.get<any>(url);
   }
-  public convert(request: ConversionRequest): Observable<ConversionResponse>{
+  public convert(xml: any): Observable<ConversionResponse>{
     const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/xml'
     });
-    return this.http.post<ConversionResponse>('http://localhost:12345/api/v1/convert', request,{headers})
+    return this.http.post<ConversionResponse>('http://localhost:12345/api/v1/convert',xml,{headers})
+
   }
 
 }

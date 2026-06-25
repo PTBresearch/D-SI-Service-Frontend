@@ -10,7 +10,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
 import {Ng2SearchPipeModule} from "ng2-search-filter";
-import {HashLocationStrategy, LocationStrategy, PathLocationStrategy} from "@angular/common";
+import {CommonModule, HashLocationStrategy, LocationStrategy, PathLocationStrategy} from "@angular/common";
 import { ErrorComponent } from './components/error/error.component';
 import { SawaggerComponent } from './components/sawagger/sawagger.component';
 import { DsiconverterComponent } from './components/dsiconverter/dsiconverter.component';
@@ -38,6 +38,7 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatCardModule} from "@angular/material/card";
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,6 +58,7 @@ import {MatCardModule} from "@angular/material/card";
 
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
@@ -84,8 +86,7 @@ import {MatCardModule} from "@angular/material/card";
     MatSnackBarModule,
     MatCheckboxModule,
     MatAutocompleteModule,
-    MatCardModule
-  ],
+    MatCardModule ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},  {
     provide: HTTP_INTERCEPTORS,
     useClass: BasicAuthInterceptor,

@@ -21,6 +21,8 @@ export class DsiconverterComponent implements OnInit {
   showResults: boolean = false;
   inputValue: string = ''
   unitData: any = {};
+  parser = new DOMParser();
+
 
   units: String[] = [];
   result$ = new BehaviorSubject<number | null>(null);
@@ -31,6 +33,8 @@ export class DsiconverterComponent implements OnInit {
   });
 
   constructor(private sirpConverterService: SirpConverterService, private dialog: MatDialog) {
+   var  dummy: string[] = ["\\kelvin", "\\metre" , "\\kilo"];
+   this.units = dummy;
   }
 
   ngOnInit(): void {
@@ -47,12 +51,16 @@ export class DsiconverterComponent implements OnInit {
 
   public convertSi() :void {
 
-    const conversionRequest: ConversionRequest = {
-      value: this.form.value.inputValue,
-      fromUnit: this.form.value.fromUnit,
-      toUnit: this.form.value.toUnit
-    }
-    this.sirpConverterService.convert(conversionRequest).subscribe({
+    // const conversionRequest: ConversionRequest = {
+    //   value: this.form.value.inputValue,
+    //   fromUnit: this.form.value.fromUnit,
+    //   toUnit: this.form.value.toUnit
+    // }
+
+    const xml = this.buildXml();
+
+
+    this.sirpConverterService.convert(xml).subscribe({
       next: (res: ConversionResponse): void => {
         this.result$.next(res.result)
       },
@@ -89,4 +97,26 @@ export class DsiconverterComponent implements OnInit {
     this.showResults = false;
     this.unitData = {};
   }
+
+  private  buildXml(){
+    const data = this.form.value
+    const xml:string = `
+    <?xml version="1.0" encoding="UTF-8"?>
+    <conversionInput xmlns="https://ptb.de/si/conversion">
+    <fromQuantityValue>
+      <real xmlns="https://ptb.de/si">
+      <value>${data.inputValue}</value>
+      <unit>${data.fromUnit}</unit>
+    </real>
+    </fromQuantityValue>
+    <toUnit>
+    <unit>${data.toUnit}</unit>
+    </toUnit>
+    </conversionInput>`
+    const xmlDoc = this.parser.parseFromString(xml, 'application/xml');
+
+    return xmlDoc;
+
+  }
 }
+
