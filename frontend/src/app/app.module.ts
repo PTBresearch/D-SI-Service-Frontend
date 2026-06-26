@@ -37,6 +37,7 @@ import { UserAddDialogComponent } from './components/user-add-dialog/user-add-di
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatCardModule} from "@angular/material/card";
+import {MatListModule} from "@angular/material/list";
 
 
 @NgModule({
@@ -86,7 +87,8 @@ import {MatCardModule} from "@angular/material/card";
     MatSnackBarModule,
     MatCheckboxModule,
     MatAutocompleteModule,
-    MatCardModule ],
+    MatCardModule,
+    MatListModule],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},  {
     provide: HTTP_INTERCEPTORS,
     useClass: BasicAuthInterceptor,
