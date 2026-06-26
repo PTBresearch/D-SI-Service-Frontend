@@ -40,11 +40,43 @@
         <input matInput type="number" formControlName="inputValue">
       </mat-form-field>
     </form>
-    <button mat-raised-button color="primary" class="full-width" (click)="convertSi()">
+    <button mat-raised-button color="primary" [disabled]="!form.get('fromUnit')?.value || !form.get('inputValue')?.value" class="full-width" (click)="convertSi()">
       convert
     </button>
-    <div [class.result]="(result$ | async) !== null">
-      {{ result$ | async }}
+    <div [class.result]="(notifications$ | async)">
+      <mat-list *ngIf="(result$ | async)">
+        <mat-list-item>
+          <div class="result-item">
+            <div class="label">Result</div>
+            <div class="value">{{ (result$ | async) }}</div>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item *ngIf=" (sMu$ | async)">
+          <div class="result-item">
+            <div class="label">Standard Measurement Uncertainty</div>
+            <div class="value">{{ (sMu$ | async) }}</div>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item *ngIf="(notifications$ | async)">
+          <div class="result-item">
+            <div class="label">Notifications</div>
+            <div *ngFor="let item of notifications$ | async" class="value">{{ item }}</div>
+          </div>
+        </mat-list-item>
+        <mat-list-item *ngIf="(notifications$ | async)">
+        <button id="report-btn"
+          *ngIf="rawResponse"
+          mat-raised-button
+          color="primary"
+
+          (click)="showReport()">
+          Conversion Report
+        </button>
+      </mat-list-item>
+      </mat-list>
+
     </div>
   </mat-card>
 

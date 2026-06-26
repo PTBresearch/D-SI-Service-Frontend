@@ -27,7 +27,6 @@
   border-radius: 2px;
 }
 
-
 .d-conv.animate::after {
   width: 100%;
 }
@@ -54,7 +53,7 @@
 
 }
 .converter-card{
-  max-width: 450px;
+  max-width: 500px;
   margin: 20px auto;
   padding: 16px;
 }
@@ -77,15 +76,24 @@ swap-btn{
   margin-top: 8px;
 }
 
-
-.result{
-  margin-top: 1.5rem;
-  padding: 1rem;
-  font-style: italic;
-  border-radius: 8px;
-  border-color: #009cd1;
-  border-style: inset;
+.result-item {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.label {
+  color: rgba(0, 0, 0, 0.6);
+  white-space: normal;
+}
+
+.value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+#report-btn{
+  width: 100%;
 }
