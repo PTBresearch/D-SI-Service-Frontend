@@ -90,10 +90,17 @@ swap-btn{
 
 .value {
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 500;
   word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
+
 
 #report-btn{
   width: 100%;
+}
+
+.mat-mdc-list-item {
+  height: auto !important;
 }

@@ -7,11 +7,12 @@
 
         <mat-form-field>
           <mat-label>From unit ...</mat-label>
-          <input type="text" matInput formControlName="fromUnit" [matAutocomplete]="auto">
+          <input type="text" (focus)="activeField='fromUnit'" #searchInputFrom  matInput formControlName="fromUnit" [matAutocomplete]="auto" (input)="onInput($event)">
         </mat-form-field>
-        <mat-autocomplete #auto="matAutocomplete">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event, 'fromUnit')">
 
-          <mat-option *ngFor="let unit of units" [value]="unit"> {{ unit}}</mat-option>
+          <mat-option  *ngFor="let suggestion of filteredSuggestions"
+                       [value]="suggestion"> {{ suggestion}}</mat-option>
 
         </mat-autocomplete>
 
@@ -21,19 +22,16 @@
 
         <mat-form-field>
           <mat-label>To unit ...</mat-label>
-          <input type="text" matInput formControlName="toUnit" [matAutocomplete]="auto">
+          <input type="text"  (focus)="activeField='toUnit'" matInput #searchInputTo formControlName="toUnit" [matAutocomplete]="auto" (input)="onInput($event)">
         </mat-form-field>
 
-        <mat-autocomplete #auto="matAutocomplete">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event, 'toUnit')">
 
-          <mat-option *ngFor="let unit of units" [value]="units">{{ units}}</mat-option>
-
-        </mat-autocomplete>
-        <mat-autocomplete #auto="matAutocomplete">
-
-          <mat-option *ngFor="let unit of units" [value]="unit">{{ unit}}</mat-option>
+          <mat-option  *ngFor="let suggestion of filteredSuggestions"
+                       [value]="suggestion"> {{ suggestion}}</mat-option>
 
         </mat-autocomplete>
+
       </div>
       <mat-form-field appearance="fill" class="unit-field full-width">
         <mat-label>Value</mat-label>
@@ -44,8 +42,8 @@
       convert
     </button>
     <div [class.result]="(notifications$ | async)">
-      <mat-list *ngIf="(result$ | async)">
-        <mat-list-item>
+      <mat-list >
+        <mat-list-item *ngIf="(result$ | async)">
           <div class="result-item">
             <div class="label">Result</div>
             <div class="value">{{ (result$ | async) }}</div>

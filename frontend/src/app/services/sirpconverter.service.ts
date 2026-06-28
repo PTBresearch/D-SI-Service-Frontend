@@ -24,6 +24,11 @@ export class SirpConverterService {
     return this.http.get<any>(url);
   }
 
+  public getSuggestions() : Observable<string[]>{
+    return this.http.get<string[]>('http://localhost:12345/api/v1/getUnits');
+  }
+
+
   public convert(xml: string): Observable<string> {
     return this.http.post(
       'http://localhost:12345/api/v1/convert',

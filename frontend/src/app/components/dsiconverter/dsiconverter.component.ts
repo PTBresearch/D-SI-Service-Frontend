@@ -1,11 +1,19 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {SirpConverterService} from "../../services/sirpconverter.service";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {FormControl, FormGroup} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {NotificationDialog} from "../notification-dialog/notification-dialog";
 import {BehaviorSubject} from "rxjs";
+import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 
+
+interface Token {
+  start: number;
+  end: number;
+  value: string;
+  type: '#' | '\\';
+}
 
 @Component({
   selector: 'app-dsiconverter',
@@ -14,12 +22,18 @@ import {BehaviorSubject} from "rxjs";
   styleUrls: ['./dsiconverter.component.css']
 })
 export class DsiconverterComponent implements OnInit {
+  @ViewChild('searchInputFrom')
+  searchInputFrom!: ElementRef<HTMLInputElement>;
+  @ViewChild('searchInputTo')
+  searchInputTo!: ElementRef<HTMLInputElement>;
+  activeField: 'fromUnit' | 'toUnit' = 'fromUnit';
   showResults: boolean = false;
   inputValue: string = ''
   unitData: any = {};
   parser = new DOMParser();
   rawResponse: string | null = null;
-  units: String[] = [];
+  units: string[] = [];
+  filteredSuggestions: string[] = [];
   result$ = new BehaviorSubject<number | null>(null);
   sMu$ = new BehaviorSubject<number | null>(null);
   notifications$ = new BehaviorSubject<string[] | null>(null);
@@ -28,13 +42,17 @@ export class DsiconverterComponent implements OnInit {
     toUnit: new FormControl(''),
     inputValue: new FormControl<number | null>(null)
   });
+  private lastValue = '';
+  private lastCursor = 0;
 
   constructor(private sirpConverterService: SirpConverterService, private dialog: MatDialog) {
-   var  dummy: string[] = ["\\kelvin", "\\metre" , "\\kilo"];
-   this.units = dummy;
+
   }
 
   ngOnInit(): void {
+    this.sirpConverterService.getSuggestions().subscribe((res) =>{
+      this.units = res;
+    })
   }
   public swap() : void {
     const fromUnit = this.form.get('fromUnit')?.value;
@@ -81,7 +99,6 @@ export class DsiconverterComponent implements OnInit {
           this.result$.next(null);
           const notifications = this.parseNotifications(err.error)
           this.notifications$.next(notifications ?? null)
-
         }
 
         if(ct?.includes('json') ){
@@ -139,12 +156,10 @@ export class DsiconverterComponent implements OnInit {
     let notifications: string[] = []
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(res, 'text/xml');
-
     const nodes = xmlDoc.getElementsByTagNameNS(
       'https://ptb.de/si/conversion',
       'notification'
     );
-
 
     Array.from(nodes).forEach(el => {
       if (el.textContent) {
@@ -213,6 +228,87 @@ export class DsiconverterComponent implements OnInit {
 
     return xml.trim();
   }
+
+  //===== Filter suggestions ===
+
+
+  getCurrentToken(value: string, cursor: number): Token | null {
+    let start = cursor - 1;
+    while (start >= 0 && value[start] !== '#' && value[start] !== '\\') {
+      start--;
+    }
+    if (start < 0) return null;
+    const type = value[start] as '#' | '\\';
+    let end = start + 1;
+    while ( end < value.length && value[end] !== '#' && value[end] !== '\\' ) {
+      end++;
+    }
+    return { start, end, type, value: value.substring(start, end) };
+  }
+
+  filter(value: string, cursor: number): void {
+    const token = this.getCurrentToken(value, cursor);
+    if (!token) {
+      this.filteredSuggestions = [];
+      return;
+    }
+    if (token.type === '#') {
+      const alreadyHasHash = value.includes('#');
+      if (alreadyHasHash && !value.startsWith('#')) {
+        this.filteredSuggestions = [];
+        return;
+      }
+      this.filteredSuggestions = this.units.filter(s => s.startsWith('#') && s.substring(1).toLowerCase().startsWith(token.value.substring(1).toLowerCase()) );
+      return;
+    }
+    this.filteredSuggestions = this.units.filter(s => s.startsWith('\\') && s.substring(1).toLowerCase().startsWith(token.value.substring(1).toLowerCase()) );
+  }
+
+
+  onInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+
+    this.lastValue = input.value;
+    this.lastCursor = input.selectionStart ?? input.value.length;
+
+    this.filter(this.lastValue, this.lastCursor);
+  }
+
+  optionSelected(event: MatAutocompleteSelectedEvent, field: string) {
+
+    const suggestion = event.option.value as string;
+    const value = this.lastValue;
+    const cursor = this.lastCursor;
+    let newValue: string;
+    if (suggestion.startsWith('#')) {
+      newValue =  suggestion;
+    } else {
+      const lastSlash = value.lastIndexOf('\\', cursor - 1);
+      newValue =
+        value.substring(0, lastSlash) +
+        suggestion +
+        value.substring(cursor);
+    }
+      this.form.get(this.activeField)?.setValue(newValue);
+        if(this.activeField === "fromUnit") {
+          const inputEl = this.searchInputFrom.nativeElement;
+          inputEl.value = newValue;
+          inputEl.setSelectionRange(newValue.length, newValue.length);
+          inputEl.focus();
+
+        }
+        if(this.activeField === "toUnit") {
+          const inputEl = this.searchInputTo.nativeElement;
+          inputEl.value = newValue;
+          inputEl.setSelectionRange(newValue.length, newValue.length);
+          inputEl.focus();
+
+        }
+
+
+
+  }
+
 
 }
 
