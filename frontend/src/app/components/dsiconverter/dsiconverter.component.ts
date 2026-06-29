@@ -65,6 +65,7 @@ export class DsiconverterComponent implements OnInit {
   }
   public convertSi(): void {
 
+
     const xml = this.buildXml();
 
     this.sirpConverterService.convert(xml).subscribe({

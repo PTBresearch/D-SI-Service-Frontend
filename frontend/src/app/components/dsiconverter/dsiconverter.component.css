@@ -81,6 +81,7 @@ swap-btn{
   flex-direction: column;
   gap: 0.25rem;
   width: 100%;
+  height: auto;
 }
 
 .label {
@@ -94,6 +95,7 @@ swap-btn{
   word-break: break-word;
   white-space: normal;
   overflow-wrap: break-word;
+  height: auto;
 }
 
 
@@ -105,4 +107,10 @@ swap-btn{
 
 .mat-mdc-list-item {
   height: auto !important;
+  margin-bottom: 20px;
+}
+
+
+.mat-mdc-card-title {
+  margin-bottom: 20px;
 }
