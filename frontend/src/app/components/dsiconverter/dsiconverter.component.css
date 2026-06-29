@@ -99,6 +99,8 @@ swap-btn{
 
 #report-btn{
   width: 100%;
+  background-color:#009cd1;
+  border-color:#009cd1;
 }
 
 .mat-mdc-list-item {
