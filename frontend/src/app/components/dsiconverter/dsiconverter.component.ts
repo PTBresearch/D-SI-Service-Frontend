@@ -29,6 +29,7 @@ export class DsiconverterComponent implements OnInit {
   activeField: 'fromUnit' | 'toUnit' = 'fromUnit';
   showResults: boolean = false;
   inputValue: string = ''
+
   unitData: any = {};
   parser = new DOMParser();
   rawResponse: string | null = null;
@@ -40,7 +41,8 @@ export class DsiconverterComponent implements OnInit {
   form : any = new FormGroup({
     fromUnit: new FormControl(''),
     toUnit: new FormControl(''),
-    inputValue: new FormControl<number | null>(null)
+    inputValue: new FormControl<number | null>(null),
+    outputValue: new FormControl<number | null>(null)
   });
   private lastValue = '';
   private lastCursor = 0;
@@ -69,21 +71,22 @@ export class DsiconverterComponent implements OnInit {
     const xml = this.buildXml();
 
     this.sirpConverterService.convert(xml).subscribe({
+
       next: (res: string) => {
+        this.form.patchValue({outputValue: null});
         this.rawResponse = res
-        console.log('RAW Response:', res);
         const value = this.parseResult(res);
-        console.log('Parsed value:', value);
+        this.form.patchValue({
+          outputValue: value
+        })
         this.result$.next(value ?? 0);
 
         const toUnit = this.parseToUnit(res);
-        console.log('Parsed toUnit:', toUnit);
         this.form.patchValue({
           toUnit:toUnit
         })
 
         const sMu = this.parseSmu(res);
-        console.log('Parsed uncertainty:', sMu);
         this.sMu$.next(sMu ?? null);
 
         const notifications = this.parseNotifications(res);
@@ -91,6 +94,7 @@ export class DsiconverterComponent implements OnInit {
 
       },
       error: (err: HttpErrorResponse) => {
+        this.form.patchValue({outputValue: null});
         this.rawResponse = err.error
         const ct = err.headers.get('Content-Type');
         console.error('Error:', err.error);
@@ -103,9 +107,8 @@ export class DsiconverterComponent implements OnInit {
         }
 
         if(ct?.includes('json') ){
-
           this.dialog.open(NotificationDialog, {
-            data: JSON.parse(err.error)
+            data: JSON.parse(err.error) == null ? "Unknown error." : JSON.parse(err.error)
           });
 
         }
@@ -203,6 +206,20 @@ export class DsiconverterComponent implements OnInit {
         this.showResults = true;
       }
     );
+  }
+
+  clear(): void {
+    this.form.reset({
+      fromUnit: '',
+      toUnit: '',
+      inputValue: null,
+      outputValue: null
+
+    });
+    this.notifications$.next(null);
+    this.result$.next(null);
+    this.sMu$.next(null);
+    this.rawResponse = null;
   }
 
   resetResults() {

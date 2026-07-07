@@ -53,29 +53,56 @@
 
 }
 .converter-card{
-  max-width: 500px;
+  max-width: 70%;
   margin: 20px auto;
   padding: 16px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.header mat-card-title {
+  margin: 0;
+  line-height: 1;
 }
 
 .full-width {
   width: 100%;
 }
 
-.unit-row{
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
 }
 
-.unit-field{
-  flex: 1;
+.swap-row{
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+ }
+
+.large {
+  grid-column: 2;
 }
 
-swap-btn{
-  margin-top: 8px;
+.small {
+  grid-column: 1;
 }
 
+.bold{
+font-weight: bold;
+}
+
+.swap-btn {
+  justify-self: center;
+  grid-column: 2;
+}
+.no-focus {
+  pointer-events: none;
+}
 .result-item {
   display: flex;
   flex-direction: column;
@@ -114,3 +141,22 @@ swap-btn{
 .mat-mdc-card-title {
   margin-bottom: 20px;
 }
+
+button:disabled {
+  background-color: #bdbdbd !important;
+  color: #6c6c6c !important;
+  border-color: #bdbdbd !important;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.section-buttons {
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-end;
+
+}
+
+
+

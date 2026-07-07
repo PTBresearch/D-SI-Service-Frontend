@@ -1,42 +1,56 @@
 <div class="container converter section ">
-  <h2 class="  d-conv animate section">D-SI Converter</h2>
-  <mat-card class="converter-card">
-    <mat-card-title>Unit Converter</mat-card-title>
-    <form [formGroup]="form">
-      <div class="unit-row">
+  <h2 class="  d-conv animate section">SI Unit Converter</h2>
+  <section class="section-buttons">
 
-        <mat-form-field>
+      <a mat-stroked-button href="http://a85279.berlin.ptb.de/api/siconverter/swagger-ui/index.html" target="_blank">Swagger UI</a>
+
+  </section>
+  <mat-card class="converter-card">
+    <div class="header">
+      <mat-card-title >SI Unit Converter</mat-card-title>
+      <button
+          mat-icon-button
+          type="button"
+          aria-label="reset form"
+          color="primary"
+          (click)="clear()">
+          <mat-icon>restart_alt</mat-icon>
+        </button>
+    </div>
+    <form [formGroup]="form">
+      <div class="row">
+        <mat-form-field appearance="fill" class="small">
+          <mat-label>Value</mat-label>
+          <input matInput type="number" formControlName="inputValue">
+        </mat-form-field>
+        <mat-form-field class="large">
           <mat-label>From unit ...</mat-label>
           <input type="text" (focus)="activeField='fromUnit'" #searchInputFrom  matInput formControlName="fromUnit" [matAutocomplete]="auto" (input)="onInput($event)">
         </mat-form-field>
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event, 'fromUnit')">
-
-          <mat-option  *ngFor="let suggestion of filteredSuggestions"
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event, 'fromUnit')">          <mat-option  *ngFor="let suggestion of filteredSuggestions"
                        [value]="suggestion"> {{ suggestion}}</mat-option>
-
         </mat-autocomplete>
-
+      </div>
+      <div class="swap-row">
         <button mat-button class="swap-btn" (click)="swap()">
-          <mat-icon color="primary">swap_horiz</mat-icon>
+          <mat-icon color="primary">swap_vert</mat-icon>
         </button>
-
-        <mat-form-field>
+      </div>
+      <div class="row">
+        <mat-form-field appearance="fill" class="small no-focus bold">
+          <mat-label></mat-label>
+          <input matInput  type="text" [readonly]="true" tabindex="-1" formControlName="outputValue">
+        </mat-form-field>
+        <mat-form-field class="large">
           <mat-label>To unit ...</mat-label>
           <input type="text"  (focus)="activeField='toUnit'" matInput #searchInputTo formControlName="toUnit" [matAutocomplete]="auto" (input)="onInput($event)">
         </mat-form-field>
-
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event, 'toUnit')">
-
           <mat-option  *ngFor="let suggestion of filteredSuggestions"
                        [value]="suggestion"> {{ suggestion}}</mat-option>
-
         </mat-autocomplete>
 
       </div>
-      <mat-form-field appearance="fill" class="unit-field full-width">
-        <mat-label>Value</mat-label>
-        <input matInput type="number" formControlName="inputValue">
-      </mat-form-field>
     </form>
     <button class="btn btn-primary" id="report-btn" [disabled]="!form.get('fromUnit')?.value || !form.get('inputValue')?.value"  (click)="convertSi()">
       convert

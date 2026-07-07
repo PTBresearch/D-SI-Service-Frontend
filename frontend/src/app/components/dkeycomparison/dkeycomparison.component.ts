@@ -384,7 +384,7 @@ export class DkeycomparisonComponent implements OnInit {
     if (reportData?.contributionList?.length > 0) {
       console.log("contributionList ist korrekt gesetzt:", reportData.contributionList);
     } else {
-      console.log("contributionList ist leer oder nicht gesetzt.");
+      console.log("contributionList");
     }
 
     this.reports$ = this.contributionsService.getReports(sessionId).pipe(

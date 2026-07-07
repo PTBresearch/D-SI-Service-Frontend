@@ -25,13 +25,13 @@ export class SirpConverterService {
   }
 
   public getSuggestions() : Observable<string[]>{
-    return this.http.get<string[]>('http://localhost:12345/api/v1/getUnits');
+    return this.http.get<string[]>('http://localhost:12345/api/siconverter/getUnits');
   }
 
 
   public convert(xml: string): Observable<string> {
     return this.http.post(
-      'http://localhost:12345/api/v1/convert',
+      'http://localhost:12345/api/siconverter/convert',
       xml,
       {
         headers: new HttpHeaders({
