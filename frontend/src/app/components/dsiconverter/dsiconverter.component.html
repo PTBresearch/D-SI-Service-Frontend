@@ -13,6 +13,7 @@
           type="button"
           aria-label="reset form"
           color="primary"
+          class="reset-button"
           (click)="clear()">
           <mat-icon>restart_alt</mat-icon>
         </button>
@@ -37,8 +38,8 @@
         </button>
       </div>
       <div class="row">
-        <mat-form-field appearance="fill" class="small no-focus bold">
-          <mat-label></mat-label>
+        <mat-form-field appearance="fill" class="small no-focus scale-btn">
+          <mat-label>Result</mat-label>
           <input matInput  type="text" [readonly]="true" tabindex="-1" formControlName="outputValue">
         </mat-form-field>
         <mat-form-field class="large">

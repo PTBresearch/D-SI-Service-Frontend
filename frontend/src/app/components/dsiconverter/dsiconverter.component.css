@@ -99,6 +99,18 @@ font-weight: bold;
 .swap-btn {
   justify-self: center;
   grid-column: 2;
+  transform: scale(1.2);
+  width: 60px;
+  height: 60px;
+  margin-bottom: 16px
+}
+
+.swap-btn mat-icon {
+  font-size: 36px;
+  color: #009cd1;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
 }
 .no-focus {
   pointer-events: none;
@@ -159,4 +171,32 @@ button:disabled {
 }
 
 
+.reset-button {
+  width: 60px;
+  height: 60px;
+}
 
+.reset-button mat-icon {
+  color: #009cd1;
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+.scale-btn {
+  display: inline-block;
+  font-size: 24px;
+  font-weight: 400;
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
