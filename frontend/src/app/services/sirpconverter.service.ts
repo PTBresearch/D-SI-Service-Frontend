@@ -11,6 +11,7 @@ import {ConversionResponse} from "../model/ConversionResponse";
   providedIn: 'root'
 })
 export class SirpConverterService {
+  private apiServerUrl = environment.apiBaseUrl;
 
   private dataUrl = 'assets/data-unit.json'; // Pfad zur JSON-Datei
 
@@ -25,13 +26,13 @@ export class SirpConverterService {
   }
 
   public getSuggestions() : Observable<string[]>{
-    return this.http.get<string[]>('http://a85279.berlin.ptb.de/api/siconverter/getUnits');
+    return this.http.get<string[]>(`${this.apiServerUrl}/siconverter/getUnits`);
   }
 
 
   public convert(xml: string): Observable<string> {
     return this.http.post(
-      'http://a85279.berlin.ptb.de/api/siconverter/convert',
+      `${this.apiServerUrl}/siconverter/convert`,
       xml,
       {
         headers: new HttpHeaders({

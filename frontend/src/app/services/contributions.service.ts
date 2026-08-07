@@ -16,7 +16,6 @@ import {Page} from "../model/page.model";
 })
 export class ContributionsService {
   private apiServerUrl = environment.apiBaseUrl;
-
   private apiServerDCCUrl = environment.apiDCCUrl;
   private apiServerClientBaseUrl = environment.apiClientBaseUrl;
 

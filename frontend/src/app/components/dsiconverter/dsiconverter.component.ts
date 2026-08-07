@@ -6,6 +6,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {NotificationDialog} from "../notification-dialog/notification-dialog";
 import {BehaviorSubject} from "rxjs";
 import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
+import {environment} from "../../../environments/environment";
 
 
 interface Token {
@@ -22,6 +23,8 @@ interface Token {
   styleUrls: ['./dsiconverter.component.css']
 })
 export class DsiconverterComponent implements OnInit {
+
+  protected apiServerUrl = environment.apiBaseUrl;
   @ViewChild('searchInputFrom')
   searchInputFrom!: ElementRef<HTMLInputElement>;
   @ViewChild('searchInputTo')

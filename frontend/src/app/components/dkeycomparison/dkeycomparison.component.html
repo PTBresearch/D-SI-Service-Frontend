@@ -28,8 +28,8 @@
 
   <!--  Comparison-Template für alle-->
   <ng-template #contributionForm>
-    <h2 class=" d-comp animate ">D-Comparison "test system"</h2>
-
+<!--    <h2 class=" d-comp animate ">D-Comparison "test system"</h2>-->
+    <h2 class=" d-comp animate ">D-Comparison <span *ngIf="isTestSystem">"Test System"</span></h2>
 
     <div class="title">
       <h2 class="mc"><span>E = mc²</span></h2>
@@ -80,40 +80,6 @@
             PID DCC is required
           </small>
         </div>
-
-
-
-        <!--        <div class="form-group mb-3" *ngIf="dccPidList$ | async as result" [ngSwitch]="result.dataState">-->
-<!--          <div *ngSwitchCase="DataStateEnum.LOADING">Loading...</div>-->
-<!--          <div *ngSwitchCase="DataStateEnum.ERROR" class="text-danger">-->
-<!--            {{ result.errorMessage }}-->
-<!--          </div>-->
-
-<!--          <div *ngSwitchCase="DataStateEnum.LOADED">-->
-<!--            <label class="form-label" for="pidDCC" *ngIf="!isLoggedIn">PID DCC:</label>-->
-
-<!--            <input-->
-<!--              id="pidDCC"-->
-<!--              formControlName="pidDCC"-->
-<!--              class="form-control"-->
-<!--              type="text"-->
-<!--              placeholder="Search or enter PID DCC"-->
-<!--              (input)="onPidSearch($event)" />-->
-<!--            &lt;!&ndash; Vorschlagsliste &ndash;&gt;-->
-<!--            <ul *ngIf="filteredDccPids.length > 0" class="list-group mt-1">-->
-<!--              <li *ngFor="let pid of filteredDccPids"-->
-<!--                  class="list-group-item list-group-item-action"-->
-<!--                  (click)="selectPid(pid)">{{ pid }}-->
-<!--              </li>-->
-<!--            </ul>-->
-<!--            <small *ngIf="contributionFormGroup.controls['pidDCC'].errors &&-->
-<!--                contributionFormGroup.controls['pidDCC'].touched"-->
-<!--                   class="text-danger">-->
-<!--              PID DCC is required-->
-<!--            </small>-->
-<!--          </div>-->
-
-<!--        </div>-->
 
         <div #radioGroupElement>
         <mat-radio-group formControlName="selectedOption" (change)="selectedProperty($event)">
@@ -279,9 +245,7 @@
         </div>
         </div>
         <a class="btn btn-danger" style="background-color:#009cd1; border-color:#009cd1; margin-bottom: 100px;"
-           href="http://a85279.berlin.ptb.de/api/d-comparison/swagger-ui/index.html#" target="_blank">Swagger UI OpenAPI</a>
-<!--        <a class="btn btn-danger" style="background-color:#009cd1; border-color:#009cd1; margin-bottom: 100px;"-->
-        <!--           href="https://d-si.ptb.de/api/d-comparison/swagger-ui/index.html#" target="_blank">Swagger UI OpenAPI</a>-->
+           [href]="apiServerUrl + '/d-comparison/swagger-ui/index.html# '" target="_blank">Swagger UI OpenAPI</a>
       </div>
     </div>
   </ng-template>

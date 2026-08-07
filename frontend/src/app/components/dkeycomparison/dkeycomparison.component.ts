@@ -39,6 +39,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {UserAddDialogComponent} from "../user-add-dialog/user-add-dialog.component";
 import { timeout } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-dkeycomparison',
@@ -46,6 +47,11 @@ import { v4 as uuidv4 } from 'uuid';
   styleUrls: ['./dkeycomparison.component.css']
 })
 export class DkeycomparisonComponent implements OnInit {
+
+  protected apiServerUrl = environment.apiBaseUrl;
+  get isTestSystem(): boolean {
+    return this.apiServerUrl.includes('http://a85279.berlin.ptb.de/api');
+  }
   title = 'dsi-Services';
 
   // Auth & User
